@@ -2,9 +2,9 @@ import { PlusIcon } from "@heroicons/react/20/solid";
 import Image from "next/image";
 import Script from 'next/script'
 
-import Hero from "./Hero";
-import Footer from "./Footer";
-import FeaturedJob from "./FeaturedJob";
+import Hero from "./components/Hero";
+import Footer from "./components/Footer";
+import FeaturedJob from "./components/FeaturedJob";
 
 const person = {
   name: "Software Development Manager",
@@ -310,6 +310,8 @@ export default function Home() {
 
       {/* Footer */}
       <Footer />
+
+      <Script src="https://cloud.umami.is/script.js" />
     </main>
   );
 }
