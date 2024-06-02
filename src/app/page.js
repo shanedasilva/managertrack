@@ -1,5 +1,6 @@
 import { PlusIcon } from "@heroicons/react/20/solid";
 import Image from "next/image";
+import Script from 'next/script'
 
 import Hero from "./Hero";
 import Footer from "./Footer";
