@@ -104,7 +104,7 @@ export default function Home() {
       <div className="mx-auto max-w-7xl px-4 lg:px-0 pb-16 relative z-10">
         <div className="pb-5 sm:flex sm:items-center sm:justify-between">
           <h3 className="text-2xl font-medium leading-6 text-gray-900">
-            Featured startups hiring now
+            Featured companies hiring now
           </h3>
 
           <div className="mt-3 flex sm:ml-4 sm:mt-0">
@@ -139,7 +139,7 @@ export default function Home() {
                 </div>
 
                 <ul role="list" className="divide-y divide-gray-300 pb-6">
-                  {Array.from({ length: 5 }).map((_, index) => (
+                  {Array.from({ length: 8 }).map((_, index) => (
                     <li
                       key={index}
                       className="flex justify-between gap-x-6 py-3"
@@ -157,7 +157,7 @@ export default function Home() {
                             />
                           </a>
                         </div>
-                        <div className="min-w-0 flex-auto pt-1">
+                        <div className="min-w-0 flex-auto">
                           <p className="text-base font-medium leading-6 text-gray-900 hover:underline cursor-pointer">
                             {person.name}
                           </p>

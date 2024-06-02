@@ -21,12 +21,12 @@ export default function Hero() {
         <div className="mx-auto max-w-4xl py-32 sm:py-48 lg:py-12 relative">
           <div className="text-center">
             <h1 className="text-4xl font-medium tracking-tight text-gray-900 sm:text-4xl">
-              Find your dream remote job without the hassle
+              Find your dream management job without the hassle
             </h1>
 
             <p className="mt-6 text-lg leading-8 text-gray-600 tracking-tight">
-              Remotive is where top talents go to easily access active and fully
-              remote job opportunities from vetted tech companies.
+              Managertrack is where top talents go to easily access active
+              management job opportunities from vetted tech companies.
             </p>
 
             <div className="mt-10 flex items-center justify-center gap-x-6">
