@@ -54,11 +54,11 @@ export default function Navigation() {
                   </DisclosureButton>
                 </div>
                 <div className="flex flex-shrink-0 items-center">
-                  <img
+                  {/* <img
                     className="h-8 w-auto"
                     src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
                     alt="Your Company"
-                  />
+                  /> */}
                 </div>
                 <div className="hidden md:ml-6 md:flex md:items-center md:space-x-4">
                   {navigation.map((item) => (
@@ -104,11 +104,11 @@ export default function Navigation() {
                       <MenuButton className="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                         <span className="absolute -inset-1.5" />
                         <span className="sr-only">Open user menu</span>
-                        <img
+                        {/* <img
                           className="h-8 w-8 rounded-full"
                           src={user.imageUrl}
                           alt=""
-                        />
+                        /> */}
                       </MenuButton>
                     </div>
                     <Transition
@@ -165,11 +165,11 @@ export default function Navigation() {
             <div className="border-t border-gray-700 pb-3 pt-4">
               <div className="flex items-center px-5 sm:px-6">
                 <div className="flex-shrink-0">
-                  <img
+                  {/* <img
                     className="h-10 w-10 rounded-full"
                     src={user.imageUrl}
                     alt=""
-                  />
+                  /> */}
                 </div>
                 <div className="ml-3">
                   <div className="text-base font-medium text-white">

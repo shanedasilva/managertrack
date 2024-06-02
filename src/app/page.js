@@ -1,4 +1,5 @@
 import { PlusIcon } from "@heroicons/react/20/solid";
+import Image from "next/image";
 
 import Hero from "./Hero";
 import Footer from "./Footer";
@@ -115,7 +116,7 @@ export default function Home() {
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-4">
           {Array.from({ length: 4 }).map((_, index) => (
-            <FeaturedJob index={index} job={featured} />
+            <FeaturedJob index={Math.random()} job={featured} />
           ))}
         </div>
       </div>
@@ -144,13 +145,18 @@ export default function Home() {
                       className="flex justify-between gap-x-6 py-3"
                     >
                       <div className="flex min-w-0 gap-x-4">
-                        <a href="#">
-                          <img
-                            className="h-14 w-14 flex-none rounded-lg bg-gray-50"
-                            src={person.imageUrl}
-                            alt=""
-                          />
-                        </a>
+                        <div className="h-12 w-12 rounded-lg relative">
+                          <a href="#">
+                            <Image
+                              alt={person.name}
+                              className="rounded-lg"
+                              fill={true}
+                              layout="fill"
+                              src={person.imageUrl}
+                              style={{ objectFit: "cover" }}
+                            />
+                          </a>
+                        </div>
                         <div className="min-w-0 flex-auto pt-1">
                           <p className="text-base font-medium leading-6 text-gray-900 hover:underline cursor-pointer">
                             {person.name}

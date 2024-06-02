@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Navigation from "./Navigation";
 
 export default function Hero() {
@@ -7,16 +8,13 @@ export default function Hero() {
     <>
       <Navigation />
 
-      <img
+      <Image
         alt=""
-        loading="lazy"
-        width="2245"
+        className="absolute bg-cover bg-center bg-no-repeat z-0 top-16"
         height="1636"
-        decoding="async"
-        data-nimg="1"
-        class="absolute bg-cover bg-center bg-no-repeat z-0 top-16"
-        style={{ color: "transparent" }}
+        priority={false}
         src="https://cms.jibecdn.com/prod/githubinc-careers/assets/LP-SKU-A1-IMG-BG-en-us-1704968586856.png"
+        width="2245"
       />
 
       <div className="relative isolate px-6 lg:px-8 relative py-8">
