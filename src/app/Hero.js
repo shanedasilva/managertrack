@@ -19,16 +19,18 @@ export default function Hero() {
         src="https://cms.jibecdn.com/prod/githubinc-careers/assets/LP-SKU-A1-IMG-BG-en-us-1704968586856.png"
       />
 
-      <div className="relative isolate px-6 lg:px-8 relative py-16">
-        <div className="mx-auto max-w-4xl py-32 sm:py-48 lg:py-16 relative">
+      <div className="relative isolate px-6 lg:px-8 relative py-8">
+        <div className="mx-auto max-w-4xl py-32 sm:py-48 lg:py-12 relative">
           <div className="text-center">
-            <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+            <h1 className="text-4xl font-medium tracking-tight text-gray-900 sm:text-4xl">
               Find your dream remote job without the hassle
             </h1>
-            <p className="mt-6 text-lg leading-8 text-gray-600">
+
+            <p className="mt-6 text-lg leading-8 text-gray-600 tracking-tight">
               Remotive is where top talents go to easily access active and fully
               remote job opportunities from vetted tech companies.
             </p>
+
             <div className="mt-10 flex items-center justify-center gap-x-6">
               <form className="w-full mx-auto">
                 <label
@@ -37,6 +39,7 @@ export default function Hero() {
                 >
                   Search
                 </label>
+
                 <div className="relative">
                   <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
                     <svg
@@ -55,13 +58,15 @@ export default function Hero() {
                       />
                     </svg>
                   </div>
+
                   <input
                     type="search"
                     id="default-search"
-                    className="block w-full px-4 py-3 ps-10 text-base text-gray-900 border border-gray-300 rounded-md bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
+                    className="block w-full px-4 py-3 ps-10 text-base text-gray-900 border border-gray-500 shadow-sm rounded-md focus:ring-blue-500 focus:border-blue-500"
                     placeholder="Search over 2000 management jobs..."
                     required
                   />
+
                   <button
                     type="submit"
                     className="text-white absolute end-2.5 bottom-2 bg-gray-900 hover:bg-orange-600 focus:ring-4 focus:outline-none focus:ring-orange-600 font-medium rounded-md text-sm px-4 py-2"
