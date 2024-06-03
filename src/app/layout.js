@@ -14,7 +14,6 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={inter.className}>{children}</body>
-      <script defer src="https://cloud.umami.is/script.js" data-website-id="78db0d63-9409-47bf-ad77-bd47e1e234a5"></script>
       <Analytics />
     </html>
   );
