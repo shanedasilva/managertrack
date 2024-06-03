@@ -13,8 +13,9 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Profile {
+model User {
   id           String            @id @default(uuid())
+  externalId   String            @map("external_id")
   firstName    String?           @map("first_name")
   lastName     String?           @map("last_name")
   email        String?           @map("email")
@@ -25,7 +26,7 @@ model Profile {
   organization OrganizationUser?
   resume       Resume?
 
-  @@map("profiles")
+  @@map("users")
 }
 
 model Resume {
@@ -41,7 +42,7 @@ model Resume {
   education  ResumeEducation[]
   experience ResumeExperience[]
   skills     ResumeSkills[]
-  user       Profile            @relation(fields: [userId], references: [id])
+  user       User               @relation(fields: [userId], references: [id])
 
   @@map("resumes")
 }
@@ -110,7 +111,7 @@ model OrganizationUser {
   createdAt      DateTime         @default(now()) @map("created_at")
   updatedAt      DateTime         @updatedAt @map("updated_at")
   organization   Organization     @relation(fields: [organizationId], references: [id])
-  user           Profile          @relation(fields: [userId], references: [id])
+  user           User             @relation(fields: [userId], references: [id])
 
   @@id([userId, organizationId])
   @@map("organizations_users")
@@ -134,7 +135,7 @@ model Job {
   updatedAt       DateTime         @updatedAt @map("updated_at")
   applications    JobApplication[]
   organization    Organization     @relation(fields: [organizationId], references: [id])
-  user            Profile          @relation(fields: [userId], references: [id])
+  user            User             @relation(fields: [userId], references: [id])
 
   @@map("jobs")
 }
@@ -149,7 +150,7 @@ model JobApplication {
   updatedAt       DateTime             @updatedAt @map("updated_at")
   job             Job                  @relation(fields: [jobId], references: [id])
   resume          Resume               @relation(fields: [resumeId], references: [id])
-  user            Profile              @relation(fields: [userId], references: [id])
+  user            User                 @relation(fields: [userId], references: [id])
   questionAnswers Json[]               @map("question_answers")
 
   @@map("job_applications")
