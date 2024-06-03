@@ -1,4 +1,5 @@
 import { Inter } from "next/font/google";
+import Script from 'next/script'
 
 import "./globals.css";
 
@@ -13,6 +14,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={inter.className}>{children}</body>
+      <Script async src="https://cloud.umami.is/script.js" data-website-id="78db0d63-9409-47bf-ad77-bd47e1e234a5" />
     </html>
   );
 }
