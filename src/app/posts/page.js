@@ -7,7 +7,7 @@ async function getData() {
   return posts;
 }
 
-export default async function Posts() {
+export default async function Page() {
   const posts = await getData();
 
   return (
