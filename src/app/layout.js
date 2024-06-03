@@ -12,7 +12,7 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-  title: "Managertrack",
+  title: "ManagerTrack",
   description:
     "Managertrack is where top talents go to easily access active management job opportunities from vetted tech companies.",
 };
