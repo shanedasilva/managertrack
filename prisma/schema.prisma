@@ -13,10 +13,181 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Post {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  title     String  
-  content   String?  @db.Text
+model Profile {
+  id           String            @id @default(uuid())
+  firstName    String?           @map("first_name")
+  lastName     String?           @map("last_name")
+  email        String?           @map("email")
+  createdAt    DateTime          @default(now()) @map("created_at")
+  updatedAt    DateTime          @updatedAt @map("updated_at")
+  appliedTo    JobApplication[]
+  Job          Job[]
+  organization OrganizationUser?
+  resume       Resume?
+
+  @@map("profiles")
+}
+
+model Resume {
+  id         String             @id @default(uuid())
+  userId     String             @unique @map("user_id")
+  firstName  String             @map("first_name")
+  lastName   String             @map("last_name")
+  location   String
+  summary    String?
+  createdAt  DateTime           @default(now()) @map("created_at")
+  updatedAt  DateTime           @updatedAt @map("updated_at")
+  appliedTo  JobApplication[]
+  education  ResumeEducation[]
+  experience ResumeExperience[]
+  skills     ResumeSkills[]
+  user       Profile            @relation(fields: [userId], references: [id])
+
+  @@map("resumes")
+}
+
+model ResumeEducation {
+  id                String    @id @default(uuid())
+  resumeId          String    @map("resume_id")
+  educationLevel    String    @map("education_level")
+  field             String    @map("field")
+  school            String    @map("school")
+  location          String    @map("location")
+  currentlyEnrolled Boolean   @default(false) @map("currently_enrolled")
+  enrolledFrom      DateTime? @map("enrolled_from")
+  enrolledTo        DateTime? @map("enrolled_to")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+  resume            Resume    @relation(fields: [resumeId], references: [id])
+
+  @@map("resume_educations")
+}
+
+model ResumeExperience {
+  id                String    @id @default(uuid())
+  resumeId          String?   @map("resume_id")
+  jobTitle          String?   @map("job_title")
+  company           String?   @map("company")
+  location          String?   @map("location")
+  currentlyEmployed Boolean?  @default(false) @map("currently_employed")
+  startDate         DateTime? @map("start_date")
+  endDate           DateTime? @map("end_date")
+  description       String?
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+  resume            Resume?   @relation(fields: [resumeId], references: [id])
+
+  @@map("resume_experience")
+}
+
+model ResumeSkills {
+  id        String   @id @default(uuid())
+  resumeId  String?  @map("resume_id")
+  name      String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  resume    Resume?  @relation(fields: [resumeId], references: [id])
+
+  @@map("resume_skills")
+}
+
+model Organization {
+  id                String             @id @default(uuid())
+  name              String
+  website           String?
+  createdAt         DateTime           @default(now()) @map("created_at")
+  updatedAt         DateTime           @updatedAt @map("updated_at")
+  Job               Job[]
+  organizationUsers OrganizationUser[]
+
+  @@map("organizations")
+}
+
+model OrganizationUser {
+  organizationId String           @map("organization_id")
+  userId         String           @unique @map("user_id")
+  role           OrganizationRole @default(RECRUITER)
+  createdAt      DateTime         @default(now()) @map("created_at")
+  updatedAt      DateTime         @updatedAt @map("updated_at")
+  organization   Organization     @relation(fields: [organizationId], references: [id])
+  user           Profile          @relation(fields: [userId], references: [id])
+
+  @@id([userId, organizationId])
+  @@map("organizations_users")
+}
+
+model Job {
+  id              String           @id @default(uuid())
+  title           String
+  jobType         JobType
+  location        String
+  compType        JobCompType      @map("comp_type")
+  payScaleBegin   Int              @map("pay_scale_begin")
+  payScaleEnd     Int              @map("pay_scale_end")
+  description     String
+  jobLocType      JobLocType       @map("job_location_type")
+  status          JobStatus        @default(DRAFT)
+  customQuestions Json[]           @map("custom_questions")
+  organizationId  String           @map("organization_id")
+  userId          String           @map("user_id")
+  createdAt       DateTime         @default(now()) @map("created_at")
+  updatedAt       DateTime         @updatedAt @map("updated_at")
+  applications    JobApplication[]
+  organization    Organization     @relation(fields: [organizationId], references: [id])
+  user            Profile          @relation(fields: [userId], references: [id])
+
+  @@map("jobs")
+}
+
+model JobApplication {
+  id              String               @unique @default(uuid())
+  jobId           String               @map("job_id")
+  userId          String               @map("user_id")
+  status          JobApplicationStatus @default(APPLIED)
+  resumeId        String               @map("resume_id")
+  createdAt       DateTime             @default(now()) @map("created_at")
+  updatedAt       DateTime             @updatedAt @map("updated_at")
+  job             Job                  @relation(fields: [jobId], references: [id])
+  resume          Resume               @relation(fields: [resumeId], references: [id])
+  user            Profile              @relation(fields: [userId], references: [id])
+  questionAnswers Json[]               @map("question_answers")
+
+  @@map("job_applications")
+}
+
+enum OrganizationRole {
+  RECRUITER
+  ADMIN
+}
+
+enum JobType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+}
+
+enum JobLocType {
+  REMOTE
+  HYBRID
+  OFFICE
+}
+
+enum JobCompType {
+  SALARY
+  HOURLY
+}
+
+enum JobStatus {
+  DRAFT
+  OPEN
+  PAUSED
+  CLOSED
+}
+
+enum JobApplicationStatus {
+  APPLIED
+  WITHDRAWN
+  INTERVIEWING
+  HIRED
+  CLOSED
 }

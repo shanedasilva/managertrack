@@ -1,12 +1,5 @@
 import { Inter } from "next/font/google";
-import {
-  ClerkProvider,
-  SignInButton,
-  SignedIn,
-  SignedOut,
-  UserButton,
-} from "@clerk/nextjs";
-
+import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -15,8 +8,15 @@ export const metadata = {
   title: "ManagerTrack",
   description:
     "Managertrack is where top talents go to easily access active management job opportunities from vetted tech companies.",
+  on: "/managertrack.jpg",
 };
 
+/**
+ * RootLayout component for providing a common layout structure.
+ *
+ * @param {Object} children - The children components to be rendered within the layout.
+ * @returns {JSX.Element} JSX for the RootLayout component.
+ */
 export default function RootLayout({ children }) {
   return (
     <ClerkProvider>

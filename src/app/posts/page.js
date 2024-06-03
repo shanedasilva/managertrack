@@ -1,9 +1,8 @@
 // pages/index.js
-import prisma from "../../lib/database/prisma";
+import { getPosts } from "../../server/models/Post";
 
 async function getData() {
-  const posts = await prisma.post.findMany();
-
+  const posts = await getPosts();
   return posts;
 }
 
