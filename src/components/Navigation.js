@@ -63,7 +63,7 @@ export default function Navigation() {
                 <div className="hidden md:ml-6 md:flex md:items-center md:space-x-4">
                   {navigation.map((item) => (
                     <a
-                      key={item.name}
+                      key={Math.random()}
                       href={item.href}
                       className={classNames(
                         item.current
@@ -121,7 +121,7 @@ export default function Navigation() {
                     >
                       <MenuItems className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                         {userNavigation.map((item) => (
-                          <MenuItem key={item.name}>
+                          <MenuItem key={Math.random()}>
                             {({ focus }) => (
                               <a
                                 href={item.href}
@@ -147,7 +147,7 @@ export default function Navigation() {
             <div className="space-y-1 px-2 pb-3 pt-2 sm:px-3">
               {navigation.map((item) => (
                 <DisclosureButton
-                  key={item.name}
+                  key={Math.random()}
                   as="a"
                   href={item.href}
                   className={classNames(
@@ -191,7 +191,7 @@ export default function Navigation() {
               <div className="mt-3 space-y-1 px-2 sm:px-3">
                 {userNavigation.map((item) => (
                   <DisclosureButton
-                    key={item.name}
+                    key={Math.random()}
                     as="a"
                     href={item.href}
                     className="block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white"

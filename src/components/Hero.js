@@ -32,8 +32,8 @@ export default function Hero() {
             <div className="mt-10 flex items-center justify-center gap-x-6">
               <form className="w-full mx-auto">
                 <label
-                  for="default-search"
-                  class="mb-2 text-sm font-medium text-gray-900 sr-only"
+                  htmlFor="default-search"
+                  className="mb-2 text-sm font-medium text-gray-900 sr-only"
                 >
                   Search
                 </label>
@@ -49,9 +49,9 @@ export default function Hero() {
                     >
                       <path
                         stroke="currentColor"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
                         d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
                       />
                     </svg>
@@ -60,7 +60,7 @@ export default function Hero() {
                   <input
                     type="search"
                     id="default-search"
-                    className="block w-full px-4 py-3 ps-10 text-base text-gray-900 border border-gray-500 shadow-sm rounded-md focus:ring-blue-500 focus:border-blue-500"
+                    className="block w-full px-4 py-3 ps-10 text-base text-gray-900 border border-gray-300 shadow-sm rounded-md focus:ring-blue-500 focus:border-blue-500"
                     placeholder="Search over 2000 management jobs..."
                     required
                   />

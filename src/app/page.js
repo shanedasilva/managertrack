@@ -1,10 +1,10 @@
 import { PlusIcon } from "@heroicons/react/20/solid";
 import Image from "next/image";
-import Script from 'next/script'
+import Script from "next/script";
 
-import Hero from "./components/Hero";
-import Footer from "./components/Footer";
-import FeaturedJob from "./components/FeaturedJob";
+import Hero from "../components/Hero";
+import Footer from "../components/Footer";
+import FeaturedJob from "../components/FeaturedJob";
 
 const person = {
   name: "Software Development Manager",
@@ -123,7 +123,7 @@ export default function Home() {
       </div>
 
       {/* Jobs */}
-      <div className="mx-auto max-w-7xl px-4 lg:px-0 pb-16 relative z-10 bg-white">
+      <div className="mx-auto max-w-7xl px-4 lg:px-0 pb-4 relative z-10 bg-white">
         <div className="mx-auto grid max-w-2xl grid-cols-1 grid-rows-1 items-start gap-x-8 gap-y-8 lg:mx-0 lg:max-w-none lg:grid-cols-12">
           <div className="col-span-9">
             {Array.from({ length: 5 }).map((_, index) => (
@@ -142,7 +142,7 @@ export default function Home() {
                 <ul role="list" className="divide-y divide-gray-300 pb-6">
                   {Array.from({ length: 8 }).map((_, index) => (
                     <li
-                      key={index}
+                      key={Math.random()}
                       className="flex justify-between gap-x-6 py-3"
                     >
                       <div className="flex min-w-0 gap-x-4">
@@ -152,7 +152,6 @@ export default function Home() {
                               alt={person.name}
                               className="rounded-lg"
                               fill={true}
-                              layout="fill"
                               src={person.imageUrl}
                               style={{ objectFit: "cover" }}
                             />
@@ -242,7 +241,7 @@ export default function Home() {
                 <form className="space-y-6 divide-y divide-gray-300">
                   {filters.map((section, sectionIdx) => (
                     <div
-                      key={section.name}
+                      key={Math.random()}
                       className={sectionIdx === 0 ? null : "pt-6"}
                     >
                       <fieldset>
@@ -252,7 +251,7 @@ export default function Home() {
                         <div className="space-y-3 pt-6">
                           {section.options.map((option, optionIdx) => (
                             <div
-                              key={option.value}
+                              key={Math.random()}
                               className="flex items-center"
                             >
                               <input
@@ -260,11 +259,11 @@ export default function Home() {
                                 name={`${section.id}[]`}
                                 defaultValue={option.value}
                                 type="checkbox"
-                                className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                                className="h-4 w-4 rounded border-gray-900 text-gray-900 focus:ring-gray-900"
                               />
                               <label
                                 htmlFor={`${section.id}-${optionIdx}`}
-                                className="ml-3 text-sm text-gray-600"
+                                className="ml-3 text-sm text-gray-900"
                               >
                                 {option.label}
                               </label>
@@ -277,33 +276,6 @@ export default function Home() {
                 </form>
               </div>
             </aside>
-          </div>
-        </div>
-      </div>
-
-      {/* Signup CTA */}
-      <div className="mx-auto max-w-7xl px-4 lg:px-0 pb-16 relative z-10">
-        <div className="bg-indigo-100 rounded-md">
-          <div className="mx-auto max-w-7xl px-6 py-24 sm:py-32 lg:flex lg:items-center lg:justify-between lg:px-8">
-            <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-              Ready to dive in?
-              <br />
-              Start your free trial today.
-            </h2>
-            <div className="mt-10 flex items-center gap-x-6 lg:mt-0 lg:flex-shrink-0">
-              <a
-                href="#"
-                className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-              >
-                Get started
-              </a>
-              <a
-                href="#"
-                className="text-sm font-semibold leading-6 text-gray-900"
-              >
-                Learn more <span aria-hidden="true">→</span>
-              </a>
-            </div>
           </div>
         </div>
       </div>

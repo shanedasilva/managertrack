@@ -118,7 +118,6 @@ export default function Example() {
               <Image
                 alt="Company Name"
                 fill={true}
-                layout="fill"
                 style={{ objectFit: "cover" }}
                 src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
               />
@@ -133,7 +132,7 @@ export default function Example() {
                 </h3>
                 <ul role="list" className="mt-6 space-y-4">
                   {navigation.solutions.map((item) => (
-                    <li key={item.name}>
+                    <li key={Math.random()}>
                       <a
                         href={item.href}
                         className="text-sm leading-6 text-gray-600 hover:text-gray-900"
@@ -150,7 +149,7 @@ export default function Example() {
                 </h3>
                 <ul role="list" className="mt-6 space-y-4">
                   {navigation.support.map((item) => (
-                    <li key={item.name}>
+                    <li key={Math.random()}>
                       <a
                         href={item.href}
                         className="text-sm leading-6 text-gray-600 hover:text-gray-900"
@@ -169,7 +168,7 @@ export default function Example() {
                 </h3>
                 <ul role="list" className="mt-6 space-y-4">
                   {navigation.company.map((item) => (
-                    <li key={item.name}>
+                    <li key={Math.random()}>
                       <a
                         href={item.href}
                         className="text-sm leading-6 text-gray-600 hover:text-gray-900"
@@ -186,7 +185,7 @@ export default function Example() {
                 </h3>
                 <ul role="list" className="mt-6 space-y-4">
                   {navigation.legal.map((item) => (
-                    <li key={item.name}>
+                    <li key={Math.random()}>
                       <a
                         href={item.href}
                         className="text-sm leading-6 text-gray-600 hover:text-gray-900"

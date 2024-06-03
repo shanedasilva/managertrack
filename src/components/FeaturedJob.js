@@ -4,7 +4,7 @@ export default function FeaturedJob({ job }) {
   return (
     <div
       key={Math.random()}
-      className="rounded-md border border-gray-400 bg-white shadow-sm z-50"
+      className="rounded-md border border-gray-300 bg-white shadow-sm z-50"
     >
       <div className="relative flex items-center space-x-3 px-4 pt-4 bg-white rounded-md">
         <div className="flex-shrink-0">
@@ -14,7 +14,6 @@ export default function FeaturedJob({ job }) {
                 alt={job.name}
                 className="rounded-lg"
                 fill={true}
-                layout="fill"
                 src={job.imageUrl}
                 style={{ objectFit: "cover" }}
               />
@@ -50,7 +49,7 @@ export default function FeaturedJob({ job }) {
         ))} */}
       </div>
 
-      <div className="border-t border-gray-400">
+      <div className="border-t border-gray-300">
         <a
           href=""
           className="text-sm text-gray-900 flex px-4 py-3 hover:bg-gray-100 hover:underline"
