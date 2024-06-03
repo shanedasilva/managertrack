@@ -60,7 +60,7 @@ export async function POST(req) {
 
   if (event.type === "user.created") {
     await CreateUser(
-      event.data.external_id,
+      event.data.id,
       event.data.first_name,
       event.data.last_name,
       event.data.email_addresses[0].email_address
