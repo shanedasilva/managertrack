@@ -25,7 +25,11 @@ export default function RootLayout({ children }) {
           <main>{children}</main>
         </body>
 
-        {/* <script async="" defer src="https://cloud.umami.is/script.js" data-website-id="78db0d63-9409-47bf-ad77-bd47e1e234a5"></script> */}
+        <script
+          defer
+          src="https://cloud.umami.is/script.js"
+          data-website-id="78db0d63-9409-47bf-ad77-bd47e1e234a5"
+        ></script>
       </html>
     </ClerkProvider>
   );
