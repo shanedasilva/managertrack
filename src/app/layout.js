@@ -1,8 +1,13 @@
-import { Inter } from "next/font/google";
+import { Inter as FontSans } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
-import "./globals.css";
+import "../styles/globals.css";
 
-const inter = Inter({ subsets: ["latin"] });
+import { cn } from "@/lib/utils";
+
+const fontSans = FontSans({
+  subsets: ["latin"],
+  variable: "--font-sans",
+});
 
 export const metadata = {
   title: "ManagerTrack",
@@ -20,16 +25,21 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <ClerkProvider>
-      <html lang="en">
-        <body className={inter.className}>
+      <html lang="en" suppressHydrationWarning>
+        <body
+          className={cn(
+            "min-h-screen bg-background font-sans antialiased",
+            fontSans.variable
+          )}
+        >
           <main>{children}</main>
-        </body>
 
-        <script
-          defer
-          src="https://cloud.umami.is/script.js"
-          data-website-id="78db0d63-9409-47bf-ad77-bd47e1e234a5"
-        ></script>
+          <script
+            defer
+            src="https://cloud.umami.is/script.js"
+            data-website-id="78db0d63-9409-47bf-ad77-bd47e1e234a5"
+          ></script>
+        </body>
       </html>
     </ClerkProvider>
   );

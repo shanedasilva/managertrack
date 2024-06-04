@@ -1,7 +1,7 @@
 import { Webhook } from "svix";
 import { headers } from "next/headers";
 
-import { CreateUser } from "../../../../server/models/User";
+import { CreateUser } from "../../../../lib/models/User";
 
 export async function POST(req) {
   // Fetch the webhook secret from environment variables

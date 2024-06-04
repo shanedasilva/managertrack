@@ -8,8 +8,8 @@ import Footer from "./components/Footer";
 import FeaturedOrganization from "./components/FeaturedOrganization";
 import JobListItem from "./components/JobListItem";
 
-import { GetFeedJobs } from "@/server/models/Job";
-import { GetFeaturedOrganizations } from "@/server/models/Organization";
+import { GetFeedJobs } from "../lib/models/Job";
+import { GetFeaturedOrganizations } from "../lib/models/Organization";
 
 const featured = {
   name: "Amazon Web Services",
