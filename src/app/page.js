@@ -1,23 +1,15 @@
 import { PlusIcon } from "@heroicons/react/20/solid";
-import Image from "next/image";
 import Script from "next/script";
 import { auth } from "@clerk/nextjs/server";
-// import { SignInButton, SignOutButton } from "@clerk/clerk-react";
+import { SignInButton, SignOutButton } from "@clerk/nextjs";
 
 import Hero from "./components/Hero";
 import Footer from "./components/Footer";
-import FeaturedJob from "./components/FeaturedJob";
-import { SignInButton, SignOutButton } from "@clerk/nextjs";
+import FeaturedOrganization from "./components/FeaturedOrganization";
+import JobListItem from "./components/JobListItem";
 
-const person = {
-  name: "Software Development Manager",
-  company: "Amazon Web Services",
-  role: "Fulltime",
-  location: "Remote (PST)",
-  salary: "$275,000 CAD",
-  imageUrl:
-    "https://pbs.twimg.com/profile_images/1641476962362302464/K8lb6OtN_400x400.jpg",
-};
+import { GetFeedJobs } from "@/server/models/Job";
+import { GetFeaturedOrganizations } from "@/server/models/Organization";
 
 const featured = {
   name: "Amazon Web Services",
@@ -96,8 +88,10 @@ const filters = [
   },
 ];
 
-export default function Page() {
+export default async function Page() {
   const { userId } = auth();
+  const jobs = await GetFeedJobs();
+  const featuredOrganizations = await GetFeaturedOrganizations();
 
   return (
     <main>
@@ -106,9 +100,11 @@ export default function Page() {
         <Hero />
       </div>
 
-      <FeaturedJobsSection />
+      <FeaturedOrganizationsSection
+        featuredOrganizations={featuredOrganizations}
+      />
 
-      <JobsSection />
+      <JobsSection jobs={jobs} />
 
       <Footer />
 
@@ -119,29 +115,29 @@ export default function Page() {
 }
 
 /**
- * FeaturedJobsSection component.
+ * FeaturedOrganizationsSection component.
  *
  * @component
- * @returns {JSX.Element} JSX for the FeaturedJobsSection component.
+ * @returns {JSX.Element} JSX for the FeaturedOrganizationsSection component.
  */
-function FeaturedJobsSection() {
+function FeaturedOrganizationsSection({ featuredOrganizations }) {
   return (
     <div className="mx-auto max-w-7xl px-4 lg:px-0 pb-16 relative z-10">
       <div className="pb-5 sm:flex sm:items-center sm:justify-between">
         <h3 className="text-2xl font-medium leading-6 text-gray-900">
-          Featured companies hiring now
+          Featured organizations hiring now
         </h3>
 
         <div className="mt-3 flex sm:ml-4 sm:mt-0">
           <p className="truncate text-base text-gray-900 underline cursor-pointer hover:no-underline">
-            Feature your company
+            Feature your organization
           </p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-4">
-        {Array.from({ length: 4 }).map((_, index) => (
-          <FeaturedJob index={Math.random()} job={featured} />
+        {featuredOrganizations.map((organization) => (
+          <FeaturedOrganization organization={organization} />
         ))}
       </div>
     </div>
@@ -154,12 +150,12 @@ function FeaturedJobsSection() {
  * @component
  * @returns {JSX.Element} JSX for the JobsSection component.
  */
-function JobsSection() {
+function JobsSection({ jobs }) {
   return (
     <div className="mx-auto max-w-7xl px-4 lg:px-0 pb-4 relative z-10 bg-white">
       <div className="mx-auto grid max-w-2xl grid-cols-1 grid-rows-1 items-start gap-x-8 gap-y-8 lg:mx-0 lg:max-w-none lg:grid-cols-12">
         <div className="col-span-9">
-          {Array.from({ length: 5 }).map((_, index) => (
+          {Array.from({ length: 1 }).map((_, index) => (
             <div className="pb-6">
               <div className="pb-5 sm:flex sm:items-center sm:justify-between">
                 <h3 className="text-2xl font-medium leading-6 text-gray-900">
@@ -173,71 +169,8 @@ function JobsSection() {
               </div>
 
               <ul role="list" className="divide-y divide-gray-300 pb-6">
-                {Array.from({ length: 8 }).map((_, index) => (
-                  <li
-                    key={Math.random()}
-                    className="flex justify-between gap-x-6 py-3"
-                  >
-                    <div className="flex min-w-0 gap-x-4">
-                      <div className="h-12 w-12 rounded-lg relative">
-                        <a href="#">
-                          <Image
-                            alt={person.name}
-                            className="rounded-lg"
-                            fill={true}
-                            src={person.imageUrl}
-                            style={{ objectFit: "cover" }}
-                          />
-                        </a>
-                      </div>
-                      <div className="min-w-0 flex-auto">
-                        <p className="text-base font-medium leading-6 text-gray-900 hover:underline cursor-pointer">
-                          {person.name}
-                        </p>
-                        <div className="mt-1 flex items-center gap-x-1.5 text-xs">
-                          <p className="truncate text-sm text-gray-900 hover:underline cursor-pointer">
-                            {person.company}
-                          </p>
-                          <svg
-                            viewBox="0 0 2 2"
-                            className="h-0.5 w-0.5 text-gray-900"
-                          >
-                            <circle cx={1} cy={1} r={1} />
-                          </svg>
-                          <p className="truncate text-sm text-gray-500">
-                            {person.location}
-                          </p>
-                          <svg
-                            viewBox="0 0 2 2"
-                            className="h-0.5 w-0.5 text-gray-900"
-                          >
-                            <circle cx={1} cy={1} r={1} />
-                          </svg>
-                          <p className="truncate text-sm text-gray-500">
-                            {person.salary}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="hidden shrink-0 sm:flex">
-                      <div className="flex justify-between gap-x-2 align-middle py-2">
-                        <div>
-                          <button
-                            type="button"
-                            className="rounded bg-white px-5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-900 hover:bg-gray-50 mr-2"
-                          >
-                            Save
-                          </button>
-                          <button
-                            type="button"
-                            className="rounded bg-gray-900 px-5 py-2.5 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-                          >
-                            Apply
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </li>
+                {jobs.map((job) => (
+                  <JobListItem job={job} />
                 ))}
               </ul>
             </div>

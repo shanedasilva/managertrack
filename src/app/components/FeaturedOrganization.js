@@ -1,7 +1,11 @@
 import Image from "next/image";
+import Link from "next/link";
+
+const avatartUrl =
+  "https://pbs.twimg.com/profile_images/1641476962362302464/K8lb6OtN_400x400.jpg";
 
 /**
- * Renders a featured job.
+ * Renders a featured organization.
  *
  * @param {Object} props - The properties passed to the component.
  * @param {Object} props.job - The job object containing details.
@@ -9,27 +13,31 @@ import Image from "next/image";
  * @param {string} props.job.imageUrl - The URL of the job image.
  * @returns {JSX.Element} - The JSX for the featured job.
  */
-export default function FeaturedJob({ job }) {
+export default function FeaturedOrganization({ organization }) {
   return (
     <div className="rounded-md border border-gray-300 bg-white shadow-sm z-50">
       <div className="relative flex items-center space-x-3 px-4 pt-4 bg-white rounded-md">
         <div className="flex-shrink-0 h-12 w-12 rounded-lg relative">
-          <a href="#">
+          <Link href={`/organization/${organization.id}`}>
             <Image
-              alt={job.name}
+              alt={organization.name}
               className="rounded-lg"
               layout="fill"
-              src={job.imageUrl}
+              src={avatartUrl}
               style={{ objectFit: "cover" }}
             />
-          </a>
+          </Link>
         </div>
 
-        <JobHeader name={job.name} />
+        <JobHeader name={organization.name} />
       </div>
 
       <JobDescription />
-      <JobFooter />
+
+      <JobFooter
+        organizationId={organization.id}
+        jobCount={organization._count.Job}
+      />
     </div>
   );
 }
@@ -60,7 +68,7 @@ function JobHeader({ name }) {
  */
 function JobDescription() {
   return (
-    <p className="text-sm text-gray-900 px-4 pt-4">
+    <p className="text-sm text-gray-900 px-4 pt-4 pb-12">
       Building awesome, scalable apps to power the future of tech
     </p>
   );
@@ -71,15 +79,15 @@ function JobDescription() {
  *
  * @returns {JSX.Element} - The JSX for the job footer.
  */
-function JobFooter() {
+function JobFooter({ organizationId, jobCount }) {
   return (
     <div className="border-t border-gray-300">
-      <a
-        href=""
+      <Link
+        href={`/organization/${organizationId}`}
         className="text-sm text-gray-900 flex px-4 py-3 hover:bg-gray-100 hover:underline"
       >
-        12 open positions
-      </a>
+        {jobCount} open position {jobCount > 1 ? "s" : ""}
+      </Link>
     </div>
   );
 }
