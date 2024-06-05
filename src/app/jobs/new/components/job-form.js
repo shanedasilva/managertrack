@@ -8,7 +8,6 @@ import { z } from "zod";
 import { CheckCircledIcon } from "@radix-ui/react-icons";
 
 import { cn } from "@/lib/utils";
-import { ToastAction } from "@/components/ui/toast";
 import { useToast } from "@/components/ui/use-toast";
 import { Input } from "@/components/ui/input";
 import { Icons } from "@/components/icons";
@@ -32,6 +31,7 @@ import {
 } from "@/components/ui/select";
 
 import { SaveRecords } from "@/app/jobs/new/actions";
+import getStripe from "@/lib/payments/stripe";
 
 const formSchema = z.object({
   // organization_name: z
@@ -111,15 +111,42 @@ export function JobForm({ className, ...props }) {
   });
 
   const onSubmit = async (data) => {
-    setIsLoading(true);
+    try {
+      setIsLoading(true);
 
-    const createdOrganization = await SaveRecords(data);
+      await SaveRecords(data);
 
-    setTimeout(() => {
       setIsLoading(false);
-    }, 2000);
 
-    // redirect("https://buy.stripe.com/test_8wMcNtd0wcaYbSw000");
+      const stripe = await getStripe();
+
+      const checkoutSession = await fetch("/api/stripe/checkout-session", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!checkoutSession.ok) {
+        console.error("Failed to create checkout session");
+        return;
+      }
+
+      const checkoutSessionResponse = await checkoutSession.json();
+
+      const { error } = await stripe.redirectToCheckout({
+        sessionId: checkoutSessionResponse.id,
+      });
+
+      // If `redirectToCheckout` fails due to a browser or network
+      // error, display the localized error message to your customer
+      // using `error.message`.
+      console.warn(error.message);
+    } catch (error) {
+      console.error("An error occurred:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (

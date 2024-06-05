@@ -45,7 +45,7 @@ export async function CreateNewOrganizationWithUseAndJob(data) {
       },
     });
 
-    const job = await client.job.create({
+    await client.job.create({
       data: {
         title: "Software Engineer",
         jobType: "FULL_TIME",
@@ -64,12 +64,6 @@ export async function CreateNewOrganizationWithUseAndJob(data) {
         },
       },
     });
-
-    console.log(
-      "Organization, Users, and Jobs created successfully:",
-      organization,
-      job
-    );
   } catch (error) {
     console.error("Error creating Organization, Users, and Jobs:", error);
   }
