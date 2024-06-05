@@ -9,5 +9,5 @@ export async function GET(request) {
 
   await updateJobForPaymentSuccessUsingStripeSessionId(stripeSessionId);
 
-  return NextResponse.redirect(new URL("http://localhost:3000"));
+  return NextResponse.redirect(new URL(process.env.NEXT_PUBLIC_BASE_APP_URL));
 }
