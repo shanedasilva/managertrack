@@ -60,17 +60,14 @@ export async function createStripeCheckoutSession(customerId) {
       payment_method_types: ["card"],
       line_items: [
         {
-          price_data: {
-            currency: "usd",
-            product_data: {
-              name: "Non-recurring 30 Day Job Posting",
-            },
-            unit_amount: 22500,
-          },
+          price: process.env.STRIPE_PRODUCT_PRICE_ID,
           quantity: 1,
         },
       ],
       mode: "payment",
+      invoice_creation: {
+        enabled: true,
+      },
       success_url: `${process.env.NEXT_PUBLIC_BASE_APP_URL}/api/stripe/checkout-success?stripe_session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.NEXT_PUBLIC_BASE_APP_URL}/cancel`,
     };
