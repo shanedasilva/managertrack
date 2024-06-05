@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/select";
 
 import {
-  createOrganizationAndJob,
+  createOrgAndJob,
   updateJobForPaymentProcessing,
   updateUserWithStripeCustomerId,
 } from "@/app/jobs/new/actions";
@@ -117,51 +117,66 @@ export function JobForm({ className, ...props }) {
       setIsLoading(true);
 
       const stripe = await getStripe();
-      const { organization, job } = await createOrganizationAndJob(data);
-
-      const checkoutSession = await fetch("/api/stripe/checkout-session", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userId: organization.users[0].userId,
-          userEmail: data.user_email,
-          userFirstName: data.user_first_name,
-          userLastName: data.user_last_name,
-        }),
-      });
-
-      if (!checkoutSession.ok) {
-        console.error("Failed to create checkout session");
-        return;
-      }
-
-      const checkoutSessionResponse = await checkoutSession.json();
-
-      await updateJobForPaymentProcessing(
-        job.id,
-        checkoutSessionResponse.session_id
+      const { organization, job } = await createOrgAndJob(data);
+      const checkoutSessionResponse = await createCheckoutSession(
+        data,
+        organization
       );
 
-      await updateUserWithStripeCustomerId(
-        organization.users[0].userId,
-        checkoutSessionResponse.customer_id
-      );
-
-      const { error } = await stripe.redirectToCheckout({
-        sessionId: checkoutSessionResponse.session_id,
-      });
-
-      // If `redirectToCheckout` fails due to a browser or network
-      // error, display the localized error message to your customer
-      // using `error.message`.
-      console.warn(error.message);
+      await updateJobAndUser(data, organization, job, checkoutSessionResponse);
+      await redirectToCheckout(stripe, checkoutSessionResponse);
     } catch (error) {
       console.error("An error occurred:", error);
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const createCheckoutSession = async (data, organization) => {
+    const checkoutSession = await fetch("/api/stripe/checkout-session", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        userId: organization.users[0].userId,
+        userEmail: data.user_email,
+        userFirstName: data.user_first_name,
+        userLastName: data.user_last_name,
+      }),
+    });
+
+    if (!checkoutSession.ok) {
+      console.error("Failed to create checkout session");
+      return;
+    }
+
+    return await checkoutSession.json();
+  };
+
+  const updateJobAndUser = async (
+    data,
+    organization,
+    job,
+    checkoutSessionResponse
+  ) => {
+    await updateJobForPaymentProcessing(
+      job.id,
+      checkoutSessionResponse.session_id
+    );
+
+    await updateUserWithStripeCustomerId(
+      organization.users[0].userId,
+      checkoutSessionResponse.customer_id
+    );
+  };
+
+  const redirectToCheckout = async (stripe, checkoutSessionResponse) => {
+    const { error } = await stripe.redirectToCheckout({
+      sessionId: checkoutSessionResponse.session_id,
+    });
+
+    console.warn(error.message);
   };
 
   return (

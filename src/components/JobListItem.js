@@ -1,15 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 
-const person = {
-  name: "Software Development Manager",
-  company: "Amazon Web Services",
-  role: "Fulltime",
-  location: "Remote (PST)",
-  salary: "$275,000 CAD",
-  imageUrl:
-    "https://pbs.twimg.com/profile_images/1641476962362302464/K8lb6OtN_400x400.jpg",
-};
+const AVATAR_URL =
+  "https://pbs.twimg.com/profile_images/1641476962362302464/K8lb6OtN_400x400.jpg";
 
 const formatter = new Intl.NumberFormat("en-US", {
   style: "currency",
@@ -35,7 +28,7 @@ export default function JobListItem({ job }) {
               alt={job.title}
               className="rounded-lg"
               fill={true}
-              src={person.imageUrl}
+              src={AVATAR_URL}
               style={{ objectFit: "cover" }}
             />
           </Link>

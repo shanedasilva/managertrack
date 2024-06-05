@@ -8,8 +8,8 @@ import Footer from "@/components/Footer";
 import FeaturedOrganization from "@/components/FeaturedOrganization";
 import JobListItem from "@/components/JobListItem";
 
-import { GetFeedJobs } from "@/lib/models/Job";
-import { GetFeaturedOrganizations } from "@/lib/models/Organization";
+import { getFeedJobs } from "@/lib/models/Job";
+import { getFeaturedOrganizations } from "@/lib/models/Organization";
 
 const filters = [
   {
@@ -83,8 +83,8 @@ const filters = [
 export default async function Page() {
   const { userId } = auth();
 
-  const jobs = await GetFeedJobs();
-  const featuredOrganizations = await GetFeaturedOrganizations();
+  const jobs = await getFeedJobs();
+  const featuredOrganizations = await getFeaturedOrganizations();
 
   return (
     <main>

@@ -1,11 +1,11 @@
-import client from "../database/client";
+import client from "@/lib/database/client";
 
 /**
- * Create a user from the database asynchronously.
+ * Asynchronously retrieves featured organizations from the database.
  *
- * @returns {Promise<Array<Object>>} A promise that resolves to the created user
+ * @returns {Promise<Array<Object>>} A promise that resolves to the featured organizations.
  */
-export async function GetFeaturedOrganizations() {
+export async function getFeaturedOrganizations() {
   return await client.organization.findMany({
     select: {
       id: true,
@@ -19,7 +19,13 @@ export async function GetFeaturedOrganizations() {
   });
 }
 
-export async function CreateNewOrganizationWithUseAndJob(data) {
+/**
+ * Asynchronously creates a new organization with a user and a job.
+ *
+ * @param {Object} data - Data object containing information about the organization, user, and job.
+ * @returns {Promise<Object>} A promise that resolves to an object containing the created organization and job.
+ */
+export async function createNewOrganizationWithUserAndJob(data) {
   try {
     const organization = await client.organization.create({
       data: {

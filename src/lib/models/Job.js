@@ -1,11 +1,11 @@
-import client from "../database/client";
+import client from "@/lib/database/client";
 
 /**
- * Create a user from the database asynchronously.
+ * Asynchronously retrieves feed jobs from the database.
  *
- * @returns {Promise<Array<Object>>} A promise that resolves to the created user
+ * @returns {Promise<Array<Object>>} A promise that resolves to the feed jobs.
  */
-export async function GetFeedJobs() {
+export async function getFeedJobs() {
   return await client.job.findMany({
     where: {
       status: "OPEN",
@@ -21,11 +21,18 @@ export async function GetFeedJobs() {
   });
 }
 
-export async function UpdateJobForPaymentProcessingUsingJobId(
+/**
+ * Asynchronously updates a job for payment processing using its ID.
+ *
+ * @param {number} jobId - The ID of the job to be updated.
+ * @param {string} stripeSessionId - The ID of the Stripe session for payment processing.
+ * @returns {Promise<Object>} A promise that resolves to the updated job.
+ */
+export async function updateJobForPaymentProcessingUsingJobId(
   jobId,
   stripeSessionId
 ) {
-  return await prisma.job.update({
+  return await client.job.update({
     where: {
       id: jobId,
     },
@@ -36,10 +43,16 @@ export async function UpdateJobForPaymentProcessingUsingJobId(
   });
 }
 
-export async function UpdateJobForPaymentSuccessUsingStripeSessionId(
+/**
+ * Asynchronously updates a job for payment success using the Stripe session ID.
+ *
+ * @param {string} stripeSessionId - The ID of the Stripe session for payment success.
+ * @returns {Promise<Object>} A promise that resolves to the updated job.
+ */
+export async function updateJobForPaymentSuccessUsingStripeSessionId(
   stripeSessionId
 ) {
-  return await prisma.job.update({
+  return await client.job.update({
     where: {
       stripeSessionId: stripeSessionId,
     },
