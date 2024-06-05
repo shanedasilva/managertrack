@@ -3,21 +3,13 @@ import Script from "next/script";
 import { auth } from "@clerk/nextjs/server";
 import { SignInButton, SignOutButton } from "@clerk/nextjs";
 
-import Hero from "./components/Hero";
-import Footer from "./components/Footer";
-import FeaturedOrganization from "./components/FeaturedOrganization";
-import JobListItem from "./components/JobListItem";
+import Hero from "@/components/Hero";
+import Footer from "@/components/Footer";
+import FeaturedOrganization from "@/components/FeaturedOrganization";
+import JobListItem from "@/components/JobListItem";
 
-import { GetFeedJobs } from "../lib/models/Job";
-import { GetFeaturedOrganizations } from "../lib/models/Organization";
-
-const featured = {
-  name: "Amazon Web Services",
-  email: "leslie.alexander@example.com",
-  role: "Co-Founder / CEO",
-  imageUrl:
-    "https://pbs.twimg.com/profile_images/1641476962362302464/K8lb6OtN_400x400.jpg",
-};
+import { GetFeedJobs } from "@/lib/models/Job";
+import { GetFeaturedOrganizations } from "@/lib/models/Organization";
 
 const filters = [
   {
@@ -90,6 +82,7 @@ const filters = [
 
 export default async function Page() {
   const { userId } = auth();
+
   const jobs = await GetFeedJobs();
   const featuredOrganizations = await GetFeaturedOrganizations();
 

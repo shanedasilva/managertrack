@@ -1,7 +1,6 @@
 "use server";
 
 import { NextResponse } from "next/server";
-
 import Stripe from "stripe";
 
 // Initialize Stripe with the secret key
@@ -9,11 +8,8 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 /**
  * Handles POST requests to create a new Stripe checkout session.
- *
- * @param {Object} req - The request object.
- * @param {Object} res - The response object.
  */
-export async function POST(req, res) {
+export async function POST() {
   try {
     const checkoutParams = {
       payment_method_types: ["card"],
@@ -30,7 +26,7 @@ export async function POST(req, res) {
         },
       ],
       mode: "payment",
-      success_url: `http://localhost:3000/success?session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `http://localhost:3000/api/stripe/checkout-success?stripe_session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `http://localhost:3000/cancel`,
     };
 

@@ -11,7 +11,7 @@ CREATE TYPE "JobLocType" AS ENUM ('REMOTE', 'HYBRID', 'OFFICE');
 CREATE TYPE "JobCompType" AS ENUM ('SALARY', 'HOURLY');
 
 -- CreateEnum
-CREATE TYPE "JobStatus" AS ENUM ('DRAFT', 'OPEN', 'PAUSED', 'CLOSED');
+CREATE TYPE "JobStatus" AS ENUM ('DRAFT', 'PAYMENT_PROCESSING', 'OPEN', 'PAUSED', 'CLOSED');
 
 -- CreateEnum
 CREATE TYPE "JobApplicationStatus" AS ENUM ('APPLIED', 'WITHDRAWN', 'INTERVIEWING', 'HIRED', 'CLOSED');
@@ -121,6 +121,7 @@ CREATE TABLE "jobs" (
     "job_location_type" "JobLocType" NOT NULL,
     "status" "JobStatus" NOT NULL DEFAULT 'DRAFT',
     "custom_questions" JSONB[],
+    "stripe_session_id" TEXT,
     "organization_id" TEXT NOT NULL,
     "user_id" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -149,6 +150,9 @@ CREATE UNIQUE INDEX "organizations_users_user_id_key" ON "organizations_users"("
 
 -- CreateIndex
 CREATE UNIQUE INDEX "organizations_users_organization_id_key" ON "organizations_users"("organization_id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "jobs_stripe_session_id_key" ON "jobs"("stripe_session_id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "job_applications_id_key" ON "job_applications"("id");

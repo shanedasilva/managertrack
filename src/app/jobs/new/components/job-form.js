@@ -1,14 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { redirect } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { CheckCircledIcon } from "@radix-ui/react-icons";
 
 import { cn } from "@/lib/utils";
-import { useToast } from "@/components/ui/use-toast";
 import { Input } from "@/components/ui/input";
 import { Icons } from "@/components/icons";
 import { Button } from "@/components/ui/button";
@@ -30,7 +28,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { SaveRecords } from "@/app/jobs/new/actions";
+import {
+  createOrganizationAndJob,
+  updateJobForPaymentProcessing,
+} from "@/app/jobs/new/actions";
+
 import getStripe from "@/lib/payments/stripe";
 
 const formSchema = z.object({
@@ -103,7 +105,6 @@ const formSchema = z.object({
 
 export function JobForm({ className, ...props }) {
   const [isLoading, setIsLoading] = useState(false);
-  const { toast } = useToast();
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -114,7 +115,7 @@ export function JobForm({ className, ...props }) {
     try {
       setIsLoading(true);
 
-      await SaveRecords(data);
+      const { organization, job } = await createOrganizationAndJob(data);
 
       setIsLoading(false);
 
@@ -133,6 +134,8 @@ export function JobForm({ className, ...props }) {
       }
 
       const checkoutSessionResponse = await checkoutSession.json();
+
+      await updateJobForPaymentProcessing(job.id, checkoutSessionResponse.id);
 
       const { error } = await stripe.redirectToCheckout({
         sessionId: checkoutSessionResponse.id,

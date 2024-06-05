@@ -127,6 +127,7 @@ model Job {
   jobLocType      JobLocType       @map("job_location_type")
   status          JobStatus        @default(DRAFT)
   customQuestions Json[]           @map("custom_questions")
+  stripeSessionId String?          @unique @map("stripe_session_id")
   organizationId  String           @map("organization_id")
   userId          String           @map("user_id")
   createdAt       DateTime         @default(now()) @map("created_at")
@@ -178,6 +179,7 @@ enum JobCompType {
 
 enum JobStatus {
   DRAFT
+  PAYMENT_PROCESSING
   OPEN
   PAUSED
   CLOSED

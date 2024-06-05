@@ -12,7 +12,7 @@ export async function GetFeaturedOrganizations() {
       name: true,
       _count: {
         select: {
-          Job: { where: { status: "OPEN" } },
+          jobs: { where: { status: "OPEN" } },
         },
       },
     },
@@ -45,7 +45,7 @@ export async function CreateNewOrganizationWithUseAndJob(data) {
       },
     });
 
-    await client.job.create({
+    const job = await client.job.create({
       data: {
         title: "Software Engineer",
         jobType: "FULL_TIME",
@@ -55,7 +55,7 @@ export async function CreateNewOrganizationWithUseAndJob(data) {
         payScaleEnd: 80000,
         description: "Join our team as a Software Engineer!",
         jobLocType: "REMOTE",
-        status: "OPEN",
+        status: "DRAFT",
         organization: {
           connect: { id: organization.id },
         },
@@ -64,6 +64,8 @@ export async function CreateNewOrganizationWithUseAndJob(data) {
         },
       },
     });
+
+    return { organization, job };
   } catch (error) {
     console.error("Error creating Organization, Users, and Jobs:", error);
   }

@@ -20,3 +20,32 @@ export async function GetFeedJobs() {
     },
   });
 }
+
+export async function UpdateJobForPaymentProcessingUsingJobId(
+  jobId,
+  stripeSessionId
+) {
+  return await prisma.job.update({
+    where: {
+      id: jobId,
+    },
+    data: {
+      stripeSessionId: stripeSessionId,
+      status: "PAYMENT_PROCESSING",
+    },
+  });
+}
+
+export async function UpdateJobForPaymentSuccessUsingStripeSessionId(
+  stripeSessionId
+) {
+  return await prisma.job.update({
+    where: {
+      stripeSessionId: stripeSessionId,
+    },
+    data: {
+      stripeSessionId: null,
+      status: "OPEN",
+    },
+  });
+}
