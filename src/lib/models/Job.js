@@ -44,7 +44,6 @@ export async function UpdateJobForPaymentSuccessUsingStripeSessionId(
       stripeSessionId: stripeSessionId,
     },
     data: {
-      stripeSessionId: null,
       status: "OPEN",
     },
   });

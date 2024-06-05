@@ -19,10 +19,11 @@ CREATE TYPE "JobApplicationStatus" AS ENUM ('APPLIED', 'WITHDRAWN', 'INTERVIEWIN
 -- CreateTable
 CREATE TABLE "users" (
     "id" TEXT NOT NULL,
-    "external_id" TEXT NOT NULL,
     "first_name" TEXT,
     "last_name" TEXT,
     "email" TEXT,
+    "clerk_user_id" TEXT,
+    "stripe_user_id" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
@@ -143,13 +144,43 @@ CREATE TABLE "job_applications" (
 );
 
 -- CreateIndex
+CREATE UNIQUE INDEX "users_id_key" ON "users"("id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "users_stripe_user_id_key" ON "users"("stripe_user_id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "resumes_id_key" ON "resumes"("id");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "resumes_user_id_key" ON "resumes"("user_id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "resume_educations_id_key" ON "resume_educations"("id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "resume_experience_id_key" ON "resume_experience"("id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "resume_skills_id_key" ON "resume_skills"("id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "organizations_id_key" ON "organizations"("id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "organizations_name_key" ON "organizations"("name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "organizations_users_user_id_key" ON "organizations_users"("user_id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "organizations_users_organization_id_key" ON "organizations_users"("organization_id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "jobs_id_key" ON "jobs"("id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "jobs_stripe_session_id_key" ON "jobs"("stripe_session_id");

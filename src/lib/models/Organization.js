@@ -23,17 +23,16 @@ export async function CreateNewOrganizationWithUseAndJob(data) {
   try {
     const organization = await client.organization.create({
       data: {
-        name: "Example Organization",
+        name: data.organization_name,
         users: {
           create: [
             {
               assignedAt: new Date(),
               user: {
                 create: {
-                  externalId: "test",
-                  firstName: "John",
-                  lastName: "Doe",
-                  email: "john@example.com",
+                  firstName: data.user_first_name,
+                  lastName: data.user_last_name,
+                  email: data.user_email,
                 },
               },
             },
@@ -47,14 +46,14 @@ export async function CreateNewOrganizationWithUseAndJob(data) {
 
     const job = await client.job.create({
       data: {
-        title: "Software Engineer",
-        jobType: "FULL_TIME",
-        location: "Remote",
-        compType: "SALARY",
-        payScaleBegin: 60000,
-        payScaleEnd: 80000,
-        description: "Join our team as a Software Engineer!",
-        jobLocType: "REMOTE",
+        title: data.job_title,
+        jobType: data.job_employment_type,
+        location: data.job_location,
+        compType: data.job_compenstation_type,
+        payScaleBegin: data.job_salary_low,
+        payScaleEnd: data.job_salary_high,
+        description: data.job_description,
+        jobLocType: data.job_location_requirement,
         status: "DRAFT",
         organization: {
           connect: { id: organization.id },

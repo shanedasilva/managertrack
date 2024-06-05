@@ -14,11 +14,12 @@ datasource db {
 }
 
 model User {
-  id           String            @id @default(uuid())
-  externalId   String            @map("external_id")
+  id           String            @unique @id @default(uuid())
   firstName    String?           @map("first_name")
   lastName     String?           @map("last_name")
-  email        String?           @map("email")
+  email        String?           @unique @map("email")
+  clerkUserId  String?           @map("clerk_user_id")
+  stripeUserId String?           @unique @map("stripe_user_id")
   createdAt    DateTime          @default(now()) @map("created_at")
   updatedAt    DateTime          @updatedAt @map("updated_at")
   applications JobApplication[]
@@ -30,7 +31,7 @@ model User {
 }
 
 model Resume {
-  id           String             @id @default(uuid())
+  id           String             @unique @id @default(uuid())
   userId       String             @unique @map("user_id")
   firstName    String             @map("first_name")
   lastName     String             @map("last_name")
@@ -48,7 +49,7 @@ model Resume {
 }
 
 model ResumeEducation {
-  id                String    @id @default(uuid())
+  id                String    @unique @id @default(uuid())
   resumeId          String    @map("resume_id")
   educationLevel    String    @map("education_level")
   field             String    @map("field")
@@ -65,7 +66,7 @@ model ResumeEducation {
 }
 
 model ResumeExperience {
-  id                String    @id @default(uuid())
+  id                String    @unique @id @default(uuid())
   resumeId          String?   @map("resume_id")
   jobTitle          String?   @map("job_title")
   company           String?   @map("company")
@@ -82,7 +83,7 @@ model ResumeExperience {
 }
 
 model ResumeSkills {
-  id        String   @id @default(uuid())
+  id        String   @unique @id @default(uuid())
   resumeId  String?  @map("resume_id")
   name      String
   createdAt DateTime @default(now()) @map("created_at")
@@ -93,8 +94,8 @@ model ResumeSkills {
 }
 
 model Organization {
-  id        String             @id @default(uuid())
-  name      String
+  id        String             @unique @id @default(uuid())
+  name      String             @unique 
   website   String?
   createdAt DateTime           @default(now()) @map("created_at")
   updatedAt DateTime           @updatedAt @map("updated_at")
@@ -116,7 +117,7 @@ model OrganizationUser {
 }
 
 model Job {
-  id              String           @id @default(uuid())
+  id              String           @unique @id @default(uuid())
   title           String
   jobType         JobType
   location        String

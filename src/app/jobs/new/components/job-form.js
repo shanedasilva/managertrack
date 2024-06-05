@@ -31,76 +31,77 @@ import {
 import {
   createOrganizationAndJob,
   updateJobForPaymentProcessing,
+  updateUserWithStripeCustomerId,
 } from "@/app/jobs/new/actions";
 
 import getStripe from "@/lib/payments/stripe";
 
 const formSchema = z.object({
-  // organization_name: z
-  //   .string({
-  //     required_error: "Organization name is required",
-  //   })
-  //   .min(3, { message: "Must be 3 or more characters long" })
-  //   .max(300, { message: "Must be 30 or less characters long" }),
-  // organization_website: z
-  //   .string({
-  //     required_error: "Organization URL is required",
-  //   })
-  //   .url({ message: "Invalid url" }),
-  // organization_tagline: z.string().optional(),
-  // job_title: z
-  //   .string({
-  //     required_error: "Job name is required",
-  //   })
-  //   .min(2, { message: "Must be 2 or more characters long" })
-  //   .max(30, { message: "Must be 30 or less characters long" }),
-  // job_location: z
-  //   .string({
-  //     required_error: "Job location is required",
-  //   })
-  //   .min(2, { message: "Must be 2 or more characters long" })
-  //   .max(30, { message: "Must be 30 or less characters long" }),
-  // job_location_requirement: z.string({
-  //   required_error: "Job location requirement is required",
-  // }),
-  // job_apply_url: z
-  //   .string({
-  //     required_error: "Apply URL is required",
-  //   })
-  //   .url({ message: "Invalid url" }),
-  // job_employment_type: z.string({
-  //   required_error: "Employment type is required",
-  // }),
-  // job_compenstation_type: z.string({
-  //   required_error: "Compensation type is required",
-  // }),
-  // job_salary_low: z.number().nonnegative().optional(),
-  // job_salary_high: z.number().nonnegative().optional(),
-  // job_description: z
-  //   .string({
-  //     required_error: "Job description is required",
-  //   })
-  //   .min(10, { message: "Must be 10 or more characters long" })
-  //   .max(500, { message: "Must be 500 or less characters long" }),
-  // user_first_name: z
-  //   .string({
-  //     required_error: "First name is required",
-  //   })
-  //   .min(2, { message: "Must be 2 or more characters long" })
-  //   .max(20, { message: "Must be 20 or less characters long" }),
-  // user_last_name: z
-  //   .string({
-  //     required_error: "Last name is required",
-  //   })
-  //   .min(2, { message: "Must be 2 or more characters long" })
-  //   .max(20, { message: "Must be 20 or less characters long" }),
-  // user_email: z
-  //   .string({
-  //     required_error: "Email is required",
-  //   })
-  //   .email()
-  //   .min(2, { message: "Must be 2 or more characters long" })
-  //   .max(40, { message: "Must be 40 or less characters long" }),
+  organization_name: z
+    .string({
+      required_error: "Organization name is required",
+    })
+    .min(3, { message: "Must be 3 or more characters long" })
+    .max(300, { message: "Must be 30 or less characters long" }),
+  organization_website: z
+    .string({
+      required_error: "Organization URL is required",
+    })
+    .url({ message: "Invalid url" }),
+  organization_tagline: z.string().optional(),
+  job_title: z
+    .string({
+      required_error: "Job name is required",
+    })
+    .min(2, { message: "Must be 2 or more characters long" })
+    .max(30, { message: "Must be 30 or less characters long" }),
+  job_location: z
+    .string({
+      required_error: "Job location is required",
+    })
+    .min(2, { message: "Must be 2 or more characters long" })
+    .max(30, { message: "Must be 30 or less characters long" }),
+  job_location_requirement: z.string({
+    required_error: "Job location requirement is required",
+  }),
+  job_apply_url: z
+    .string({
+      required_error: "Apply URL is required",
+    })
+    .url({ message: "Invalid url" }),
+  job_employment_type: z.string({
+    required_error: "Employment type is required",
+  }),
+  job_compenstation_type: z.string({
+    required_error: "Compensation type is required",
+  }),
+  job_salary_low: z.coerce.number().nonnegative().optional(),
+  job_salary_high: z.coerce.number().nonnegative().optional(),
+  job_description: z
+    .string({
+      required_error: "Job description is required",
+    })
+    .min(10, { message: "Must be 10 or more characters long" })
+    .max(500, { message: "Must be 500 or less characters long" }),
+  user_first_name: z
+    .string({
+      required_error: "First name is required",
+    })
+    .min(2, { message: "Must be 2 or more characters long" })
+    .max(20, { message: "Must be 20 or less characters long" }),
+  user_last_name: z
+    .string({
+      required_error: "Last name is required",
+    })
+    .min(2, { message: "Must be 2 or more characters long" })
+    .max(20, { message: "Must be 20 or less characters long" }),
+  user_email: z
+    .string({
+      required_error: "Email is required",
+    })
+    .email()
+    .min(2, { message: "Must be 2 or more characters long" })
+    .max(40, { message: "Must be 40 or less characters long" }),
 });
 
 export function JobForm({ className, ...props }) {
@@ -115,17 +116,20 @@ export function JobForm({ className, ...props }) {
     try {
       setIsLoading(true);
 
-      const { organization, job } = await createOrganizationAndJob(data);
-
-      setIsLoading(false);
-
       const stripe = await getStripe();
+      const { organization, job } = await createOrganizationAndJob(data);
 
       const checkoutSession = await fetch("/api/stripe/checkout-session", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
+        body: JSON.stringify({
+          userId: organization.users[0].userId,
+          userEmail: data.user_email,
+          userFirstName: data.user_first_name,
+          userLastName: data.user_last_name,
+        }),
       });
 
       if (!checkoutSession.ok) {
@@ -135,10 +139,18 @@ export function JobForm({ className, ...props }) {
 
       const checkoutSessionResponse = await checkoutSession.json();
 
-      await updateJobForPaymentProcessing(job.id, checkoutSessionResponse.id);
+      await updateJobForPaymentProcessing(
+        job.id,
+        checkoutSessionResponse.session_id
+      );
+
+      await updateUserWithStripeCustomerId(
+        organization.users[0].userId,
+        checkoutSessionResponse.customer_id
+      );
 
       const { error } = await stripe.redirectToCheckout({
-        sessionId: checkoutSessionResponse.id,
+        sessionId: checkoutSessionResponse.session_id,
       });
 
       // If `redirectToCheckout` fails due to a browser or network
@@ -370,7 +382,7 @@ export function JobForm({ className, ...props }) {
                   <FormItem>
                     <FormLabel>Lower Salary Range</FormLabel>
                     <FormControl>
-                      <Input disabled={isLoading} {...field} />
+                      <Input disabled={isLoading} type="number" {...field} />
                     </FormControl>
                     <FormDescription>Minimum salary provided</FormDescription>
                     <FormMessage />
@@ -387,7 +399,7 @@ export function JobForm({ className, ...props }) {
                   <FormItem>
                     <FormLabel>Upper Salary Range</FormLabel>
                     <FormControl>
-                      <Input disabled={isLoading} {...field} />
+                      <Input disabled={isLoading} type="number" {...field} />
                     </FormControl>
                     <FormDescription>Maximum salary provided</FormDescription>
                     <FormMessage />
