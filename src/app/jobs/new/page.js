@@ -31,7 +31,7 @@ export default function Page() {
         />
       </div>
 
-      <div className="container relative hidden h-screen flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-3 lg:px-0">
+      <div className="container relative hidden h-screen flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-8 lg:px-0">
         <Link
           href="/examples/authentication"
           className={cn(
@@ -42,7 +42,7 @@ export default function Page() {
           Login
         </Link>
 
-        <div className="relative hidden h-full flex-col bg-muted p-10 text-white lg:flex dark:border-r">
+        <div className="relative hidden h-full flex-col bg-muted p-10 text-white lg:flex dark:border-r col-span-2">
           <div className="absolute inset-0 bg-zinc-900" />
           <div className="relative z-20 flex items-center text-lg font-medium">
             <svg
@@ -72,7 +72,7 @@ export default function Page() {
           </div>
         </div>
 
-        <div className="lg:px-36 lg:py-16 col-span-2">
+        <div className="lg:px-48 lg:py-16 col-span-6">
           <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-full">
             <JobForm />
 

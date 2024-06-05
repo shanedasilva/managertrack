@@ -19,11 +19,58 @@ export async function GetFeaturedOrganizations() {
   });
 }
 
-export async function CreateNewOrganizationWithUserAndPost(data) {
-  return await client.organization.create({
-    data: {
-      name: data.organization_name,
-      website: data.organization_website,
-    },
-  });
+export async function CreateNewOrganizationWithUseAndJob(data) {
+  try {
+    const organization = await client.organization.create({
+      data: {
+        name: "Example Organization",
+        users: {
+          create: [
+            {
+              assignedAt: new Date(),
+              user: {
+                create: {
+                  externalId: "test",
+                  firstName: "John",
+                  lastName: "Doe",
+                  email: "john@example.com",
+                },
+              },
+            },
+          ],
+        },
+      },
+      include: {
+        users: true,
+      },
+    });
+
+    const job = await client.job.create({
+      data: {
+        title: "Software Engineer",
+        jobType: "FULL_TIME",
+        location: "Remote",
+        compType: "SALARY",
+        payScaleBegin: 60000,
+        payScaleEnd: 80000,
+        description: "Join our team as a Software Engineer!",
+        jobLocType: "REMOTE",
+        status: "OPEN",
+        organization: {
+          connect: { id: organization.id },
+        },
+        user: {
+          connect: { id: organization.users[0].userId },
+        },
+      },
+    });
+
+    console.log(
+      "Organization, Users, and Jobs created successfully:",
+      organization,
+      job
+    );
+  } catch (error) {
+    console.error("Error creating Organization, Users, and Jobs:", error);
+  }
 }

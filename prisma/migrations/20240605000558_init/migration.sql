@@ -101,11 +101,9 @@ CREATE TABLE "organizations" (
 
 -- CreateTable
 CREATE TABLE "organizations_users" (
-    "organization_id" TEXT NOT NULL,
     "user_id" TEXT NOT NULL,
-    "role" "OrganizationRole" NOT NULL DEFAULT 'RECRUITER',
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL,
+    "organization_id" TEXT NOT NULL,
+    "assignedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "organizations_users_pkey" PRIMARY KEY ("user_id","organization_id")
 );
@@ -150,6 +148,9 @@ CREATE UNIQUE INDEX "resumes_user_id_key" ON "resumes"("user_id");
 CREATE UNIQUE INDEX "organizations_users_user_id_key" ON "organizations_users"("user_id");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "organizations_users_organization_id_key" ON "organizations_users"("organization_id");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "job_applications_id_key" ON "job_applications"("id");
 
 -- AddForeignKey
@@ -165,10 +166,10 @@ ALTER TABLE "resume_experience" ADD CONSTRAINT "resume_experience_resume_id_fkey
 ALTER TABLE "resume_skills" ADD CONSTRAINT "resume_skills_resume_id_fkey" FOREIGN KEY ("resume_id") REFERENCES "resumes"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "organizations_users" ADD CONSTRAINT "organizations_users_organization_id_fkey" FOREIGN KEY ("organization_id") REFERENCES "organizations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "organizations_users" ADD CONSTRAINT "organizations_users_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "organizations_users" ADD CONSTRAINT "organizations_users_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "organizations_users" ADD CONSTRAINT "organizations_users_organization_id_fkey" FOREIGN KEY ("organization_id") REFERENCES "organizations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "jobs" ADD CONSTRAINT "jobs_organization_id_fkey" FOREIGN KEY ("organization_id") REFERENCES "organizations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

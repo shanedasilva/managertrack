@@ -1,11 +1,17 @@
 "use client";
 
+import { useState } from "react";
+import { redirect } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { CheckCircledIcon } from "@radix-ui/react-icons";
 
 import { cn } from "@/lib/utils";
+import { ToastAction } from "@/components/ui/toast";
+import { useToast } from "@/components/ui/use-toast";
+import { Input } from "@/components/ui/input";
+import { Icons } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -16,8 +22,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { toast } from "@/components/ui/use-toast";
-import { Input } from "@/components/ui/input";
+
 import {
   Select,
   SelectContent,
@@ -29,91 +34,92 @@ import {
 import { SaveRecords } from "@/app/jobs/new/actions";
 
 const formSchema = z.object({
-  organization_name: z
-    .string({
-      required_error: "Organization name is required",
-    })
-    .min(3, { message: "Must be 3 or more characters long" })
-    .max(300, { message: "Must be 30 or less characters long" }),
-  organization_website: z
-    .string({
-      required_error: "Organization URL is required",
-    })
-    .url({ message: "Invalid url" }),
-  organization_tagline: z.string().optional(),
-
-  job_title: z
-    .string({
-      required_error: "Job name is required",
-    })
-    .min(2, { message: "Must be 2 or more characters long" })
-    .max(30, { message: "Must be 30 or less characters long" }),
-  job_location: z
-    .string({
-      required_error: "Job location is required",
-    })
-    .min(2, { message: "Must be 2 or more characters long" })
-    .max(30, { message: "Must be 30 or less characters long" }),
-  job_location_requirement: z.string({
-    required_error: "Job location requirement is required",
-  }),
-  job_apply_url: z
-    .string({
-      required_error: "Apply URL is required",
-    })
-    .url({ message: "Invalid url" }),
-  job_employment_type: z.string({
-    required_error: "Employment type is required",
-  }),
-  job_compenstation_type: z.string({
-    required_error: "Compensation type is required",
-  }),
-  job_salary_low: z.number().nonnegative().optional(),
-  job_salary_high: z.number().nonnegative().optional(),
-  job_description: z
-    .string({
-      required_error: "Job description is required",
-    })
-    .min(10, { message: "Must be 10 or more characters long" })
-    .max(500, { message: "Must be 500 or less characters long" }),
-
-  user_first_name: z
-    .string({
-      required_error: "First name is required",
-    })
-    .min(2, { message: "Must be 2 or more characters long" })
-    .max(20, { message: "Must be 20 or less characters long" }),
-
-  user_last_name: z
-    .string({
-      required_error: "Last name is required",
-    })
-    .min(2, { message: "Must be 2 or more characters long" })
-    .max(20, { message: "Must be 20 or less characters long" }),
-
-  user_email: z
-    .string({
-      required_error: "Email is required",
-    })
-    .email()
-    .min(2, { message: "Must be 2 or more characters long" })
-    .max(40, { message: "Must be 40 or less characters long" }),
+  // organization_name: z
+  //   .string({
+  //     required_error: "Organization name is required",
+  //   })
+  //   .min(3, { message: "Must be 3 or more characters long" })
+  //   .max(300, { message: "Must be 30 or less characters long" }),
+  // organization_website: z
+  //   .string({
+  //     required_error: "Organization URL is required",
+  //   })
+  //   .url({ message: "Invalid url" }),
+  // organization_tagline: z.string().optional(),
+  // job_title: z
+  //   .string({
+  //     required_error: "Job name is required",
+  //   })
+  //   .min(2, { message: "Must be 2 or more characters long" })
+  //   .max(30, { message: "Must be 30 or less characters long" }),
+  // job_location: z
+  //   .string({
+  //     required_error: "Job location is required",
+  //   })
+  //   .min(2, { message: "Must be 2 or more characters long" })
+  //   .max(30, { message: "Must be 30 or less characters long" }),
+  // job_location_requirement: z.string({
+  //   required_error: "Job location requirement is required",
+  // }),
+  // job_apply_url: z
+  //   .string({
+  //     required_error: "Apply URL is required",
+  //   })
+  //   .url({ message: "Invalid url" }),
+  // job_employment_type: z.string({
+  //   required_error: "Employment type is required",
+  // }),
+  // job_compenstation_type: z.string({
+  //   required_error: "Compensation type is required",
+  // }),
+  // job_salary_low: z.number().nonnegative().optional(),
+  // job_salary_high: z.number().nonnegative().optional(),
+  // job_description: z
+  //   .string({
+  //     required_error: "Job description is required",
+  //   })
+  //   .min(10, { message: "Must be 10 or more characters long" })
+  //   .max(500, { message: "Must be 500 or less characters long" }),
+  // user_first_name: z
+  //   .string({
+  //     required_error: "First name is required",
+  //   })
+  //   .min(2, { message: "Must be 2 or more characters long" })
+  //   .max(20, { message: "Must be 20 or less characters long" }),
+  // user_last_name: z
+  //   .string({
+  //     required_error: "Last name is required",
+  //   })
+  //   .min(2, { message: "Must be 2 or more characters long" })
+  //   .max(20, { message: "Must be 20 or less characters long" }),
+  // user_email: z
+  //   .string({
+  //     required_error: "Email is required",
+  //   })
+  //   .email()
+  //   .min(2, { message: "Must be 2 or more characters long" })
+  //   .max(40, { message: "Must be 40 or less characters long" }),
 });
 
 export function JobForm({ className, ...props }) {
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
+
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {},
   });
 
   const onSubmit = async (data) => {
-    console.log(data);
+    setIsLoading(true);
 
-    await SaveRecords(data);
+    const createdOrganization = await SaveRecords(data);
 
-    toast({
-      description: "Organization created!",
-    });
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 2000);
+
+    // redirect("https://buy.stripe.com/test_8wMcNtd0wcaYbSw000");
   };
 
   return (
@@ -138,7 +144,7 @@ export function JobForm({ className, ...props }) {
                   <FormItem>
                     <FormLabel>Name</FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <Input disabled={isLoading} {...field} />
                     </FormControl>
                     <FormDescription>
                       This is your public display name.
@@ -157,7 +163,7 @@ export function JobForm({ className, ...props }) {
                   <FormItem>
                     <FormLabel>Website</FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <Input disabled={isLoading} {...field} />
                     </FormControl>
                     <FormDescription>
                       Optional: Link to your public organization website
@@ -185,7 +191,7 @@ export function JobForm({ className, ...props }) {
                   <FormItem>
                     <FormLabel>Title</FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <Input disabled={isLoading} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -202,7 +208,7 @@ export function JobForm({ className, ...props }) {
                   <FormItem>
                     <FormLabel>Location</FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <Input disabled={isLoading} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -220,22 +226,17 @@ export function JobForm({ className, ...props }) {
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
+                      disabled={isLoading}
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select a verified email to display" />
+                          <SelectValue />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="m@example.com">
-                          m@example.com
-                        </SelectItem>
-                        <SelectItem value="m@google.com">
-                          m@google.com
-                        </SelectItem>
-                        <SelectItem value="m@support.com">
-                          m@support.com
-                        </SelectItem>
+                        <SelectItem value="REMOTE">Remote</SelectItem>
+                        <SelectItem value="HYBRID">Hybrid</SelectItem>
+                        <SelectItem value="OFFICE">On office</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -253,7 +254,7 @@ export function JobForm({ className, ...props }) {
                   <FormItem>
                     <FormLabel>How to Apply</FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <Input disabled={isLoading} {...field} />
                     </FormControl>
                     <FormDescription>
                       Provite the URL of your public job page or the email
@@ -277,22 +278,17 @@ export function JobForm({ className, ...props }) {
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
+                        disabled={isLoading}
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select a verified email to display" />
+                            <SelectValue />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="m@example.com">
-                            m@example.com
-                          </SelectItem>
-                          <SelectItem value="m@google.com">
-                            m@google.com
-                          </SelectItem>
-                          <SelectItem value="m@support.com">
-                            m@support.com
-                          </SelectItem>
+                          <SelectItem value="FULL_TIME">Full-Time</SelectItem>
+                          <SelectItem value="PART_TIME">Part-Time</SelectItem>
+                          <SelectItem value="CONTRACT">Contract</SelectItem>
                         </SelectContent>
                       </Select>
                     </FormControl>
@@ -314,22 +310,16 @@ export function JobForm({ className, ...props }) {
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
+                        disabled={isLoading}
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select a verified email to display" />
+                            <SelectValue />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="m@example.com">
-                            m@example.com
-                          </SelectItem>
-                          <SelectItem value="m@google.com">
-                            m@google.com
-                          </SelectItem>
-                          <SelectItem value="m@support.com">
-                            m@support.com
-                          </SelectItem>
+                          <SelectItem value="SALARY">Salary</SelectItem>
+                          <SelectItem value="HOURLY">Hourly</SelectItem>
                         </SelectContent>
                       </Select>
                     </FormControl>
@@ -350,7 +340,7 @@ export function JobForm({ className, ...props }) {
                   <FormItem>
                     <FormLabel>Lower Salary Range</FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <Input disabled={isLoading} {...field} />
                     </FormControl>
                     <FormDescription>Minimum salary provided</FormDescription>
                     <FormMessage />
@@ -367,7 +357,7 @@ export function JobForm({ className, ...props }) {
                   <FormItem>
                     <FormLabel>Upper Salary Range</FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <Input disabled={isLoading} {...field} />
                     </FormControl>
                     <FormDescription>Maximum salary provided</FormDescription>
                     <FormMessage />
@@ -385,7 +375,7 @@ export function JobForm({ className, ...props }) {
                   <FormItem>
                     <FormLabel>Description</FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <Input disabled={isLoading} {...field} />
                     </FormControl>
                     <FormDescription>Maximum salary provided</FormDescription>
                     <FormMessage />
@@ -411,7 +401,7 @@ export function JobForm({ className, ...props }) {
                   <FormItem>
                     <FormLabel>First Name</FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <Input disabled={isLoading} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -427,7 +417,7 @@ export function JobForm({ className, ...props }) {
                   <FormItem>
                     <FormLabel>Last Name</FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <Input disabled={isLoading} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -444,7 +434,7 @@ export function JobForm({ className, ...props }) {
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <Input disabled={isLoading} {...field} />
                     </FormControl>
                     <FormDescription>
                       We will use it to send you confirmation email and links to
@@ -465,7 +455,7 @@ export function JobForm({ className, ...props }) {
                   <FormItem>
                     <FormLabel>Password</FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <Input disabled={isLoading} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -481,7 +471,7 @@ export function JobForm({ className, ...props }) {
                   <FormItem>
                     <FormLabel>Confirm Password</FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <Input disabled={isLoading} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -491,8 +481,12 @@ export function JobForm({ className, ...props }) {
           </div>
 
           <div className="py-8 w-full">
-            <Button type="submit" className="w-full">
-              <CheckCircledIcon className="mr-2 h-4 w-4" />
+            <Button className="w-full" disabled={isLoading} type="submit">
+              {isLoading ? (
+                <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <CheckCircledIcon className="mr-2 h-4 w-4" />
+              )}
               Submit and start hiring for $299
             </Button>
           </div>
