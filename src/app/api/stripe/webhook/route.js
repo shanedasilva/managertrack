@@ -6,13 +6,6 @@ import Stripe from "stripe";
 // Initialize Stripe with the secret key
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
-// Stripe requires the raw body to construct the event.
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
-
 /**
  * Handles POST requests which accepts incoming webhook events from Stripe.
  */
