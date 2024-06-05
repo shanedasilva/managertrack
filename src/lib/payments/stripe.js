@@ -71,8 +71,8 @@ export async function createStripeCheckoutSession(customerId) {
         },
       ],
       mode: "payment",
-      success_url: `${NEXT_PUBLIC_BASE_APP_URL}/api/stripe/checkout-success?stripe_session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${NEXT_PUBLIC_BASE_APP_URL}/cancel`,
+      success_url: `${process.env.NEXT_PUBLIC_BASE_APP_URL}/api/stripe/checkout-success?stripe_session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.NEXT_PUBLIC_BASE_APP_URL}/cancel`,
     };
 
     return stripe.checkout.sessions.create(checkoutParams);
