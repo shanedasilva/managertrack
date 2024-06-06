@@ -30,11 +30,10 @@ export const createNewJob = async (form) => {
       form.user_first_name,
       form.user_last_name,
       form.user_email,
-      "password"
+      "$Maddieinkits7$"
     );
-    form.clerkUserId = clerkUser.id;
     // create user
-    let newUser = await createUser(form, newOrganization.id);
+    let newUser = await createUser(form, clerkUser.id);
     // create organizations_users
     await createOrganizationUser(newOrganization.id, newUser.id);
     // create job

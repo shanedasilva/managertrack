@@ -6,17 +6,14 @@ import client from "@/lib/database/client";
  * @param {Object} data - Data object containing information about the user.
  * @returns {Promise<Object>} A promise that resolves to an object containing the created user.
  */
-export async function createUser(form) {
+export async function createUser(form, clerkUserId) {
   try {
     const data = {
       firstName: form.user_first_name,
       lastName: form.user_last_name,
       email: form.user_email,
+      clerkUserId: clerkUserId,
     };
-
-    if (form.clerkUserId !== null) {
-      data.clerkUserId = `DEFAULT-${Math.random()}`;
-    }
 
     return await client.user.create({
       data: data,
