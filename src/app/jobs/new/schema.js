@@ -78,6 +78,7 @@ const userSchema = z.object({
     })
     .min(2, { message: "Must be 2 or more characters long" })
     .max(40, { message: "Must be 40 or less characters long" }),
+  user_password_confirm: z.string(),
 });
 
 const getFormSchema = (sessionUser) => {

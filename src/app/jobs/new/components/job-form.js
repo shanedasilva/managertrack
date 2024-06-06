@@ -9,8 +9,10 @@ import { CheckCircledIcon } from "@radix-ui/react-icons";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Icons } from "@/components/icons";
+import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { PasswordInput } from "@/components/ui/password";
+import { MultiSelect } from "@/components/ui/multi-select";
 import {
   Form,
   FormControl,
@@ -415,9 +417,31 @@ function FormJobSection({ form, isLoading }) {
               <FormItem>
                 <FormLabel>Description</FormLabel>
                 <FormControl>
-                  <Input disabled={isLoading} {...field} />
+                  <Textarea
+                    className="h-64 resize-none"
+                    disabled={isLoading}
+                    {...field}
+                  />
                 </FormControl>
                 <FormDescription>Maximum salary provided</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+      </div>
+
+      <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+        <div className="sm:col-span-6">
+          <FormField
+            control={form.control}
+            name="search_tags"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Search Tags</FormLabel>
+                <FormControl>
+                  <MultiSelect disabled={isLoading} {...field} />
+                </FormControl>
                 <FormMessage />
               </FormItem>
             )}
