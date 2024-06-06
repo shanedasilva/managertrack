@@ -8,7 +8,7 @@ export default function Page() {
           alt="sign-in"
           loading="lazy"
           decoding="async"
-          class="pointer-events-none absolute inset-0 object-cover object-center absolute w-full h-full"
+          className="pointer-events-none absolute inset-0 object-cover object-center absolute w-full h-full"
           src="https://dashboard.clerk.com/assets/signin-bg.svg"
           style={{
             position: "absolute",

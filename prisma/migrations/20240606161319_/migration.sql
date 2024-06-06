@@ -150,6 +150,9 @@ CREATE UNIQUE INDEX "users_id_key" ON "users"("id");
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "users_clerk_user_id_key" ON "users"("clerk_user_id");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "users_stripe_user_id_key" ON "users"("stripe_user_id");
 
 -- CreateIndex

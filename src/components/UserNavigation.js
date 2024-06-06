@@ -1,3 +1,7 @@
+import { SignOutButton } from "@clerk/nextjs";
+import { auth, currentUser } from "@clerk/nextjs/server";
+import Link from "next/link";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -7,50 +11,73 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-export default function UserNavigation() {
+import { findUserByClerkUserId } from "@/lib/models/User";
+
+const getInitialsFromName = (name) => {
+  let rgx = new RegExp(/(\p{L}{1})\p{L}+/, "gu");
+  let initials = [...name.matchAll(rgx)] || [];
+
+  initials = (
+    (initials.shift()?.[1] || "") + (initials.pop()?.[1] || "")
+  ).toUpperCase();
+
+  return initials;
+};
+
+export default async function UserNavigation() {
+  const { userId } = auth();
+  const clerkUser = await currentUser();
+  let user = await findUserByClerkUserId(userId);
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-8 w-8">
-            <AvatarImage src="/avatars/01.png" alt="@shadcn" />
-            <AvatarFallback>SC</AvatarFallback>
+            <AvatarImage
+              alt={`${user.firstName} ${user.lastName}`}
+              src={clerkUser.imageUrl}
+            />
+            <AvatarFallback>
+              {getInitialsFromName(`${user.firstName} ${user.lastName}`)}
+            </AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">shadcn</p>
+            <p className="text-sm font-medium leading-none">
+              {user.firstName} {user.lastName}
+            </p>
             <p className="text-xs leading-none text-muted-foreground">
-              m@example.com
+              {user.email}
             </p>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
+          <DropdownMenuItem>Profile</DropdownMenuItem>
+          <DropdownMenuItem>Billing</DropdownMenuItem>
           <DropdownMenuItem>
-            Profile
-            <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
+            <Link className="w-full text-left" href="/user-profile">
+              Settings
+            </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem>
-            Billing
-            <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            Settings
-            <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
-          </DropdownMenuItem>
-          <DropdownMenuItem>New Team</DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem>
-          Log out
-          <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
+          <SignOutButton
+            className="w-full text-left"
+            redirectUrl={process.env.NEXT_PUBLIC_BASE_APP_URL}
+          >
+            <Button variant="ghost" asChild>
+              Sign Out
+            </Button>
+          </SignOutButton>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

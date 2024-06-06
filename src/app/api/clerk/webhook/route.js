@@ -1,11 +1,11 @@
 import { Webhook } from "svix";
 import { headers } from "next/headers";
 
-import { CreateUser } from "../../../../lib/models/User";
+import { createUser } from "@/lib/models/User";
 
 export async function POST(req) {
   // Fetch the webhook secret from environment variables
-  const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET;
+  const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET;
 
   // Validate if the webhook secret is provided
   if (!WEBHOOK_SECRET) {
@@ -59,14 +59,14 @@ export async function POST(req) {
   console.log("Webhook body:", body);
 
   if (event.type === "user.created") {
-    await CreateUser(
+    await createUser(
       event.data.id,
       event.data.first_name,
       event.data.last_name,
       event.data.email_addresses[0].email_address
     );
 
-    console.log("userId:", event.data.id);
+    console.log("saved clerk user with clerk user id: ", event.data.id);
   }
 
   return new Response("", { status: 200 });

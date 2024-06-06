@@ -18,7 +18,7 @@ model User {
   firstName    String?           @map("first_name")
   lastName     String?           @map("last_name")
   email        String?           @unique @map("email")
-  clerkUserId  String?           @map("clerk_user_id")
+  clerkUserId  String?           @unique @map("clerk_user_id")
   stripeUserId String?           @unique @map("stripe_user_id")
   createdAt    DateTime          @default(now()) @map("created_at")
   updatedAt    DateTime          @updatedAt @map("updated_at")

@@ -104,7 +104,7 @@ const formSchema = z.object({
     .max(40, { message: "Must be 40 or less characters long" }),
 });
 
-export function JobForm({ className, ...props }) {
+export function JobForm({ isAuthenticated, className, ...props }) {
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm({
@@ -441,101 +441,106 @@ export function JobForm({ className, ...props }) {
               />
             </div>
           </div>
-          <div className="flex flex-col space-y-2 py-4">
-            <h1 className="text-2xl font-semibold tracking-tight">
-              Tell us about yourself
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              Please be as detailed as possible describing the job opening.
-            </p>
-          </div>
-          <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-            <div className="sm:col-span-3">
-              <FormField
-                control={form.control}
-                name="user_first_name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>First Name</FormLabel>
-                    <FormControl>
-                      <Input disabled={isLoading} {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
 
-            <div className="sm:col-span-3">
-              <FormField
-                control={form.control}
-                name="user_last_name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Last Name</FormLabel>
-                    <FormControl>
-                      <Input disabled={isLoading} {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-          </div>
-          <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-            <div className="sm:col-span-6">
-              <FormField
-                control={form.control}
-                name="user_email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input disabled={isLoading} {...field} />
-                    </FormControl>
-                    <FormDescription>
-                      We will use it to send you confirmation email and links to
-                      manage your job listing.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-          </div>
-          <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-            <div className="sm:col-span-3">
-              <FormField
-                control={form.control}
-                name="user_password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input disabled={isLoading} {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+          {!isAuthenticated && (
+            <>
+              <div className="flex flex-col space-y-2 py-4">
+                <h1 className="text-2xl font-semibold tracking-tight">
+                  Tell us about yourself
+                </h1>
+                <p className="text-sm text-muted-foreground">
+                  Please be as detailed as possible describing the job opening.
+                </p>
+              </div>
+              <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                <div className="sm:col-span-3">
+                  <FormField
+                    control={form.control}
+                    name="user_first_name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>First Name</FormLabel>
+                        <FormControl>
+                          <Input disabled={isLoading} {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
 
-            <div className="sm:col-span-3">
-              <FormField
-                control={form.control}
-                name="user_password_confirm"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Confirm Password</FormLabel>
-                    <FormControl>
-                      <Input disabled={isLoading} {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-          </div>
+                <div className="sm:col-span-3">
+                  <FormField
+                    control={form.control}
+                    name="user_last_name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Last Name</FormLabel>
+                        <FormControl>
+                          <Input disabled={isLoading} {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+              <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                <div className="sm:col-span-6">
+                  <FormField
+                    control={form.control}
+                    name="user_email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input disabled={isLoading} {...field} />
+                        </FormControl>
+                        <FormDescription>
+                          We will use it to send you confirmation email and
+                          links to manage your job listing.
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+              <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                <div className="sm:col-span-3">
+                  <FormField
+                    control={form.control}
+                    name="user_password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Password</FormLabel>
+                        <FormControl>
+                          <Input disabled={isLoading} {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <div className="sm:col-span-3">
+                  <FormField
+                    control={form.control}
+                    name="user_password_confirm"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Confirm Password</FormLabel>
+                        <FormControl>
+                          <Input disabled={isLoading} {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+            </>
+          )}
 
           <div className="py-8 w-full">
             <Button className="w-full" disabled={isLoading} type="submit">

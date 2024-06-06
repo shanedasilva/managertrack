@@ -3,14 +3,16 @@ import client from "@/lib/database/client";
 /**
  * Asynchronously creates a user in the database.
  *
+ * @param {string} clerkUserId - The Clerk user ID.
  * @param {string} firstName - The first name of the user.
  * @param {string} lastName - The last name of the user.
  * @param {string} email - The email of the user.
  * @returns {Promise<Object>} A promise that resolves to the created user.
  */
-export async function createUser(firstName, lastName, email) {
+export async function createUser(clerkUserId, firstName, lastName, email) {
   return await client.user.create({
     data: {
+      clerkUserId,
       firstName,
       lastName,
       email,
@@ -35,6 +37,14 @@ export async function updateUserWithStripeCustomerIdUsingId(
     },
     data: {
       stripeUserId: stripeUserId,
+    },
+  });
+}
+
+export async function findUserByClerkUserId(clerkUserId) {
+  return await client.user.findUnique({
+    where: {
+      clerkUserId: clerkUserId,
     },
   });
 }

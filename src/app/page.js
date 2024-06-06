@@ -1,9 +1,8 @@
 import { PlusIcon } from "@heroicons/react/20/solid";
-import Script from "next/script";
 import Link from "next/link";
-import { Search } from "lucide-react";
+import { CircleChevronRight, Search } from "lucide-react";
+import { SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
 
-import Hero from "@/components/Hero";
 import Footer from "@/components/Footer";
 import FeaturedOrganization from "@/components/FeaturedOrganization";
 import JobListItem from "@/components/JobListItem";
@@ -46,43 +45,73 @@ export default async function Page() {
 
   return (
     <main>
-      <div className="border-b fixed top-0 w-full z-50 bg-white">
-        <div className="flex h-16 items-center px-4">
+      <div className="border-b fixed top-0 w-full bg-white z-50">
+        <div className="grid gap-4 items-center md:grid-cols-2 lg:grid-cols-3 px-4 h-16">
           <Navigation />
 
-          <div className="ml-auto flex items-center space-x-4">
-            <Link
-              href="/jobs/new"
-              className="text-sm font-medium transition-colors hover:text-primary"
-            >
-              Post a Job
-            </Link>
+          <div>
+            <Button variant="ghost" asChild>
+              <Link href="/examples/dashboard">Browse Jobs</Link>
+            </Button>
+            <Button variant="ghost" asChild>
+              <Link href="/examples/dashboard">Organizations</Link>
+            </Button>
+            <Button variant="ghost" asChild>
+              <Link href="/examples/dashboard">Advertise</Link>
+            </Button>
+            <Button variant="ghost" asChild>
+              <Link href="/examples/dashboard">More</Link>
+            </Button>
+          </div>
 
-            <UserNavigation />
+          <div className="ml-auto flex items-center space-x-4">
+            <SignedIn>
+              <UserNavigation />
+            </SignedIn>
+
+            <SignedOut>
+              <SignInButton>
+                <Button variant="outline" asChild>
+                  <Link href="/login">Sign In</Link>
+                </Button>
+              </SignInButton>
+            </SignedOut>
+
+            <Button asChild>
+              <Link
+                href="/jobs/new"
+                className="text-sm font-medium transition-colors hover:text-primary"
+              >
+                Post a Job
+                <CircleChevronRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
           </div>
         </div>
       </div>
 
-      <div className="mx-auto max-w-3xl py-32 sm:py-48 lg:pt-36 lg:pb-24">
-        <div className="text-center">
-          <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-            Find your dream exec job without the hassle
-          </h1>
-          <p className="mt-6 text-lg leading-8 text-gray-600">
-            ManagerTrack is where top executives go to easily access active and
-            fully remote job opportunities from vetted tech companies.
-          </p>
-          <div className="mt-10 w-full flex gap-x-6">
-            <div className="bg-background/95 p-4 backdrop-blur supports-[backdrop-filter]:bg-background/60 w-full">
-              <form>
-                <div className="relative">
-                  <Search className="absolute left-3 top-4 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Search 200 management jobs"
-                    className="indent-5 px-6 py-6 text-base"
-                  />
-                </div>
-              </form>
+      <div className="bg-white mb-16">
+        <div className="mx-auto max-w-3xl py-32 sm:py-48 lg:pt-36 lg:pb-24">
+          <div className="text-center">
+            <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+              Find your dream exec job without the hassle
+            </h1>
+            <p className="mt-6 text-lg leading-8 text-gray-600">
+              ManagerTrack is where top executives go to easily access active
+              and fully remote job opportunities from vetted tech companies.
+            </p>
+            <div className="mt-10 w-full flex gap-x-6">
+              <div className="bg-background/95 p-4 backdrop-blur supports-[backdrop-filter]:bg-background/60 w-full">
+                <form>
+                  <div className="relative">
+                    <Search className="absolute left-3 top-4 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Search 200 management jobs"
+                      className="indent-5 px-6 py-6 text-base bg-white"
+                    />
+                  </div>
+                </form>
+              </div>
             </div>
           </div>
         </div>
@@ -227,9 +256,6 @@ export default async function Page() {
       {/* <JobsSection jobs={jobs} /> */}
 
       <Footer />
-
-      {/* Umami Analytics */}
-      <Script src="https://cloud.umami.is/script.js" />
     </main>
   );
 }
