@@ -1,7 +1,7 @@
 "use server";
 
 import { auth } from "@clerk/nextjs/server";
-
+import { createClerkUser } from "@/lib/auth/clerk";
 import { createOrganization } from "@/lib/models/Organization";
 import {
   createUser,
@@ -25,15 +25,20 @@ export const createNewJob = async (form) => {
   if (!sessionUser) {
     // create organization
     let newOrganization = await createOrganization(form);
+    // create clerk user
+    let clerkUser = await createClerkUser(
+      form.user_first_name,
+      form.user_last_name,
+      form.user_email,
+      "password"
+    );
+    form.clerkUserId = clerkUser.id;
     // create user
     let newUser = await createUser(form, newOrganization.id);
     // create organizations_users
     await createOrganizationUser(newOrganization.id, newUser.id);
     // create job
     let newJob = await createJob(form, newOrganization.id, newUser.id);
-    // create clerk user
-
-    // authenticate clerk user
 
     return { job: newJob, user: newUser };
   } else if (sessionUser && !sessionUser.organization) {
