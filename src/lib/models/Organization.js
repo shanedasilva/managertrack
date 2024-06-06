@@ -21,58 +21,20 @@ export async function getFeaturedOrganizations() {
 }
 
 /**
- * Asynchronously creates a new organization with a user and a job.
+ * Asynchronously creates a new organization.
  *
- * @param {Object} data - Data object containing information about the organization, user, and job.
- * @returns {Promise<Object>} A promise that resolves to an object containing the created organization and job.
+ * @param {Object} data - Data object containing information about the organization.
+ * @returns {Promise<Object>} A promise that resolves to an object containing the created organization.
  */
-export async function createNewOrganizationWithUserAndJob(data) {
+export async function createOrganization(form) {
   try {
-    const organization = await client.organization.create({
+    return await client.organization.create({
       data: {
-        name: data.organization_name,
-        users: {
-          create: [
-            {
-              assignedAt: new Date(),
-              user: {
-                create: {
-                  firstName: data.user_first_name,
-                  lastName: data.user_last_name,
-                  email: data.user_email,
-                },
-              },
-            },
-          ],
-        },
-      },
-      include: {
-        users: true,
+        name: form.organization_name,
+        website: form.organization_website,
       },
     });
-
-    const job = await client.job.create({
-      data: {
-        title: data.job_title,
-        jobType: data.job_employment_type,
-        location: data.job_location,
-        compType: data.job_compenstation_type,
-        payScaleBegin: data.job_salary_low,
-        payScaleEnd: data.job_salary_high,
-        description: data.job_description,
-        jobLocType: data.job_location_requirement,
-        status: "DRAFT",
-        organization: {
-          connect: { id: organization.id },
-        },
-        user: {
-          connect: { id: organization.users[0].userId },
-        },
-      },
-    });
-
-    return { organization, job };
   } catch (error) {
-    console.error("Error creating Organization, Users, and Jobs:", error);
+    console.error("Error creating organization: ", error);
   }
 }

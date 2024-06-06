@@ -2,6 +2,7 @@ import { PlusIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
 import { CircleChevronRight, Search } from "lucide-react";
 import { SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 
 import Footer from "@/components/Footer";
 import FeaturedOrganization from "@/components/FeaturedOrganization";

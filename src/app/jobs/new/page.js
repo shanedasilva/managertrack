@@ -7,6 +7,7 @@ import { JobForm } from "@/app/jobs/new/components/job-form";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import UserNavigation from "@/components/UserNavigation";
 import { Button } from "@/components/ui/button";
+import { findUserByClerkUserId } from "@/lib/models/User";
 
 const avatartUrl =
   "https://media.licdn.com/dms/image/D560BAQE-TVg0lqA0AQ/company-logo_100_100/0/1717354237442/managertrack_logo?e=1725494400&v=beta&t=FFJ9uGUqwJ8IDdvRkJKsffAzej7nBGPZxpd87qKe-pc";
@@ -18,6 +19,7 @@ export const metadata = {
 
 export default async function Page() {
   const { userId } = auth();
+  let user = await findUserByClerkUserId(userId);
 
   return (
     <>
@@ -80,7 +82,7 @@ export default async function Page() {
 
         <div className="lg:px-48 lg:py-16 col-span-6">
           <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-full">
-            <JobForm isAuthenticated={userId !== null} />
+            <JobForm sessionUser={user} />
 
             <p className="px-8 text-center text-sm text-muted-foreground">
               By clicking continue, you agree to our{" "}

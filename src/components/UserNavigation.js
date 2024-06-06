@@ -30,6 +30,7 @@ const getInitialsFromName = (name) => {
 export default async function UserNavigation() {
   const { userId } = auth();
   const clerkUser = await currentUser();
+
   let user = await findUserByClerkUserId(userId);
 
   return (

@@ -1,23 +1,35 @@
 import client from "@/lib/database/client";
 
 /**
- * Asynchronously creates a user in the database.
+ * Asynchronously creates a new user.
  *
- * @param {string} clerkUserId - The Clerk user ID.
- * @param {string} firstName - The first name of the user.
- * @param {string} lastName - The last name of the user.
- * @param {string} email - The email of the user.
- * @returns {Promise<Object>} A promise that resolves to the created user.
+ * @param {Object} data - Data object containing information about the user.
+ * @returns {Promise<Object>} A promise that resolves to an object containing the created user.
  */
-export async function createUser(clerkUserId, firstName, lastName, email) {
-  return await client.user.create({
-    data: {
-      clerkUserId,
-      firstName,
-      lastName,
-      email,
-    },
-  });
+export async function createNewUser(form, organizationId) {
+  try {
+    const data = {
+      firstName: form.firstName,
+      lastName: form.lastName,
+      email: form.email,
+    };
+
+    if (form.clerkUserId !== null) {
+      data.clerkUserId = "DEFAULT";
+    }
+
+    if (organizationId !== null) {
+      data.organization = {
+        connect: { id: organizationId },
+      };
+    }
+
+    return await client.user.create({
+      data: userData,
+    });
+  } catch (error) {
+    console.error("Error creating user: ", error);
+  }
 }
 
 /**
@@ -45,6 +57,9 @@ export async function findUserByClerkUserId(clerkUserId) {
   return await client.user.findUnique({
     where: {
       clerkUserId: clerkUserId,
+    },
+    include: {
+      organization: true,
     },
   });
 }
