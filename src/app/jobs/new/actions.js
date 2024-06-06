@@ -16,7 +16,11 @@ import { createOrganizationUser } from "@/lib/models/OrganizationUser";
 
 export const createNewJob = async (form) => {
   const { userId } = auth();
-  let sessionUser = await findUserByClerkUserId(userId);
+  let sessionUser = null;
+
+  if (userId) {
+    sessionUser = await findUserByClerkUserId(userId);
+  }
 
   if (!sessionUser) {
     // create organization
@@ -24,14 +28,14 @@ export const createNewJob = async (form) => {
     // create user
     let newUser = await createUser(form, newOrganization.id);
     // create organizations_users
-    await createOrganizationUser(newOrganization.id, sessionUser.id);
+    await createOrganizationUser(newOrganization.id, newUser.id);
     // create job
     let newJob = await createJob(form, newOrganization.id, newUser.id);
     // create clerk user
 
     // authenticate clerk user
 
-    return { job: newJob };
+    return { job: newJob, user: newUser };
   } else if (sessionUser && !sessionUser.organization) {
     // create organization
     let newOrganization = await createOrganization(form);
@@ -40,7 +44,7 @@ export const createNewJob = async (form) => {
     // create job
     let newJob = await createJob(form, newOrganization.id, sessionUser.id);
 
-    return { job: newJob };
+    return { job: newJob, user: sessionUser };
   } else if (sessionUser && sessionUser.organization) {
     // create job
     let newJob = await createJob(
@@ -49,53 +53,11 @@ export const createNewJob = async (form) => {
       sessionUser.id
     );
 
-    return { job: newJob };
+    return { job: newJob, user: sessionUser };
   }
 
   return null;
 };
-
-// /**
-//  * Creates a new organization with a user.
-//  *
-//  * @param {Object} values - Data object containing information about the organization, user, and job.
-//  * @returns {Promise<Object>} A promise that resolves to an object containing the created organization and job.
-//  */
-// export const createOrganization = async (name, website) => {
-//   return await createOrganization(name, website);
-// };
-
-// /**
-//  * Creates a new organization with a user.
-//  *
-//  * @param {Object} values - Data object containing information about the organization, user, and job.
-//  * @returns {Promise<Object>} A promise that resolves to an object containing the created organization and job.
-//  */
-// export const createUser = async (
-//   firstName,
-//   lastName,
-//   email,
-//   clerkUserId = null,
-//   organizationId = null
-// ) => {
-//   return await createUser(
-//     firstName,
-//     lastName,
-//     email,
-//     clerkUserId,
-//     organizationId
-//   );
-// };
-
-// /**
-//  * Creates a new organization with a user.
-//  *
-//  * @param {Object} values - Data object containing information about the organization, user, and job.
-//  * @returns {Promise<Object>} A promise that resolves to an object containing the created organization and job.
-//  */
-// export const createJob = async (jobData, organizationId, userId) => {
-//   return await createJob(jobData, organizationId, userId);
-// };
 
 /**
  * Updates a job for payment processing using its ID.

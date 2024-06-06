@@ -37,18 +37,18 @@ import {
 import getStripe from "@/lib/payments/stripe";
 
 const formSchema = z.object({
-  // organization_name: z
-  //   .string({
-  //     required_error: "Organization name is required",
-  //   })
-  //   .min(3, { message: "Must be 3 or more characters long" })
-  //   .max(300, { message: "Must be 30 or less characters long" }),
-  // organization_website: z
-  //   .string({
-  //     required_error: "Organization URL is required",
-  //   })
-  //   .url({ message: "Invalid url" }),
-  // organization_tagline: z.string().optional(),
+  organization_name: z
+    .string({
+      required_error: "Organization name is required",
+    })
+    .min(3, { message: "Must be 3 or more characters long" })
+    .max(300, { message: "Must be 30 or less characters long" }),
+  organization_website: z
+    .string({
+      required_error: "Organization URL is required",
+    })
+    .url({ message: "Invalid url" }),
+  organization_tagline: z.string().optional(),
   job_title: z
     .string({
       required_error: "Job name is required",
@@ -83,25 +83,25 @@ const formSchema = z.object({
     })
     .min(10, { message: "Must be 10 or more characters long" })
     .max(500, { message: "Must be 500 or less characters long" }),
-  // user_first_name: z
-  //   .string({
-  //     required_error: "First name is required",
-  //   })
-  //   .min(2, { message: "Must be 2 or more characters long" })
-  //   .max(20, { message: "Must be 20 or less characters long" }),
-  // user_last_name: z
-  //   .string({
-  //     required_error: "Last name is required",
-  //   })
-  //   .min(2, { message: "Must be 2 or more characters long" })
-  //   .max(20, { message: "Must be 20 or less characters long" }),
-  // user_email: z
-  //   .string({
-  //     required_error: "Email is required",
-  //   })
-  //   .email()
-  //   .min(2, { message: "Must be 2 or more characters long" })
-  //   .max(40, { message: "Must be 40 or less characters long" }),
+  user_first_name: z
+    .string({
+      required_error: "First name is required",
+    })
+    .min(2, { message: "Must be 2 or more characters long" })
+    .max(20, { message: "Must be 20 or less characters long" }),
+  user_last_name: z
+    .string({
+      required_error: "Last name is required",
+    })
+    .min(2, { message: "Must be 2 or more characters long" })
+    .max(20, { message: "Must be 20 or less characters long" }),
+  user_email: z
+    .string({
+      required_error: "Email is required",
+    })
+    .email()
+    .min(2, { message: "Must be 2 or more characters long" })
+    .max(40, { message: "Must be 40 or less characters long" }),
 });
 
 export function JobForm({ sessionUser, className, ...props }) {
@@ -117,10 +117,10 @@ export function JobForm({ sessionUser, className, ...props }) {
       setIsLoading(true);
 
       const stripe = await getStripe();
-      const { job } = await createNewJob(formData);
-      const checkoutSessionResponse = await createCheckoutSession(sessionUser);
+      const { job, user } = await createNewJob(formData);
+      const checkoutSessionResponse = await createCheckoutSession(user);
 
-      await updateJobAndUser(job, sessionUser, checkoutSessionResponse);
+      await updateJobAndUser(job, user, checkoutSessionResponse);
       await redirectToCheckout(stripe, checkoutSessionResponse);
     } catch (error) {
       console.error("An error occurred:", error);
@@ -129,17 +129,17 @@ export function JobForm({ sessionUser, className, ...props }) {
     }
   };
 
-  const createCheckoutSession = async (sessionUser) => {
+  const createCheckoutSession = async (user) => {
     const checkoutSession = await fetch("/api/stripe/checkout-session", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        userId: sessionUser.id,
-        userEmail: sessionUser.email,
-        userFirstName: sessionUser.firstName,
-        userLastName: sessionUser.lastName,
+        userId: user.id,
+        userEmail: user.email,
+        userFirstName: user.firstName,
+        userLastName: user.lastName,
       }),
     });
 
@@ -151,18 +151,14 @@ export function JobForm({ sessionUser, className, ...props }) {
     return await checkoutSession.json();
   };
 
-  const updateJobAndUser = async (
-    job,
-    sessionUser,
-    checkoutSessionResponse
-  ) => {
+  const updateJobAndUser = async (job, user, checkoutSessionResponse) => {
     await updateJobForPaymentProcessing(
       job.id,
       checkoutSessionResponse.session_id
     );
 
     await updateUserWithStripeCustomerId(
-      sessionUser.id,
+      user.id,
       checkoutSessionResponse.customer_id
     );
   };
@@ -185,7 +181,7 @@ export function JobForm({ sessionUser, className, ...props }) {
 
           <FormJobSection form={form} isLoading={isLoading} />
 
-          {!sessionUser && (
+          {!sessionUser.id && (
             <FormUserSection form={form} isLoading={isLoading} />
           )}
 

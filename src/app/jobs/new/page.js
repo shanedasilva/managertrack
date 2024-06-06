@@ -19,7 +19,13 @@ export const metadata = {
 
 export default async function Page() {
   const { userId } = auth();
-  let user = await findUserByClerkUserId(userId);
+  let user = {
+    organization: null,
+  };
+
+  if (userId) {
+    user = await findUserByClerkUserId(userId);
+  }
 
   return (
     <>
