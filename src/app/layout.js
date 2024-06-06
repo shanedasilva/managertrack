@@ -1,5 +1,7 @@
 import { Inter as FontSans } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
+import { Analytics } from "@vercel/analytics/react";
+
 import "../styles/globals.css";
 
 import { cn } from "@/lib/utils";
@@ -33,6 +35,7 @@ export default function RootLayout({ children }) {
           )}
         >
           <main>{children}</main>
+          <Analytics />
         </body>
       </html>
     </ClerkProvider>
