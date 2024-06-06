@@ -51,6 +51,13 @@ export default async function Page() {
           <Navigation />
 
           <div className="ml-auto flex items-center space-x-4">
+            <Link
+              href="/jobs/new"
+              className="text-sm font-medium transition-colors hover:text-primary"
+            >
+              Post a Job
+            </Link>
+
             <UserNavigation />
           </div>
         </div>
@@ -130,7 +137,7 @@ export default async function Page() {
                           >
                             <circle cx={1} cy={1} r={1} />
                           </svg>
-                          <p className="truncate text-sm text-gray-500">
+                          <p className="truncate text-sm text-gray-600">
                             {job.location}
                           </p>
                           <svg
@@ -139,7 +146,7 @@ export default async function Page() {
                           >
                             <circle cx={1} cy={1} r={1} />
                           </svg>
-                          <p className="truncate text-sm text-gray-500">
+                          <p className="truncate text-sm text-gray-600">
                             {formatter.format(job.payScaleBegin)} -{" "}
                             {formatter.format(job.payScaleEnd)}
                           </p>
