@@ -72,11 +72,17 @@ const userSchema = z.object({
     .email()
     .min(2, { message: "Must be 2 or more characters long" })
     .max(40, { message: "Must be 40 or less characters long" }),
+  user_password: z
+    .string({
+      required_error: "Password is required",
+    })
+    .min(2, { message: "Must be 2 or more characters long" })
+    .max(40, { message: "Must be 40 or less characters long" }),
 });
 
 const getFormSchema = (sessionUser) => {
   // User is authenticated and has created an organization
-  if (sessionUser.id && sessionUser.organization.organizationId) {
+  if (sessionUser.id && sessionUser.organization?.organizationId) {
     return z.object({
       ...jobSchema.shape,
     });
@@ -84,7 +90,7 @@ const getFormSchema = (sessionUser) => {
 
   // User is authenticated and has NOT created an organization
   // This state occurs when users has first created Clerk account
-  if (sessionUser.id && !sessionUser.organization.organizationId) {
+  if (sessionUser.id && !sessionUser.organization?.organizationId) {
     return z.object({
       ...organizaitonSchema.shape,
       ...jobSchema.shape,

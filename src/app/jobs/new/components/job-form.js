@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Icons } from "@/components/icons";
 import { Button } from "@/components/ui/button";
+import { PasswordInput } from "@/components/ui/password";
 import {
   Form,
   FormControl,
@@ -364,7 +365,14 @@ function FormJobSection({ form, isLoading }) {
               <FormItem>
                 <FormLabel>Lower Salary Range</FormLabel>
                 <FormControl>
-                  <Input disabled={isLoading} type="number" {...field} />
+                  <Input
+                    disabled={isLoading}
+                    type="number"
+                    min="0.00"
+                    max="10000.00"
+                    step="0.01"
+                    {...field}
+                  />
                 </FormControl>
                 <FormDescription>Minimum salary provided</FormDescription>
                 <FormMessage />
@@ -381,7 +389,14 @@ function FormJobSection({ form, isLoading }) {
               <FormItem>
                 <FormLabel>Upper Salary Range</FormLabel>
                 <FormControl>
-                  <Input disabled={isLoading} type="number" {...field} />
+                  <Input
+                    disabled={isLoading}
+                    type="number"
+                    min="0.00"
+                    max="10000.00"
+                    step="0.01"
+                    {...field}
+                  />
                 </FormControl>
                 <FormDescription>Maximum salary provided</FormDescription>
                 <FormMessage />
@@ -487,7 +502,7 @@ function FormUserSection({ form, isLoading }) {
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input disabled={isLoading} {...field} />
+                  <PasswordInput disabled={isLoading} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -503,7 +518,7 @@ function FormUserSection({ form, isLoading }) {
               <FormItem>
                 <FormLabel>Confirm Password</FormLabel>
                 <FormControl>
-                  <Input disabled={isLoading} {...field} />
+                  <PasswordInput disabled={isLoading} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
