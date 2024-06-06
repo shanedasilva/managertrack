@@ -52,23 +52,20 @@ export async function POST(req) {
   }
 
   // Process the payload
-  const { id } = event.data;
-  const eventType = event.type;
-
-  console.log(`Received webhook with ID ${id} and type ${eventType}`);
-  console.log("Webhook body:", body);
+  const { id, first_name, last_name, email_addresses } = event.data;
+  console.log(`Received webhook with ID ${id} and type ${event.type}`);
 
   if (event.type === "user.created") {
-    const existingUser = findUserByClerkUserId(event.data.id);
+    const existingUser = await findUserByClerkUserId(id);
 
     if (!existingUser) {
       await createUser(
         {
-          user_first_name: event.data.first_name,
-          lastName: event.data.last_name,
-          email: event.data.email_addresses[0].email_address,
+          user_first_name: first_name,
+          user_last_name: last_name,
+          user_email: email_addresses[0].email_address,
         },
-        event.data.id
+        id
       );
     }
 
