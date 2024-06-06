@@ -16,6 +16,7 @@ export async function getFeaturedOrganizations() {
         },
       },
     },
+    take: 4,
   });
 }
 

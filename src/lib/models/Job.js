@@ -18,6 +18,7 @@ export async function getFeedJobs() {
         },
       },
     },
+    take: 5,
   });
 }
 
