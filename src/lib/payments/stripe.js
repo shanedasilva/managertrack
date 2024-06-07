@@ -79,4 +79,24 @@ export async function createStripeCheckoutSession(customerId) {
   }
 }
 
+/**
+ * Creates a new customer in Stripe.
+ *
+ * @returns {Promise<Object>} - Promise resolving to the created customer object.
+ * @throws {Error} - Throws an error if creation fails.
+ */
+export async function createBillingPortalSession(stripeCustomerId) {
+  try {
+    const params = {
+      customer: stripeCustomerId,
+      return_url: process.env.NEXT_PUBLIC_BASE_APP_URL,
+    };
+
+    return stripe.billingPortal.sessions.create(params);
+  } catch (error) {
+    console.error("Error creating customer:", error);
+    throw error;
+  }
+}
+
 export default getStripe;

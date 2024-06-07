@@ -62,7 +62,11 @@ export default async function UserNavigation() {
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem>Profile</DropdownMenuItem>
-          <DropdownMenuItem>Billing</DropdownMenuItem>
+          <DropdownMenuItem>
+            <form method="GET" action="/api/stripe/billing-portal">
+              <button type="submit">Manage billing</button>
+            </form>
+          </DropdownMenuItem>
           <DropdownMenuItem>
             <Link className="w-full text-left" href="/user-profile">
               Settings
