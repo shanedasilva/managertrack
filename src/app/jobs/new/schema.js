@@ -50,6 +50,9 @@ const jobSchema = z.object({
     })
     .min(10, { message: "Must be 10 or more characters long" })
     .max(500, { message: "Must be 500 or less characters long" }),
+  subscription_type: z.string({
+    required_error: "Subscription type is required",
+  }),
 });
 
 const userSchema = z.object({

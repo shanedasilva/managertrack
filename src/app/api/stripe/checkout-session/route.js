@@ -12,7 +12,7 @@ import {
  */
 export async function POST(request) {
   try {
-    const { userId, userEmail, userFirstName, userLastName } =
+    const { userId, userEmail, userFirstName, userLastName, paymentType } =
       await request.json();
 
     const stripeCustomer = await createStripeCustomer(
@@ -23,7 +23,8 @@ export async function POST(request) {
     );
 
     const stripeCheckoutSession = await createStripeCheckoutSession(
-      stripeCustomer.id
+      stripeCustomer.id,
+      paymentType
     );
 
     return NextResponse.json(

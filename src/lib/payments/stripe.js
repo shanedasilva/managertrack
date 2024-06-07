@@ -7,6 +7,9 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 // Initialize a promise to lazily load Stripe with the public key
 let stripePromise = null;
 
+const ONE_TIME_PRICE_ID = "price_1PO4P9HWCFf8SDJTyfNtIL1F";
+const RECURRING_PRICE_ID = "price_1PP8PeHWCFf8SDJTuFWbfMW4";
+
 /**
  * Lazily loads Stripe with the public key.
  * @returns {Promise<Stripe>} - Promise resolving to the Stripe instance.
@@ -53,26 +56,31 @@ export async function createStripeCustomer(id, email, firstName, lastName) {
  * @returns {Promise<Object>} - Promise resolving to the created checkout session object.
  * @throws {Error} - Throws an error if session creation fails.
  */
-export async function createStripeCheckoutSession(customerId) {
-  try {
-    const checkoutParams = {
-      customer: customerId,
-      payment_method_types: ["card"],
-      line_items: [
-        {
-          price: process.env.STRIPE_PRODUCT_PRICE_ID,
-          quantity: 1,
-        },
-      ],
-      mode: "payment",
-      invoice_creation: {
-        enabled: true,
+export async function createStripeCheckoutSession(customerId, paymentType) {
+  const params = {
+    customer: customerId,
+    payment_method_types: ["card"],
+    line_items: [
+      {
+        price: RECURRING_PRICE_ID,
+        quantity: 1,
       },
-      success_url: `${process.env.NEXT_PUBLIC_BASE_APP_URL}/api/stripe/checkout-success?stripe_session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_BASE_APP_URL}/cancel`,
-    };
+    ],
+    mode: "subscription",
+    success_url: `${process.env.NEXT_PUBLIC_BASE_APP_URL}/api/stripe/checkout-success?stripe_session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${process.env.NEXT_PUBLIC_BASE_APP_URL}/cancel`,
+  };
 
-    return stripe.checkout.sessions.create(checkoutParams);
+  if (paymentType == "one_time") {
+    params.mode = "payment";
+    params.line_items[0].price = ONE_TIME_PRICE_ID;
+    params.invoice_creation = {
+      enabled: true,
+    };
+  }
+
+  try {
+    return stripe.checkout.sessions.create(params);
   } catch (error) {
     console.error("Error creating checkout session:", error);
     throw error;

@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { CheckCircledIcon } from "@radix-ui/react-icons";
+import { CheckCircleIcon } from "@heroicons/react/20/solid";
 
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
@@ -13,6 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { PasswordInput } from "@/components/ui/password";
 import { MultiSelect } from "@/components/ui/multi-select";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   Form,
   FormControl,
@@ -22,7 +23,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-
 import {
   Select,
   SelectContent,
@@ -54,7 +54,10 @@ export function JobForm({ sessionUser, className, ...props }) {
 
       const stripe = await getStripe();
       const { job, user } = await createNewJob(formData);
-      const checkoutSessionResponse = await createCheckoutSession(user);
+      const checkoutSessionResponse = await createCheckoutSession(
+        user,
+        formData.subscription_type
+      );
 
       await updateJobAndUser(job, user, checkoutSessionResponse);
       await redirectToCheckout(stripe, checkoutSessionResponse);
@@ -65,7 +68,7 @@ export function JobForm({ sessionUser, className, ...props }) {
     }
   };
 
-  const createCheckoutSession = async (user) => {
+  const createCheckoutSession = async (user, stripePriceId) => {
     const checkoutSession = await fetch("/api/stripe/checkout-session", {
       method: "POST",
       headers: {
@@ -76,6 +79,7 @@ export function JobForm({ sessionUser, className, ...props }) {
         userEmail: user.email,
         userFirstName: user.firstName,
         userLastName: user.lastName,
+        paymentType: stripePriceId,
       }),
     });
 
@@ -121,6 +125,48 @@ export function JobForm({ sessionUser, className, ...props }) {
             <FormUserSection form={form} isLoading={isLoading} />
           )}
 
+          <div className="flex flex-col space-y-2">
+            <h1 className="text-2xl font-semibold tracking-tight">
+              Select your promotion plan
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              Get noticed by adding your logo, highlighting your post or pinning
+              it to the top.
+            </p>
+          </div>
+
+          <FormField
+            control={form.control}
+            name="subscription_type"
+            render={({ field }) => (
+              <FormItem className="space-y-3">
+                <FormControl>
+                  <RadioGroup
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                    className="flex flex-col space-y-1"
+                  >
+                    <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormControl>
+                        <RadioGroupItem value="one_time" />
+                      </FormControl>
+                      <FormLabel className="font-normal">30 days</FormLabel>
+                    </FormItem>
+                    <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormControl>
+                        <RadioGroupItem value="recurring" />
+                      </FormControl>
+                      <FormLabel className="font-normal">
+                        Recurring 30 days
+                      </FormLabel>
+                    </FormItem>
+                  </RadioGroup>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           <div className="py-8 w-full">
             <Button className="w-full" disabled={isLoading} type="submit">
               {isLoading ? (
@@ -139,8 +185,8 @@ export function JobForm({ sessionUser, className, ...props }) {
 
 function FormOrganizationSection({ form, isLoading }) {
   return (
-    <>
-      <div className="flex flex-col space-y-2 pb-4">
+    <div className="mb-10">
+      <div className="flex flex-col space-y-2">
         <h1 className="text-2xl font-semibold tracking-tight">
           Tell us about your organization
         </h1>
@@ -150,7 +196,7 @@ function FormOrganizationSection({ form, isLoading }) {
         </p>
       </div>
 
-      <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+      <div className="mt-4 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
         <div className="sm:col-span-3">
           <FormField
             control={form.control}
@@ -189,14 +235,14 @@ function FormOrganizationSection({ form, isLoading }) {
           />
         </div>
       </div>
-    </>
+    </div>
   );
 }
 
 function FormJobSection({ form, isLoading }) {
   return (
-    <>
-      <div className="flex flex-col space-y-2 py-4">
+    <div className="mb-10">
+      <div className="flex flex-col space-y-2">
         <h1 className="text-2xl font-semibold tracking-tight">
           Tell us about your job
         </h1>
@@ -205,7 +251,7 @@ function FormJobSection({ form, isLoading }) {
         </p>
       </div>
 
-      <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+      <div className="mt-4 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
         <div className="sm:col-span-6">
           <FormField
             control={form.control}
@@ -223,7 +269,7 @@ function FormJobSection({ form, isLoading }) {
         </div>
       </div>
 
-      <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+      <div className="mt-4 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
         <div className="sm:col-span-3">
           <FormField
             control={form.control}
@@ -270,7 +316,7 @@ function FormJobSection({ form, isLoading }) {
         </div>
       </div>
 
-      <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+      <div className="mt-4 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
         <div className="sm:col-span-6">
           <FormField
             control={form.control}
@@ -292,7 +338,7 @@ function FormJobSection({ form, isLoading }) {
         </div>
       </div>
 
-      <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+      <div className="mt-4 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
         <div className="sm:col-span-3">
           <FormField
             control={form.control}
@@ -357,7 +403,7 @@ function FormJobSection({ form, isLoading }) {
         </div>
       </div>
 
-      <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+      <div className="mt-4 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
         <div className="sm:col-span-3">
           <FormField
             control={form.control}
@@ -408,7 +454,7 @@ function FormJobSection({ form, isLoading }) {
         </div>
       </div>
 
-      <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+      <div className="mt-4 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
         <div className="sm:col-span-6">
           <FormField
             control={form.control}
@@ -431,7 +477,7 @@ function FormJobSection({ form, isLoading }) {
         </div>
       </div>
 
-      <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+      <div className="mt-4 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
         <div className="sm:col-span-6">
           <FormField
             control={form.control}
@@ -448,14 +494,14 @@ function FormJobSection({ form, isLoading }) {
           />
         </div>
       </div>
-    </>
+    </div>
   );
 }
 
 function FormUserSection({ form, isLoading }) {
   return (
-    <>
-      <div className="flex flex-col space-y-2 py-4">
+    <div className="pb-10">
+      <div className="flex flex-col space-y-2">
         <h1 className="text-2xl font-semibold tracking-tight">
           Tell us about yourself
         </h1>
@@ -463,7 +509,7 @@ function FormUserSection({ form, isLoading }) {
           Please be as detailed as possible describing the job opening.
         </p>
       </div>
-      <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+      <div className="mt-4 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
         <div className="sm:col-span-3">
           <FormField
             control={form.control}
@@ -496,7 +542,7 @@ function FormUserSection({ form, isLoading }) {
           />
         </div>
       </div>
-      <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+      <div className="mt-4 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
         <div className="sm:col-span-6">
           <FormField
             control={form.control}
@@ -517,7 +563,7 @@ function FormUserSection({ form, isLoading }) {
           />
         </div>
       </div>
-      <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+      <div className="mt-4 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
         <div className="sm:col-span-3">
           <FormField
             control={form.control}
@@ -550,6 +596,6 @@ function FormUserSection({ form, isLoading }) {
           />
         </div>
       </div>
-    </>
+    </div>
   );
 }

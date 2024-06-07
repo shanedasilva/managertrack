@@ -8,6 +8,9 @@ import client from "@/lib/database/client";
 export async function getFeedJobs() {
   return await client.job.findMany({
     where: {
+      activeUntil: {
+        gte: new Date(),
+      },
       status: "OPEN",
     },
     include: {
@@ -48,16 +51,19 @@ export async function updateJobForPaymentProcessingUsingJobId(
  * Asynchronously updates a job for payment success using the Stripe session ID.
  *
  * @param {string} stripeSessionId - The ID of the Stripe session for payment success.
+ * @param {Date} activeUntil - The number of days to keep the post active for.
  * @returns {Promise<Object>} A promise that resolves to the updated job.
  */
 export async function updateJobForPaymentSuccessUsingStripeSessionId(
-  stripeSessionId
+  stripeSessionId,
+  activeUntil
 ) {
   return await client.job.update({
     where: {
       stripeSessionId: stripeSessionId,
     },
     data: {
+      activeUntil: activeUntil,
       status: "OPEN",
     },
   });

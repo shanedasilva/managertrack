@@ -18,7 +18,7 @@ export async function GET() {
       const billingSession = await createBillingPortalSession(
         sessionUser.stripeUserId
       );
-      console.log("billingSession.url", billingSession.url);
+
       return NextResponse.redirect(billingSession.url);
     }
 
