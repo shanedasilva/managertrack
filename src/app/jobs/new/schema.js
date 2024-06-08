@@ -1,24 +1,30 @@
 import { z } from "zod";
 
-const organizaitonSchema = z.object({
+/**
+ * Schema for validating organization data.
+ */
+const organizationSchema = z.object({
   organization_name: z
     .string({
       required_error: "Organization name is required",
     })
     .min(3, { message: "Must be 3 or more characters long" })
-    .max(300, { message: "Must be 30 or less characters long" }),
+    .max(300, { message: "Must be 300 or less characters long" }),
   organization_website: z
     .string({
       required_error: "Organization URL is required",
     })
-    .url({ message: "Invalid url" }),
+    .url({ message: "Invalid URL" }),
   organization_tagline: z.string().optional(),
 });
 
+/**
+ * Schema for validating job data.
+ */
 const jobSchema = z.object({
   job_title: z
     .string({
-      required_error: "Job name is required",
+      required_error: "Job title is required",
     })
     .min(2, { message: "Must be 2 or more characters long" })
     .max(30, { message: "Must be 30 or less characters long" }),
@@ -35,7 +41,7 @@ const jobSchema = z.object({
     .string({
       required_error: "Apply URL is required",
     })
-    .url({ message: "Invalid url" }),
+    .url({ message: "Invalid URL" }),
   job_employment_type: z.string({
     required_error: "Employment type is required",
   }),
@@ -55,6 +61,9 @@ const jobSchema = z.object({
   }),
 });
 
+/**
+ * Schema for validating user data.
+ */
 const userSchema = z.object({
   user_first_name: z
     .string({
@@ -72,7 +81,7 @@ const userSchema = z.object({
     .string({
       required_error: "Email is required",
     })
-    .email()
+    .email({ message: "Invalid email address" })
     .min(2, { message: "Must be 2 or more characters long" })
     .max(40, { message: "Must be 40 or less characters long" }),
   user_password: z
@@ -84,6 +93,15 @@ const userSchema = z.object({
   user_password_confirm: z.string(),
 });
 
+/**
+ * Returns the appropriate schema based on the session user's state.
+ *
+ * @param {Object} sessionUser - The current session user.
+ * @param {string} sessionUser.id - The user's ID.
+ * @param {Object} [sessionUser.organization] - The user's organization, if any.
+ * @param {string} [sessionUser.organization.organizationId] - The organization's ID, if any.
+ * @returns {z.ZodObject} The combined schema for validation.
+ */
 const getFormSchema = (sessionUser) => {
   // User is authenticated and has created an organization
   if (sessionUser.id && sessionUser.organization?.organizationId) {
@@ -93,17 +111,17 @@ const getFormSchema = (sessionUser) => {
   }
 
   // User is authenticated and has NOT created an organization
-  // This state occurs when users has first created Clerk account
+  // This state occurs when the user has first created a Clerk account
   if (sessionUser.id && !sessionUser.organization?.organizationId) {
     return z.object({
-      ...organizaitonSchema.shape,
+      ...organizationSchema.shape,
       ...jobSchema.shape,
     });
   }
 
   // User does not yet have an account created
   return z.object({
-    ...organizaitonSchema.shape,
+    ...organizationSchema.shape,
     ...jobSchema.shape,
     ...userSchema.shape,
   });

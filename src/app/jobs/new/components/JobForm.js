@@ -3,8 +3,6 @@
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { CheckCircledIcon } from "@radix-ui/react-icons";
-import { CheckCircleIcon } from "@heroicons/react/20/solid";
 
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
@@ -17,11 +15,11 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from "@/components/ui/form";
 import {
   Select,
@@ -33,8 +31,9 @@ import {
 
 import {
   createNewJob,
-  updateJobForPaymentProcessing,
-  updateUserWithStripeCustomerId,
+  createCheckoutSession,
+  updateJobAndUser,
+  redirectToCheckout,
 } from "@/app/jobs/new/actions";
 
 import getStripe from "@/lib/payments/stripe";
@@ -48,67 +47,34 @@ export function JobForm({ sessionUser, className, ...props }) {
     defaultValues: {},
   });
 
+  /**
+   * Handles the form submission process.
+   *
+   * @param {Object} formData - The data from the submitted form.
+   */
   const onSubmit = async (formData) => {
     try {
       setIsLoading(true);
 
+      // Initialize Stripe.
       const stripe = await getStripe();
+      // Create a new job and associated user.
       const { job, user } = await createNewJob(formData);
+      // Create a Stripe checkout session.
       const checkoutSessionResponse = await createCheckoutSession(
         user,
         formData.subscription_type
       );
 
+      // Update job and user details with the checkout session info.
       await updateJobAndUser(job, user, checkoutSessionResponse);
+      // Redirect the user to the Stripe checkout page.
       await redirectToCheckout(stripe, checkoutSessionResponse);
     } catch (error) {
       console.error("An error occurred:", error);
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const createCheckoutSession = async (user, stripePriceId) => {
-    const checkoutSession = await fetch("/api/stripe/checkout-session", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        userId: user.id,
-        userEmail: user.email,
-        userFirstName: user.firstName,
-        userLastName: user.lastName,
-        paymentType: stripePriceId,
-      }),
-    });
-
-    if (!checkoutSession.ok) {
-      console.error("Failed to create checkout session");
-      return;
-    }
-
-    return await checkoutSession.json();
-  };
-
-  const updateJobAndUser = async (job, user, checkoutSessionResponse) => {
-    await updateJobForPaymentProcessing(
-      job.id,
-      checkoutSessionResponse.session_id
-    );
-
-    await updateUserWithStripeCustomerId(
-      user.id,
-      checkoutSessionResponse.customer_id
-    );
-  };
-
-  const redirectToCheckout = async (stripe, checkoutSessionResponse) => {
-    const { error } = await stripe.redirectToCheckout({
-      sessionId: checkoutSessionResponse.session_id,
-    });
-
-    console.warn(error.message);
   };
 
   return (
@@ -125,58 +91,14 @@ export function JobForm({ sessionUser, className, ...props }) {
             <FormUserSection form={form} isLoading={isLoading} />
           )}
 
-          <div className="flex flex-col space-y-2">
-            <h1 className="text-2xl font-semibold tracking-tight">
-              Select your promotion plan
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              Get noticed by adding your logo, highlighting your post or pinning
-              it to the top.
-            </p>
-          </div>
+          <FormSubscriptionSection form={form} isLoading={isLoading} />
 
-          <FormField
-            control={form.control}
-            name="subscription_type"
-            render={({ field }) => (
-              <FormItem className="space-y-3">
-                <FormControl>
-                  <RadioGroup
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                    className="flex flex-col space-y-1"
-                  >
-                    <FormItem className="flex items-center space-x-3 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem value="one_time" />
-                      </FormControl>
-                      <FormLabel className="font-normal">30 days</FormLabel>
-                    </FormItem>
-                    <FormItem className="flex items-center space-x-3 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem value="recurring" />
-                      </FormControl>
-                      <FormLabel className="font-normal">
-                        Recurring 30 days
-                      </FormLabel>
-                    </FormItem>
-                  </RadioGroup>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading && (
+              <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
             )}
-          />
-
-          <div className="py-8 w-full">
-            <Button className="w-full" disabled={isLoading} type="submit">
-              {isLoading ? (
-                <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <CheckCircledIcon className="mr-2 h-4 w-4" />
-              )}
-              Submit and start hiring for $299
-            </Button>
-          </div>
+            Continue
+          </Button>
         </form>
       </Form>
     </div>
@@ -500,7 +422,7 @@ function FormJobSection({ form, isLoading }) {
 
 function FormUserSection({ form, isLoading }) {
   return (
-    <div className="pb-10">
+    <div className="pb-4">
       <div className="flex flex-col space-y-2">
         <h1 className="text-2xl font-semibold tracking-tight">
           Tell us about yourself
@@ -595,6 +517,55 @@ function FormUserSection({ form, isLoading }) {
             )}
           />
         </div>
+      </div>
+    </div>
+  );
+}
+
+function FormSubscriptionSection({ form, isLoading }) {
+  return (
+    <div className="pb-6">
+      <div className="flex flex-col space-y-2">
+        <h1 className="text-2xl font-semibold tracking-tight">
+          Select your promotion plan
+        </h1>
+        <p className="text-sm text-muted-foreground">
+          Get noticed by adding your logo, highlighting your post or pinning it
+          to the top.
+        </p>
+      </div>
+
+      <div className="mt-4">
+        <FormField
+          control={form.control}
+          name="subscription_type"
+          render={({ field }) => (
+            <FormItem className="space-y-3">
+              <FormControl>
+                <RadioGroup
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                  className="flex flex-col space-y-1"
+                >
+                  <FormItem className="flex items-center space-x-3 space-y-0">
+                    <FormControl>
+                      <RadioGroupItem disabled={isLoading} value="one_time" />
+                    </FormControl>
+                    <FormLabel className="font-normal">30 days</FormLabel>
+                  </FormItem>
+                  <FormItem className="flex items-center space-x-3 space-y-0">
+                    <FormControl>
+                      <RadioGroupItem disabled={isLoading} value="recurring" />
+                    </FormControl>
+                    <FormLabel className="font-normal">
+                      Ongoing until canceled
+                    </FormLabel>
+                  </FormItem>
+                </RadioGroup>
+              </FormControl>
+            </FormItem>
+          )}
+        />
       </div>
     </div>
   );

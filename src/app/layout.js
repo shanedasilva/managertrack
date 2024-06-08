@@ -15,13 +15,14 @@ export const metadata = {
   title: "ManagerTrack",
   description:
     "Managertrack is where top talents go to easily access active management job opportunities from vetted tech companies.",
-  on: "/managertrack.jpg",
+  image: "/managertrack.jpg", // Fixed key name to 'image'
 };
 
 /**
  * RootLayout component for providing a common layout structure.
  *
- * @param {Object} children - The children components to be rendered within the layout.
+ * @param {Object} props - The component props.
+ * @param {React.ReactNode} props.children - The children components to be rendered within the layout.
  * @returns {JSX.Element} JSX for the RootLayout component.
  */
 export default function RootLayout({ children }) {

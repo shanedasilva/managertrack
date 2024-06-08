@@ -1,9 +1,14 @@
 import client from "@/lib/database/client";
 
+// Constants
+export const STATUS_OPEN = "OPEN";
+export const STATUS_PAYMENT_PROCESSING = "PAYMENT_PROCESSING";
+export const STATUS_DRAFT = "DRAFT";
+
 /**
  * Asynchronously retrieves feed jobs from the database.
  *
- * @returns {Promise<Array<Object>>} A promise that resolves to the feed jobs.
+ * @returns {Promise<Array<Object>>} A promise that resolves to an array of feed jobs.
  */
 export async function getFeedJobs() {
   return await client.job.findMany({
@@ -11,7 +16,7 @@ export async function getFeedJobs() {
       activeUntil: {
         gte: new Date(),
       },
-      status: "OPEN",
+      status: STATUS_OPEN,
     },
     include: {
       organization: {
@@ -42,7 +47,7 @@ export async function updateJobForPaymentProcessingUsingJobId(
     },
     data: {
       stripeSessionId: stripeSessionId,
-      status: "PAYMENT_PROCESSING",
+      status: STATUS_PAYMENT_PROCESSING,
     },
   });
 }
@@ -51,7 +56,7 @@ export async function updateJobForPaymentProcessingUsingJobId(
  * Asynchronously updates a job for payment success using the Stripe session ID.
  *
  * @param {string} stripeSessionId - The ID of the Stripe session for payment success.
- * @param {Date} activeUntil - The number of days to keep the post active for.
+ * @param {Date} activeUntil - The date until which the post will remain active.
  * @returns {Promise<Object>} A promise that resolves to the updated job.
  */
 export async function updateJobForPaymentSuccessUsingStripeSessionId(
@@ -64,7 +69,7 @@ export async function updateJobForPaymentSuccessUsingStripeSessionId(
     },
     data: {
       activeUntil: activeUntil,
-      status: "OPEN",
+      status: STATUS_OPEN,
     },
   });
 }
@@ -72,8 +77,11 @@ export async function updateJobForPaymentSuccessUsingStripeSessionId(
 /**
  * Asynchronously creates a new job.
  *
- * @param {Object} data - Data object containing information about the job.
- * @returns {Promise<Object>} A promise that resolves to an object containing job.
+ * @param {Object} form - Form object containing information about the job.
+ * @param {number} organizationId - The ID of the organization associated with the job.
+ * @param {number} userId - The ID of the user creating the job.
+ * @returns {Promise<Object>} A promise that resolves to the created job object.
+ * @throws {Error} Throws an error if job creation fails.
  */
 export async function createJob(form, organizationId, userId) {
   try {
@@ -87,7 +95,7 @@ export async function createJob(form, organizationId, userId) {
         payScaleEnd: form.job_salary_high,
         description: form.job_description,
         jobLocType: form.job_location_requirement,
-        status: "DRAFT",
+        status: STATUS_DRAFT,
         organization: {
           connect: { id: organizationId },
         },
@@ -98,5 +106,6 @@ export async function createJob(form, organizationId, userId) {
     });
   } catch (error) {
     console.error("Error creating job: ", error);
+    throw error;
   }
 }

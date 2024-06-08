@@ -1,8 +1,13 @@
 import { Webhook } from "svix";
 import { headers } from "next/headers";
-
 import { createUser, findUserByClerkUserId } from "@/lib/models/User";
 
+/**
+ * Handles incoming POST requests for Clerk webhooks.
+ *
+ * @param {Request} req - The incoming HTTP request.
+ * @returns {Promise<Response>} The response to be sent back.
+ */
 export async function POST(req) {
   // Fetch the webhook secret from environment variables
   const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET;
@@ -14,7 +19,7 @@ export async function POST(req) {
     );
   }
 
-  // Extract headers
+  // Extract headers from the incoming request
   const headerPayload = headers();
   const svix_id = headerPayload.get("svix-id");
   const svix_timestamp = headerPayload.get("svix-timestamp");
@@ -51,13 +56,14 @@ export async function POST(req) {
     });
   }
 
-  // Process the payload
+  // Process the payload based on the event type
   const { id, first_name, last_name, email_addresses } = event.data;
   console.log(`Received webhook with ID ${id} and type ${event.type}`);
 
   if (event.type === "user.created") {
     const existingUser = await findUserByClerkUserId(id);
 
+    // If the user doesn't exist, create a new user
     if (!existingUser) {
       await createUser(
         {
@@ -69,7 +75,7 @@ export async function POST(req) {
       );
     }
 
-    console.log("saved clerk user with clerk user id: ", event.data.id);
+    console.log("Saved Clerk user with Clerk user ID:", event.data.id);
   }
 
   return new Response("", { status: 200 });
