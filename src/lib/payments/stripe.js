@@ -66,7 +66,7 @@ export async function createStripeCheckoutSession(customerId, paymentType) {
     payment_method_types: ["card"],
     line_items: [
       {
-        price: "price_1PO4P9HWCFf8SDJTyfNtIL1F",
+        price: STRIPE_RECURRING_PRICE_ID,
         quantity: 1,
       },
     ],

@@ -44,14 +44,24 @@ export async function POST(request) {
   // Handle the webhook event based on its type
   switch (event.type) {
     case "checkout.session.completed":
-      // Calculate the date until which the job will be active
+      // Calculate the date until which the job will be active (30 days from today)
       const today = new Date();
       const activeUntil = new Date(new Date().setDate(today.getDate() + 30));
 
-      await updateJobForPaymentSuccessUsingStripeSessionId(
+      const job = await updateJobForPaymentSuccessUsingStripeSessionId(
         event.data.object.id,
         activeUntil
       );
+
+      const session = await stripe.checkout.sessions.retrieve(
+        event.data.object.id
+      );
+
+      await stripe.invoices.update(session.invoice, {
+        metadata: {
+          job_id: job.id,
+        },
+      });
 
       break;
     case "invoice.paid":

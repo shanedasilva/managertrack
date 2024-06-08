@@ -6,7 +6,6 @@ import { auth } from "@clerk/nextjs/server";
 /**
  * Handles GET requests to update a job's payment status and redirect the user.
  *
- * @param {Request} request - The incoming request object.
  * @returns {Promise<NextResponse>} The response to be sent back.
  */
 export async function GET() {
