@@ -66,7 +66,7 @@ export async function createStripeCheckoutSession(customerId, paymentType) {
     payment_method_types: ["card"],
     line_items: [
       {
-        price: STRIPE_RECURRING_PRICE_ID,
+        price: "price_1PO4P9HWCFf8SDJTyfNtIL1F",
         quantity: 1,
       },
     ],
@@ -100,12 +100,12 @@ export async function createStripeCheckoutSession(customerId, paymentType) {
  */
 export async function createBillingPortalSession(stripeCustomerId) {
   try {
-    const params = {
+    const session = await stripe.billingPortal.sessions.create({
       customer: stripeCustomerId,
       return_url: process.env.NEXT_PUBLIC_BASE_APP_URL,
-    };
+    });
 
-    return await stripe.billingPortal.sessions.create(params);
+    return session;
   } catch (error) {
     console.error("Error creating billing portal session:", error);
     throw error;

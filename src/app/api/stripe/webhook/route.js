@@ -2,6 +2,8 @@ import Stripe from "stripe";
 import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 
+import { updateJobForPaymentSuccessUsingStripeSessionId } from "@/lib/models/Job";
+
 // Initialize the Stripe client with the secret key and API version
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
   apiVersion: "2022-11-15",
@@ -41,6 +43,17 @@ export async function POST(request) {
 
   // Handle the webhook event based on its type
   switch (event.type) {
+    case "checkout.session.completed":
+      // Calculate the date until which the job will be active
+      const today = new Date();
+      const activeUntil = new Date(new Date().setDate(today.getDate() + 30));
+
+      await updateJobForPaymentSuccessUsingStripeSessionId(
+        event.data.object.id,
+        activeUntil
+      );
+
+      break;
     case "invoice.paid":
       console.log("invoice.paid", event.data.object);
       break;
