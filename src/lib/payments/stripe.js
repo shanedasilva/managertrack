@@ -10,6 +10,9 @@ let stripePromise = null;
 const STRIPE_ONE_TIME_PRICE_ID = process.env.STRIPE_ONE_TIME_PRICE_ID;
 const STRIPE_RECURRING_PRICE_ID = process.env.STRIPE_RECURRING_PRICE_ID;
 
+export const PAYMENT_TYPE_ONE_TIME = "ONE_TIME";
+export const PAYMENT_TYPE_RECURRING = "RECURRING";
+
 /**
  * Lazily loads Stripe with the public key.
  * @returns {Promise<Stripe>} - Promise resolving to the Stripe instance.
@@ -53,7 +56,7 @@ export async function createStripeCustomer(id, email, firstName, lastName) {
  * Creates a Stripe checkout session for a given customer.
  *
  * @param {string} customerId - ID of the customer in Stripe.
- * @param {string} paymentType - Type of payment ("one_time" or "subscription").
+ * @param {string} paymentType - Type of payment ("ONE_TIME" or "RECURRING").
  * @returns {Promise<Object>} - Promise resolving to the created checkout session object.
  * @throws {Error} - Throws an error if session creation fails.
  */
@@ -72,7 +75,7 @@ export async function createStripeCheckoutSession(customerId, paymentType) {
     cancel_url: `${process.env.NEXT_PUBLIC_BASE_APP_URL}/cancel`,
   };
 
-  if (paymentType === "one_time") {
+  if (paymentType === PAYMENT_TYPE_ONE_TIME) {
     params.mode = "payment";
     params.line_items[0].price = STRIPE_ONE_TIME_PRICE_ID;
     params.invoice_creation = {

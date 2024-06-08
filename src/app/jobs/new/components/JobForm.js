@@ -38,6 +38,10 @@ import {
 
 import getStripe from "@/lib/payments/stripe";
 import getFormSchema from "@/app/jobs/new/schema";
+import {
+  PAYMENT_TYPE_ONE_TIME,
+  PAYMENT_TYPE_RECURRING,
+} from "@/lib/payments/stripe";
 
 export function JobForm({ sessionUser, className, ...props }) {
   const [isLoading, setIsLoading] = useState(false);
@@ -549,13 +553,19 @@ function FormSubscriptionSection({ form, isLoading }) {
                 >
                   <FormItem className="flex items-center space-x-3 space-y-0">
                     <FormControl>
-                      <RadioGroupItem disabled={isLoading} value="one_time" />
+                      <RadioGroupItem
+                        disabled={isLoading}
+                        value={PAYMENT_TYPE_ONE_TIME}
+                      />
                     </FormControl>
                     <FormLabel className="font-normal">30 days</FormLabel>
                   </FormItem>
                   <FormItem className="flex items-center space-x-3 space-y-0">
                     <FormControl>
-                      <RadioGroupItem disabled={isLoading} value="recurring" />
+                      <RadioGroupItem
+                        disabled={isLoading}
+                        value={PAYMENT_TYPE_RECURRING}
+                      />
                     </FormControl>
                     <FormLabel className="font-normal">
                       Ongoing until canceled
