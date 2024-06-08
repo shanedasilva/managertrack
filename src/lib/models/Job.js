@@ -56,16 +56,40 @@ export async function updateJobForPaymentProcessingUsingJobId(
  * Asynchronously updates a job for payment success using the Stripe session ID.
  *
  * @param {string} stripeSessionId - The ID of the Stripe session for payment success.
- * @param {Date} activeUntil - The date until which the post will remain active.
  * @returns {Promise<Object>} A promise that resolves to the updated job.
  */
 export async function updateJobForPaymentSuccessUsingStripeSessionId(
-  stripeSessionId,
-  activeUntil
+  stripeSessionId
 ) {
+  // Calculate the date until which the job will be active (30 days from today)
+  const today = new Date();
+  const activeUntil = new Date(today.setDate(today.getDate() + 30));
+
   return await client.job.update({
     where: {
       stripeSessionId: stripeSessionId,
+    },
+    data: {
+      activeUntil: activeUntil,
+      status: STATUS_OPEN,
+    },
+  });
+}
+
+/**
+ * Asynchronously updates a job for payment success using the job ID.
+ *
+ * @param {string} stripeSessionId - The ID of the job for payment success.
+ * @returns {Promise<Object>} A promise that resolves to the updated job.
+ */
+export async function updateJobForPaymentSuccessUsingJobId(id) {
+  // Calculate the date until which the job will be active (30 days from today)
+  const today = new Date();
+  const activeUntil = new Date(today.setDate(today.getDate() + 30));
+
+  return await client.job.update({
+    where: {
+      id: id,
     },
     data: {
       activeUntil: activeUntil,

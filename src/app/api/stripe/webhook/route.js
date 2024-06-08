@@ -2,7 +2,10 @@ import Stripe from "stripe";
 import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 
-import { updateJobForPaymentSuccessUsingStripeSessionId } from "@/lib/models/Job";
+import {
+  updateJobForPaymentSuccessUsingStripeSessionId,
+  updateJobForPaymentSuccessUsingJobId,
+} from "@/lib/models/Job";
 
 // Initialize the Stripe client with the secret key and API version
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
@@ -43,32 +46,67 @@ export async function POST(request) {
 
   // Handle the webhook event based on its type
   switch (event.type) {
+    // Payment is successful and the subscription is created.
     case "checkout.session.completed":
-      // Calculate the date until which the job will be active (30 days from today)
-      const today = new Date();
-      const activeUntil = new Date(new Date().setDate(today.getDate() + 30));
+      try {
+        // Update the job with the Stripe session ID and activeUntil date
+        const job = await updateJobForPaymentSuccessUsingStripeSessionId(
+          event.data.object.id
+        );
 
-      const job = await updateJobForPaymentSuccessUsingStripeSessionId(
-        event.data.object.id,
-        activeUntil
-      );
+        // Retrieve the full session details from Stripe
+        const session = await stripe.checkout.sessions.retrieve(
+          event.data.object.id
+        );
 
-      const session = await stripe.checkout.sessions.retrieve(
-        event.data.object.id
-      );
+        // Update the invoice metadata with the job ID
+        await stripe.invoices.update(session.invoice, {
+          metadata: {
+            job_id: job.id,
+          },
+        });
 
-      await stripe.invoices.update(session.invoice, {
-        metadata: {
-          job_id: job.id,
-        },
-      });
-
+        // If a subscription is created, update its metadata with the job ID
+        if (session.subscription) {
+          await stripe.subscriptions.update(session.subscription, {
+            metadata: {
+              job_id: job.id,
+            },
+          });
+        }
+      } catch (error) {
+        console.error("Error updating job:", error);
+        return new NextResponse("Error occurred", { status: 400 });
+      }
       break;
+
+    // Continue to provision the subscription as payments continue to be made.
     case "invoice.paid":
-      console.log("invoice.paid", event.data.object);
+      try {
+        if (event.data.object.subscription) {
+          // Retrieve the subscription details
+          const subscription = await stripe.subscriptions.retrieve(
+            event.data.object.subscription
+          );
+
+          // Update the job associated with the subscription
+          await updateJobForPaymentSuccessUsingJobId(
+            subscription.metadata.job_id
+          );
+        }
+      } catch (error) {
+        console.error("Error processing invoice.paid event:", error);
+      }
       break;
+
+    // The payment failed or the customer does not have a valid payment method.
+    case "invoice.payment_failed":
+      console.log("invoice.payment_failed", event.data.object);
+      break;
+
     default:
       console.log(`Unhandled event type ${event.type}`);
+      break;
   }
 
   // Return a 200 OK response to acknowledge receipt of the event
