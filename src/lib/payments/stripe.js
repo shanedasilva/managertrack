@@ -72,7 +72,7 @@ export async function createStripeCheckoutSession(customerId, paymentType) {
     ],
     mode: "subscription",
     success_url: `${process.env.NEXT_PUBLIC_BASE_APP_URL}/api/stripe/checkout-success?stripe_session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${process.env.NEXT_PUBLIC_BASE_APP_URL}/cancel`,
+    cancel_url: `${process.env.NEXT_PUBLIC_BASE_APP_URL}/api/stripe/checkout-cancel`,
   };
 
   if (paymentType === PAYMENT_TYPE_ONE_TIME) {

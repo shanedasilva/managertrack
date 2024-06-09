@@ -201,7 +201,7 @@ function FormOrganizationSection({ form, isLoading }) {
                   <Input disabled={isLoading} {...field} />
                 </FormControl>
                 <FormDescription>
-                  This is your public display name.
+                  Your company's brand/trade name.
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -474,10 +474,28 @@ function FormJobSection({ form, isLoading }) {
         <div className="sm:col-span-6">
           <FormField
             control={form.control}
+            name="job_category"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Category</FormLabel>
+                <FormControl>
+                  <Input disabled={isLoading} {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+      </div>
+
+      <div className="mt-4 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+        <div className="sm:col-span-6">
+          <FormField
+            control={form.control}
             name="search_tags"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Search Tags</FormLabel>
+                <FormLabel>Additional Search Tags</FormLabel>
                 <FormControl>
                   <MultiSelect disabled={isLoading} {...field} />
                 </FormControl>
@@ -625,7 +643,9 @@ function FormSubscriptionSection({ form, isLoading }) {
                         value={PAYMENT_TYPE_ONE_TIME}
                       />
                     </FormControl>
-                    <FormLabel className="font-normal">30 days</FormLabel>
+                    <FormLabel className="font-normal">
+                      One time 30 day posting.
+                    </FormLabel>
                   </FormItem>
                   <FormItem className="flex items-center space-x-3 space-y-0">
                     <FormControl>
@@ -635,7 +655,8 @@ function FormSubscriptionSection({ form, isLoading }) {
                       />
                     </FormControl>
                     <FormLabel className="font-normal">
-                      Ongoing until canceled
+                      Recurring 30 day posting. Will charge every 30 days until
+                      cancelled.
                     </FormLabel>
                   </FormItem>
                 </RadioGroup>

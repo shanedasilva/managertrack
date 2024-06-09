@@ -119,6 +119,7 @@ export async function createJob(form, organizationId, userId) {
         payScaleEnd: form.job_salary_high,
         description: form.job_description,
         jobLocType: form.job_location_requirement,
+        category: form.job_category,
         status: STATUS_DRAFT,
         organization: {
           connect: { id: organizationId },

@@ -8,6 +8,9 @@ import { STATUS_OPEN } from "@/lib/models/Job";
  */
 export async function getFeaturedOrganizations() {
   return await client.organization.findMany({
+    where: {
+      featured: true,
+    },
     select: {
       id: true,
       name: true,

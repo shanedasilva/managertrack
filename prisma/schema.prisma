@@ -96,7 +96,8 @@ model ResumeSkills {
 model Organization {
   id        String             @unique @id @default(uuid())
   name      String             @unique 
-  website   String?
+  website   String?            @map("website")
+  featured  Boolean            @default(false) @map("featured")
   createdAt DateTime           @default(now()) @map("created_at")
   updatedAt DateTime           @updatedAt @map("updated_at")
   jobs      Job[]

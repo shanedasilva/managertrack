@@ -50,6 +50,9 @@ const jobSchema = z.object({
   }),
   job_salary_low: z.coerce.number().nonnegative().optional(),
   job_salary_high: z.coerce.number().nonnegative().optional(),
+  job_category: z.string({
+    required_error: "Job category is required",
+  }),
   job_description: z
     .string({
       required_error: "Job description is required",
