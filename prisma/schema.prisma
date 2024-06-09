@@ -130,6 +130,7 @@ model Tag {
 model Job {
   id              String           @unique @id @default(uuid())
   title           String
+  slug            String           @unique
   jobType         JobType
   location        String
   compType        JobCompType      @map("comp_type")

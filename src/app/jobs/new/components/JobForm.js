@@ -474,24 +474,6 @@ function FormJobSection({ form, isLoading }) {
         <div className="sm:col-span-6">
           <FormField
             control={form.control}
-            name="job_category"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Category</FormLabel>
-                <FormControl>
-                  <Input disabled={isLoading} {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-      </div>
-
-      <div className="mt-4 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-        <div className="sm:col-span-6">
-          <FormField
-            control={form.control}
             name="search_tags"
             render={({ field }) => (
               <FormItem>
@@ -644,7 +626,7 @@ function FormSubscriptionSection({ form, isLoading }) {
                       />
                     </FormControl>
                     <FormLabel className="font-normal">
-                      One time 30 day posting.
+                      One time 30 day posting
                     </FormLabel>
                   </FormItem>
                   <FormItem className="flex items-center space-x-3 space-y-0">

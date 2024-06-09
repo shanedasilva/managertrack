@@ -112,6 +112,7 @@ export async function createJob(form, organizationId, userId) {
     return await client.job.create({
       data: {
         title: form.job_title,
+        slug: convertToSlug(form.job_title),
         jobType: form.job_employment_type,
         location: form.job_location,
         compType: form.job_compenstation_type,
@@ -121,6 +122,7 @@ export async function createJob(form, organizationId, userId) {
         jobLocType: form.job_location_requirement,
         category: form.job_category,
         status: STATUS_DRAFT,
+        category: "test",
         organization: {
           connect: { id: organizationId },
         },
@@ -133,4 +135,36 @@ export async function createJob(form, organizationId, userId) {
     console.error("Error creating job: ", error);
     throw error;
   }
+}
+
+/**
+ * Converts a job post title into a URL slug limited to 10 words and appends a unique hash.
+ *
+ * @param {string} title - The job post title to be converted.
+ * @returns {string} - The URL slug with a unique hash.
+ */
+function convertToSlug(title) {
+  const generateUniqueHash = () => {
+    // Get last 7 digits of the current timestamp
+    const timestamp = Date.now().toString().slice(-7);
+    // Generate a 4-digit random number
+    const randomNum = Math.floor(1000 + Math.random() * 9000).toString();
+    // Combine them to form the unique hash
+    return timestamp + randomNum;
+  };
+
+  const slug = title
+    .toLowerCase() // Convert to lowercase
+    .trim() // Trim leading and trailing whitespace
+    .replace(/[^\w\s-]/g, "") // Remove all non-word characters except spaces and hyphens
+    .split(/\s+/) // Split the title into words
+    .slice(0, 10) // Limit to the first 10 words
+    .join(" ") // Rejoin the words into a string
+    .replace(/\s+/g, "-") // Replace spaces with hyphens
+    .replace(/-+/g, "-") // Replace multiple hyphens with a single hyphen
+    .replace(/^-+|-+$/g, ""); // Remove leading or trailing hyphens
+
+  const uniqueHash = generateUniqueHash();
+
+  return `${slug}-${uniqueHash}`;
 }
