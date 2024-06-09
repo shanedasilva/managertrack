@@ -23,7 +23,7 @@ export default function JobListItem({ job }) {
     <li key={job.id} className="flex justify-between gap-x-6 py-3">
       <div className="flex min-w-0 gap-x-4">
         <div className="h-12 w-12 rounded-lg relative">
-          <Link href={`/job/${job.id}`}>
+          <Link href={`/jobs/${job.slug}`}>
             <Image
               alt={job.title}
               className="rounded-lg"
@@ -35,13 +35,13 @@ export default function JobListItem({ job }) {
         </div>
 
         <div className="min-w-0 flex-auto">
-          <Link href={`/job/${job.id}`}>
+          <Link href={`/jobs/${job.slug}`}>
             <p className="text-lg font-semibold leading-6 text-gray-900 hover:underline cursor-pointer">
               {job.title}
             </p>
           </Link>
           <div className="mt-1 flex items-center gap-x-1.5 text-xs">
-            <Link href={`/organization/${job.organization.id}`}>
+            <Link href={`/organizations/${job.organization.slug}`}>
               <p className="truncate text-sm text-gray-900 hover:underline cursor-pointer">
                 {job.organization.name}
               </p>

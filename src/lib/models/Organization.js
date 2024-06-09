@@ -1,4 +1,5 @@
 import client from "@/lib/database/client";
+import { convertToSlug } from "@/lib/utils/string";
 import { STATUS_OPEN } from "@/lib/models/Job";
 
 /**
@@ -38,6 +39,7 @@ export async function createOrganization(form) {
     return await client.organization.create({
       data: {
         name: form.organization_name,
+        slug: convertToSlug(form.organization_name),
         website: form.organization_website,
       },
     });
