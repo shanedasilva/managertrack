@@ -110,6 +110,16 @@ CREATE TABLE "organizations_users" (
 );
 
 -- CreateTable
+CREATE TABLE "tag" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "tag_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "jobs" (
     "id" TEXT NOT NULL,
     "title" TEXT NOT NULL,
@@ -121,10 +131,12 @@ CREATE TABLE "jobs" (
     "description" TEXT NOT NULL,
     "job_location_type" "JobLocType" NOT NULL,
     "status" "JobStatus" NOT NULL DEFAULT 'DRAFT',
+    "category" TEXT NOT NULL,
     "custom_questions" JSONB[],
     "stripe_session_id" TEXT,
     "organization_id" TEXT NOT NULL,
     "user_id" TEXT NOT NULL,
+    "active_until" TIMESTAMP(3),
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
@@ -141,6 +153,15 @@ CREATE TABLE "job_applications" (
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
     "question_answers" JSONB[]
+);
+
+-- CreateTable
+CREATE TABLE "jobs_tags" (
+    "job_id" TEXT NOT NULL,
+    "tag_id" TEXT NOT NULL,
+    "assignedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "jobs_tags_pkey" PRIMARY KEY ("job_id","tag_id")
 );
 
 -- CreateIndex
@@ -183,6 +204,12 @@ CREATE UNIQUE INDEX "organizations_users_user_id_key" ON "organizations_users"("
 CREATE UNIQUE INDEX "organizations_users_organization_id_key" ON "organizations_users"("organization_id");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "tag_id_key" ON "tag"("id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "tag_name_key" ON "tag"("name");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "jobs_id_key" ON "jobs"("id");
 
 -- CreateIndex
@@ -190,6 +217,12 @@ CREATE UNIQUE INDEX "jobs_stripe_session_id_key" ON "jobs"("stripe_session_id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "job_applications_id_key" ON "job_applications"("id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "jobs_tags_job_id_key" ON "jobs_tags"("job_id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "jobs_tags_tag_id_key" ON "jobs_tags"("tag_id");
 
 -- AddForeignKey
 ALTER TABLE "resumes" ADD CONSTRAINT "resumes_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -223,3 +256,9 @@ ALTER TABLE "job_applications" ADD CONSTRAINT "job_applications_resume_id_fkey" 
 
 -- AddForeignKey
 ALTER TABLE "job_applications" ADD CONSTRAINT "job_applications_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "jobs_tags" ADD CONSTRAINT "jobs_tags_job_id_fkey" FOREIGN KEY ("job_id") REFERENCES "jobs"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "jobs_tags" ADD CONSTRAINT "jobs_tags_tag_id_fkey" FOREIGN KEY ("tag_id") REFERENCES "tag"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

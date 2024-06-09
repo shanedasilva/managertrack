@@ -64,7 +64,7 @@ export default async function UserNavigation() {
           <DropdownMenuItem>Profile</DropdownMenuItem>
           <DropdownMenuItem>
             <form method="GET" action="/api/stripe/billing-portal">
-              <button type="submit">Manage billing</button>
+              <button type="submit">Billing</button>
             </form>
           </DropdownMenuItem>
           <DropdownMenuItem>

@@ -116,6 +116,16 @@ model OrganizationUser {
   @@map("organizations_users")
 }
 
+model Tag {
+  id        String   @unique @id @default(uuid())
+  name      String   @unique 
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  jobs      JobTag[]
+
+  @@map("tag")
+}
+
 model Job {
   id              String           @unique @id @default(uuid())
   title           String
@@ -127,6 +137,7 @@ model Job {
   description     String
   jobLocType      JobLocType       @map("job_location_type")
   status          JobStatus        @default(DRAFT)
+  category        String           @map("category")
   customQuestions Json[]           @map("custom_questions")
   stripeSessionId String?          @unique @map("stripe_session_id")
   organizationId  String           @map("organization_id")
@@ -134,6 +145,7 @@ model Job {
   activeUntil     DateTime?        @map("active_until")
   createdAt       DateTime         @default(now()) @map("created_at")
   updatedAt       DateTime         @updatedAt @map("updated_at")
+  tags            JobTag[]       
   applications    JobApplication[]
   organization    Organization     @relation(fields: [organizationId], references: [id])
   user            User             @relation(fields: [userId], references: [id])
@@ -155,6 +167,17 @@ model JobApplication {
   questionAnswers Json[]               @map("question_answers")
 
   @@map("job_applications")
+}
+
+model JobTag {
+  job        Job      @relation(fields: [jobId], references: [id])
+  jobId      String   @unique @map("job_id")
+  tag        Tag      @relation(fields: [tagId], references: [id])
+  tagId      String   @unique @map("tag_id")
+  assignedAt DateTime @default(now())
+
+  @@id([jobId, tagId])
+  @@map("jobs_tags")
 }
 
 enum OrganizationRole {
