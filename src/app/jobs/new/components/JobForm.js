@@ -201,7 +201,7 @@ function FormOrganizationSection({ form, isLoading }) {
                   <Input disabled={isLoading} {...field} />
                 </FormControl>
                 <FormDescription>
-                  Your company's brand/trade name.
+                  Your companys brand/trade name.
                 </FormDescription>
                 <FormMessage />
               </FormItem>
