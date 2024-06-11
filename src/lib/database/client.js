@@ -48,6 +48,12 @@ async function main() {
   prisma.$use(async (params, next) => {
     // Handle the webhook event based on its type
     switch (params.action) {
+      case "find":
+        params = handleFindAction(params);
+        break;
+      case "findMany":
+        params = handleFindManyAction(params);
+        break;
       case "delete":
         params = handleDeleteAction(params);
         break;
@@ -61,6 +67,56 @@ async function main() {
     // Execute the next middleware or query
     return next(params);
   });
+}
+
+/**
+ * Handles the find action for models that support soft deletion.
+ * Ensures that only non-deleted records are returned by adding a `deleted_at: null` condition to the query.
+ *
+ * @param {Object} params - The Prisma query parameters.
+ * @returns {Object} - The modified Prisma query parameters.
+ */
+function handleFindAction(params) {
+  try {
+    // Check if the model supports soft deletion
+    if (softDeletable.includes(params.model)) {
+      // Add `deleted_at: null` condition to the where clause
+      params.args.where = { ...params.args.where, deleted_at: null };
+
+      console.log(
+        `Find action handled for model with soft delete: ${params.model}`
+      );
+    }
+
+    return params;
+  } catch (error) {
+    console.error("Error handling find action:", error);
+  }
+}
+
+/**
+ * Handles the findMany action for models that support soft deletion.
+ * Ensures that only non-deleted records are returned by adding a `deleted_at: null` condition to the query.
+ *
+ * @param {Object} params - The Prisma query parameters.
+ * @returns {Object} - The modified Prisma query parameters.
+ */
+function handleFindManyAction(params) {
+  try {
+    // Check if the model supports soft deletion
+    if (softDeletable.includes(params.model)) {
+      // Add `deleted_at: null` condition to the where clause
+      params.args.where = { ...params.args.where, deleted_at: null };
+
+      console.log(
+        `FindMany action handled for model with soft delete: ${params.model}`
+      );
+    }
+
+    return params;
+  } catch (error) {
+    console.error("Error handling findMany action:", error);
+  }
 }
 
 /**
