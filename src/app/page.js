@@ -41,7 +41,7 @@ export default async function Page() {
 
 function Header() {
   return (
-    <div className="border-b fixed top-0 w-full bg-white z-50">
+    <div className="border-b fixed top-0 w-full bg-[#FFF8F5] z-50">
       <div className="grid gap-4 items-center md:grid-cols-2 lg:grid-cols-3 px-4 h-16">
         <Navigation />
         <NavLinks />
@@ -85,7 +85,7 @@ function UserActions() {
       </SignedOut>
       <Button asChild>
         <Link
-          href="/jobs/new"
+          href="/management-jobs/new"
           className="text-sm font-medium transition-colors hover:text-primary"
         >
           Post a Job
@@ -98,7 +98,7 @@ function UserActions() {
 
 function HeroSection() {
   return (
-    <div className="bg-white mb-16">
+    <div className="bg-[#FFF8F5] mb-16">
       <div className="mx-auto max-w-3xl py-32 sm:py-48 lg:pt-36 lg:pb-24">
         <div className="text-center">
           <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-4xl">
@@ -162,12 +162,18 @@ function FeaturedOrganizationCard({ organization }) {
   return (
     <Card>
       <CardHeader className="flex flex-row items-top justify-start space-y-0 space-x-3 pb-4">
-        <Avatar className="h-12 w-12">
-          <AvatarImage src={avatarUrl} alt={organization.name} />
-          <AvatarFallback>MT</AvatarFallback>
-        </Avatar>
+        <Link href={`/organizations/${organization.slug}`}>
+          <Avatar className="h-12 w-12">
+            <AvatarImage src={avatarUrl} alt={organization.name} />
+            <AvatarFallback>MT</AvatarFallback>
+          </Avatar>
+        </Link>
         <CardTitle>
-          <div className="text-base font-semibold">{organization.name}</div>
+          <Link href={`/organizations/${organization.slug}`}>
+            <p className="text-base font-semibold hover:underline cursor-pointer">
+              {organization.name}
+            </p>
+          </Link>
           <p className="text-sm">+20.1% from last month</p>
         </CardTitle>
       </CardHeader>

@@ -15,6 +15,7 @@ export async function getFeaturedOrganizations() {
     select: {
       id: true,
       name: true,
+      slug: true,
       _count: {
         select: {
           jobs: { where: { status: STATUS_OPEN } },

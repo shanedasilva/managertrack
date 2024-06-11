@@ -94,17 +94,37 @@ model ResumeSkills {
 }
 
 model Organization {
-  id        String             @unique @id @default(uuid())
-  name      String             @unique
-  slug      String             @unique
-  website   String?            @map("website")
-  featured  Boolean            @default(false) @map("featured")
-  createdAt DateTime           @default(now()) @map("created_at")
-  updatedAt DateTime           @updatedAt @map("updated_at")
-  jobs      Job[]
-  users     OrganizationUser[]
+  id         String                @unique @id @default(uuid())
+  name       String                @unique
+  slug       String                @unique
+  website    String?               @map("website")
+  featured   Boolean               @default(false) @map("featured")
+  typeId     String 
+  type       OrganizationType      @relation(fields: [typeId], references: [id])
+  industryId String 
+  industry   OrganizationIndustry  @relation(fields: [industryId], references: [id])
+  createdAt  DateTime              @default(now()) @map("created_at")
+  updatedAt  DateTime              @updatedAt @map("updated_at")
+  jobs       Job[]
+  users      OrganizationUser[]
 
   @@map("organizations")
+}
+
+model OrganizationType {
+  id            String         @unique @default(uuid())
+  name          String         @map("name")
+  organizations Organization[]
+
+  @@map("organization_types")
+}
+
+model OrganizationIndustry {
+  id            String         @unique @default(uuid())
+  name          String         @map("name")
+  organizations Organization[]
+  
+  @@map("organization_industries")
 }
 
 model OrganizationUser {
@@ -180,7 +200,38 @@ model JobTag {
   assignedAt DateTime @default(now())
 
   @@id([jobId, tagId])
-  @@map("jobs_tags")
+  @@map("job_tags")
+}
+
+model JobCity {
+  id        String     @unique @default(uuid())
+  name      String     @map("name")
+  timezone  String     @map("timezone")
+  latitude  String     @map("latitude")
+  longitude String     @map("longitude")
+  countryId String 
+  country   JobCountry @relation(fields: [countryId], references: [id])
+
+  @@map("job_cities")
+}
+
+model JobCountry {
+  id       String    @unique @default(uuid())
+  code     String    @unique @map("code")
+  name     String    @unique @map("name")
+  regionId String 
+  region   JobRegion @relation(fields: [regionId], references: [id])
+  cities   JobCity[]
+
+  @@map("job_countries")
+}
+
+model JobRegion {
+  id        String @unique @default(uuid())
+  name      String @unique @map("name")
+  countries JobCountry[]
+
+  @@map("job_regions")
 }
 
 enum OrganizationRole {
