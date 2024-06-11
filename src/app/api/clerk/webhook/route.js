@@ -2,7 +2,12 @@ import { Webhook } from "svix";
 import { headers } from "next/headers";
 import { StatusCodes } from "http-status-codes";
 
-import { createUser, findUserByClerkUserId } from "@/lib/models/User";
+import {
+  createUser,
+  updateUser,
+  findUserByClerkUserId,
+} from "@/lib/models/User";
+import { updateStripeCustomer } from "@/lib/payments/stripe";
 
 /**
  * Handles incoming POST requests for Clerk webhooks.
@@ -38,6 +43,9 @@ export async function POST(req) {
     switch (event.type) {
       case "user.created":
         await handleUserCreated(event);
+        break;
+      case "user.updated":
+        await handleUserUpdated(event);
         break;
     }
 
@@ -98,24 +106,90 @@ function verifyWebhookEvent(
 }
 
 /**
- * Processes the user.created event.
+ * Processes the user.created event from Clerk webhook.
  *
- * @param {Object} event - The Clerk webhook event.
+ * @param {Object} event - The Clerk webhook event containing user data.
+ * @returns {Promise<void>}
  */
 async function handleUserCreated(event) {
-  const { id, first_name, last_name, email_addresses } = event.data;
-  const existingUser = await findUserByClerkUserId(id);
+  // Destructure the necessary user data from the event
+  const {
+    id: clerkUserId,
+    first_name: firstName,
+    last_name: lastName,
+    email_addresses: emailAddresses,
+  } = event.data;
 
-  if (!existingUser) {
-    await createUser(
-      {
-        user_first_name: first_name,
-        user_last_name: last_name,
-        user_email: email_addresses[0].email_address,
-      },
-      id
-    );
+  try {
+    // Check if the user already exists in the database
+    const existingUser = await findUserByClerkUserId(clerkUserId);
 
-    console.log("Saved Clerk user with Clerk user ID:", id);
+    if (!existingUser) {
+      // Create a new user in the database if not existing
+      await createUser(
+        {
+          user_first_name: firstName,
+          user_last_name: lastName,
+          user_email: emailAddresses[0].email_address,
+        },
+        clerkUserId
+      );
+
+      console.log("Saved Clerk user with Clerk user ID:", clerkUserId);
+    } else {
+      console.log("User already exists with Clerk user ID:", clerkUserId);
+    }
+  } catch (error) {
+    // Log any errors that occur during the process
+    console.error("Error handling user.created event:", error);
+  }
+}
+
+/**
+ * Processes the user.updated event from Clerk webhook.
+ *
+ * @param {Object} event - The Clerk webhook event containing user data.
+ * @returns {Promise<void>}
+ */
+async function handleUserUpdated(event) {
+  // Destructure the necessary user data from the event
+  const {
+    id: clerkUserId,
+    first_name: firstName,
+    last_name: lastName,
+    email_addresses: emailAddresses,
+  } = event.data;
+
+  try {
+    // Check if the user already exists in the database
+    const existingUser = await findUserByClerkUserId(clerkUserId);
+
+    if (existingUser) {
+      // Update the user's information in Stripe
+      await updateStripeCustomer(
+        existingUser.stripeUserId,
+        emailAddresses[0].email_address,
+        firstName,
+        lastName
+      );
+
+      // Update the user's information in the local database
+      await updateUser(
+        existingUser.id,
+        emailAddresses[0].email_address,
+        firstName,
+        lastName
+      );
+
+      console.log(
+        "Updated Stripe user with updated Clerk information:",
+        clerkUserId
+      );
+    } else {
+      console.log("No existing user found with Clerk user ID:", clerkUserId);
+    }
+  } catch (error) {
+    // Log any errors that occur during the process
+    console.error("Error handling user.updated event:", error);
   }
 }

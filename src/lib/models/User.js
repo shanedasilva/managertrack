@@ -30,6 +30,35 @@ export async function createUser(form, clerkUserId) {
 }
 
 /**
+ * Asynchronously updates an existing user.
+ *
+ * @param {string} id - The id of the user.
+ * @param {string} email - The new email address of the user.
+ * @param {string} firstName - The new first name of the user.
+ * @param {string} lastName - The new last name of the user.
+ * @returns {Promise<Object>} A promise that resolves to the updated user.
+ */
+export async function updateUser(id, email, firstName, lastName) {
+  try {
+    const data = {
+      where: {
+        id: id,
+      },
+      data: {
+        email: email,
+        firstName: firstName,
+        lastName: lastName,
+      },
+    };
+
+    return await client.user.update(data);
+  } catch (error) {
+    console.error("Error updating user: ", error);
+    throw error;
+  }
+}
+
+/**
  * Asynchronously updates a user with a Stripe customer ID using their ID.
  *
  * @param {number} userId - The ID of the user to be updated.

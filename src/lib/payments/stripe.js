@@ -56,6 +56,35 @@ export async function createStripeCustomer(id, email, firstName, lastName) {
 }
 
 /**
+ * Updates an existing customer in Stripe.
+ *
+ * @param {string} id - Unique identifier for the customer.
+ * @param {string} email - Email of the customer.
+ * @param {string} firstName - First name of the customer.
+ * @param {string} lastName - Last name of the customer.
+ * @returns {Promise<Object>} - Promise resolving to the created customer object.
+ * @throws {Error} - Throws an error if creation fails.
+ */
+export async function updateStripeCustomer(
+  stripeId,
+  email,
+  firstName,
+  lastName
+) {
+  try {
+    const customer = await stripe.customers.update(stripeId, {
+      name: `${firstName} ${lastName}`,
+      email: email,
+    });
+
+    return customer;
+  } catch (error) {
+    console.error("Error creating customer:", error);
+    throw error;
+  }
+}
+
+/**
  * Creates a Stripe checkout session for a given customer.
  *
  * @param {string} customerId - ID of the customer in Stripe.
