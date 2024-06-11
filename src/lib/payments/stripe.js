@@ -4,6 +4,9 @@ import { loadStripe } from "@stripe/stripe-js";
 // Initialize Stripe instance with the secret key
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
+// Retrieve the Stripe webhook secret from environment variables
+const stripeWebhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
 // Initialize a promise to lazily load Stripe with the public key
 let stripePromise = null;
 
@@ -98,7 +101,7 @@ export async function createStripeCheckoutSession(customerId, paymentType) {
  * @returns {Promise<Object>} - Promise resolving to the created billing portal session object.
  * @throws {Error} - Throws an error if session creation fails.
  */
-export async function createBillingPortalSession(stripeCustomerId) {
+export async function createStripeBillingPortalSession(stripeCustomerId) {
   try {
     const session = await stripe.billingPortal.sessions.create({
       customer: stripeCustomerId,
@@ -110,6 +113,71 @@ export async function createBillingPortalSession(stripeCustomerId) {
     console.error("Error creating billing portal session:", error);
     throw error;
   }
+}
+
+/**
+ * Constructs a Stripe webhook event from the request body and signature.
+ *
+ * @param {string} body - The raw body of the request.
+ * @param {string} signature - The Stripe signature from the request headers.
+ * @returns {Object} - The constructed Stripe event object.
+ * @throws {Error} - Throws an error if event construction fails.
+ */
+export function createStripeWebhookEvent(body, signature) {
+  return stripe.webhooks.constructEvent(body, signature, stripeWebhookSecret);
+}
+
+/**
+ * Retrieves a Stripe checkout session by its ID.
+ *
+ * @param {string} sessionId - The ID of the Stripe checkout session.
+ * @returns {Promise<Object>} - Promise resolving to the retrieved checkout session object.
+ */
+export async function getStripeSession(sessionId) {
+  return stripe.checkout.sessions.retrieve(sessionId);
+}
+
+/**
+ * Retrieves a Stripe subscription by its ID.
+ *
+ * @param {string} subscriptionId - The ID of the Stripe subscription.
+ * @returns {Promise<Object>} - Promise resolving to the retrieved subscription object.
+ */
+export async function getStripeSubscription(subscriptionId) {
+  return stripe.subscriptions.retrieve(subscriptionId);
+}
+
+/**
+ * Updates a Stripe invoice with job ID metadata.
+ *
+ * @param {string} invoiceId - The ID of the Stripe invoice.
+ * @param {string} jobId - The job ID to be added to the invoice metadata.
+ * @returns {Promise<Object>} - Promise resolving to the updated invoice object.
+ */
+export async function updateStripeInvoiceWithJobIdMetadata(invoiceId, jobId) {
+  return stripe.invoices.update(invoiceId, {
+    metadata: {
+      jobId: jobId,
+    },
+  });
+}
+
+/**
+ * Updates a Stripe subscription with job ID metadata.
+ *
+ * @param {string} subscriptionId - The ID of the Stripe subscription.
+ * @param {string} jobId - The job ID to be added to the subscription metadata.
+ * @returns {Promise<Object>} - Promise resolving to the updated subscription object.
+ */
+export async function updateStripeSubscriptionWithJobIdMetadata(
+  subscriptionId,
+  jobId
+) {
+  return stripe.subscriptions.update(subscriptionId, {
+    metadata: {
+      jobId: jobId,
+    },
+  });
 }
 
 export default getStripe;

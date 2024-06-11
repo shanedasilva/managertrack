@@ -26,6 +26,7 @@ CREATE TABLE "users" (
     "stripe_user_id" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
+    "deleted_at" TIMESTAMP(3),
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 );
@@ -40,6 +41,7 @@ CREATE TABLE "resumes" (
     "summary" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
+    "deleted_at" TIMESTAMP(3),
 
     CONSTRAINT "resumes_pkey" PRIMARY KEY ("id")
 );
@@ -57,6 +59,7 @@ CREATE TABLE "resume_educations" (
     "enrolled_to" TIMESTAMP(3),
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
+    "deleted_at" TIMESTAMP(3),
 
     CONSTRAINT "resume_educations_pkey" PRIMARY KEY ("id")
 );
@@ -74,6 +77,7 @@ CREATE TABLE "resume_experience" (
     "description" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
+    "deleted_at" TIMESTAMP(3),
 
     CONSTRAINT "resume_experience_pkey" PRIMARY KEY ("id")
 );
@@ -85,6 +89,7 @@ CREATE TABLE "resume_skills" (
     "name" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
+    "deleted_at" TIMESTAMP(3),
 
     CONSTRAINT "resume_skills_pkey" PRIMARY KEY ("id")
 );
@@ -105,6 +110,7 @@ CREATE TABLE "organizations" (
     "industryId" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
+    "deleted_at" TIMESTAMP(3),
 
     CONSTRAINT "organizations_pkey" PRIMARY KEY ("id")
 );
@@ -138,6 +144,7 @@ CREATE TABLE "tag" (
     "name" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
+    "deleted_at" TIMESTAMP(3),
 
     CONSTRAINT "tag_pkey" PRIMARY KEY ("id")
 );
@@ -163,6 +170,7 @@ CREATE TABLE "jobs" (
     "active_until" TIMESTAMP(3),
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
+    "deleted_at" TIMESTAMP(3),
 
     CONSTRAINT "jobs_pkey" PRIMARY KEY ("id")
 );
@@ -174,9 +182,10 @@ CREATE TABLE "job_applications" (
     "user_id" TEXT NOT NULL,
     "status" "JobApplicationStatus" NOT NULL DEFAULT 'APPLIED',
     "resume_id" TEXT NOT NULL,
+    "question_answers" JSONB[],
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
-    "question_answers" JSONB[]
+    "deleted_at" TIMESTAMP(3)
 );
 
 -- CreateTable

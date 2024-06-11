@@ -20,12 +20,13 @@ model User {
   email        String?           @unique @map("email")
   clerkUserId  String?           @unique @map("clerk_user_id")
   stripeUserId String?           @unique @map("stripe_user_id")
-  createdAt    DateTime          @default(now()) @map("created_at")
-  updatedAt    DateTime          @updatedAt @map("updated_at")
   applications JobApplication[]
   jobs         Job[]
   organization OrganizationUser?
   resume       Resume?
+  createdAt    DateTime          @default(now()) @map("created_at")
+  updatedAt    DateTime          @updatedAt @map("updated_at")
+  deletedAt    DateTime?         @map("deleted_at")
 
   @@map("users")
 }
@@ -37,13 +38,14 @@ model Resume {
   lastName     String             @map("last_name")
   location     String
   summary      String?
-  createdAt    DateTime           @default(now()) @map("created_at")
-  updatedAt    DateTime           @updatedAt @map("updated_at")
   applications JobApplication[]
   education    ResumeEducation[]
   experience   ResumeExperience[]
   skills       ResumeSkills[]
   user         User               @relation(fields: [userId], references: [id])
+  createdAt    DateTime           @default(now()) @map("created_at")
+  updatedAt    DateTime           @updatedAt @map("updated_at")
+  deletedAt    DateTime?          @map("deleted_at")
 
   @@map("resumes")
 }
@@ -58,9 +60,10 @@ model ResumeEducation {
   currentlyEnrolled Boolean   @default(false) @map("currently_enrolled")
   enrolledFrom      DateTime? @map("enrolled_from")
   enrolledTo        DateTime? @map("enrolled_to")
+  resume            Resume    @relation(fields: [resumeId], references: [id])
   createdAt         DateTime  @default(now()) @map("created_at")
   updatedAt         DateTime  @updatedAt @map("updated_at")
-  resume            Resume    @relation(fields: [resumeId], references: [id])
+  deletedAt         DateTime? @map("deleted_at")
 
   @@map("resume_educations")
 }
@@ -75,20 +78,22 @@ model ResumeExperience {
   startDate         DateTime? @map("start_date")
   endDate           DateTime? @map("end_date")
   description       String?
+  resume            Resume?   @relation(fields: [resumeId], references: [id])
   createdAt         DateTime  @default(now()) @map("created_at")
   updatedAt         DateTime  @updatedAt @map("updated_at")
-  resume            Resume?   @relation(fields: [resumeId], references: [id])
+  deletedAt         DateTime? @map("deleted_at")
 
   @@map("resume_experience")
 }
 
 model ResumeSkills {
-  id        String   @unique @id @default(uuid())
-  resumeId  String?  @map("resume_id")
+  id        String    @unique @id @default(uuid())
+  resumeId  String?   @map("resume_id")
   name      String
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-  resume    Resume?  @relation(fields: [resumeId], references: [id])
+  resume    Resume?   @relation(fields: [resumeId], references: [id])
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
 
   @@map("resume_skills")
 }
@@ -108,10 +113,11 @@ model Organization {
   type        OrganizationType     @relation(fields: [typeId], references: [id])
   industryId  String 
   industry    OrganizationIndustry @relation(fields: [industryId], references: [id])
-  createdAt   DateTime             @default(now()) @map("created_at")
-  updatedAt   DateTime             @updatedAt @map("updated_at")
   jobs        Job[]
   users       OrganizationUser[]
+  createdAt   DateTime             @default(now()) @map("created_at")
+  updatedAt   DateTime             @updatedAt @map("updated_at")
+  deletedAt   DateTime?            @map("deleted_at")
 
   @@map("organizations")
 }
@@ -146,11 +152,12 @@ model OrganizationUser {
 }
 
 model Tag {
-  id        String   @unique @id @default(uuid())
-  name      String   @unique 
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  id        String    @unique @id @default(uuid())
+  name      String    @unique 
   jobs      JobTag[]
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
 
   @@map("tag")
 }
@@ -173,12 +180,13 @@ model Job {
   organizationId  String           @map("organization_id")
   userId          String           @map("user_id")
   activeUntil     DateTime?        @map("active_until")
-  createdAt       DateTime         @default(now()) @map("created_at")
-  updatedAt       DateTime         @updatedAt @map("updated_at")
   tags            JobTag[]       
   applications    JobApplication[]
   organization    Organization     @relation(fields: [organizationId], references: [id])
   user            User             @relation(fields: [userId], references: [id])
+  createdAt       DateTime         @default(now()) @map("created_at")
+  updatedAt       DateTime         @updatedAt @map("updated_at")
+  deletedAt       DateTime?        @map("deleted_at")
 
   @@map("jobs")
 }
@@ -189,12 +197,13 @@ model JobApplication {
   userId          String               @map("user_id")
   status          JobApplicationStatus @default(APPLIED)
   resumeId        String               @map("resume_id")
-  createdAt       DateTime             @default(now()) @map("created_at")
-  updatedAt       DateTime             @updatedAt @map("updated_at")
   job             Job                  @relation(fields: [jobId], references: [id])
   resume          Resume               @relation(fields: [resumeId], references: [id])
   user            User                 @relation(fields: [userId], references: [id])
   questionAnswers Json[]               @map("question_answers")
+  createdAt       DateTime             @default(now()) @map("created_at")
+  updatedAt       DateTime             @updatedAt @map("updated_at")
+  deletedAt       DateTime?            @map("deleted_at")
 
   @@map("job_applications")
 }

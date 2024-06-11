@@ -1,20 +1,19 @@
-import Stripe from "stripe";
 import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { StatusCodes } from "http-status-codes";
 
 import {
+  createStripeWebhookEvent,
+  getStripeSession,
+  updateStripeInvoiceWithJobIdMetadata,
+  getStripeSubscription,
+  updateStripeSubscriptionWithJobIdMetadata,
+} from "@/lib/payments/stripe";
+
+import {
   updateJobForPaymentSuccessUsingStripeSessionId,
   updateJobForPaymentSuccessUsingJobId,
 } from "@/lib/models/Job";
-
-// Initialize the Stripe client with the secret key and API version
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: "2022-11-15",
-});
-
-// Retrieve the Stripe webhook secret from environment variables
-const stripeWebhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
 /**
  * Handles POST requests for Stripe webhooks.
@@ -32,12 +31,8 @@ export async function POST(request) {
   let event;
 
   try {
-    // Verify the webhook event using Stripe's SDK
-    event = stripe.webhooks.constructEvent(
-      body,
-      signature,
-      stripeWebhookSecret
-    );
+    // Verify the webhook event is using Stripe's SDK
+    event = createStripeWebhookEvent(body, signature);
   } catch (err) {
     // Return an error response if the event verification fails
     return new NextResponse(`Webhook Error: ${err.message}`, {
@@ -54,26 +49,17 @@ export async function POST(request) {
         const job = await updateJobForPaymentSuccessUsingStripeSessionId(
           event.data.object.id
         );
-
         // Retrieve the full session details from Stripe
-        const session = await stripe.checkout.sessions.retrieve(
-          event.data.object.id
-        );
-
+        const session = await getStripeSession(event.data.object.id);
         // Update the invoice metadata with the job ID
-        await stripe.invoices.update(session.invoice, {
-          metadata: {
-            job_id: job.id,
-          },
-        });
+        await updateStripeInvoiceWithJobIdMetadata(session.invoice, job.id);
 
         // If a subscription is created, update its metadata with the job ID
         if (session.subscription) {
-          await stripe.subscriptions.update(session.subscription, {
-            metadata: {
-              job_id: job.id,
-            },
-          });
+          await updateStripeSubscriptionWithJobIdMetadata(
+            session.subscription,
+            job.id
+          );
         }
       } catch (error) {
         console.error("Error updating job:", error);
@@ -89,13 +75,12 @@ export async function POST(request) {
       try {
         if (event.data.object.subscription) {
           // Retrieve the subscription details
-          const subscription = await stripe.subscriptions.retrieve(
+          const subscription = await getStripeSubscription(
             event.data.object.subscription
           );
-
           // Update the job associated with the subscription
           await updateJobForPaymentSuccessUsingJobId(
-            subscription.metadata.job_id
+            subscription.metadata.jobId
           );
         }
       } catch (error) {

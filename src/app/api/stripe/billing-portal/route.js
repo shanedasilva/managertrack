@@ -5,7 +5,7 @@ import { auth } from "@clerk/nextjs/server";
 import { StatusCodes } from "http-status-codes";
 
 import { findUserByClerkUserId } from "@/lib/models/User";
-import { createBillingPortalSession } from "@/lib/payments/stripe";
+import { createStripeBillingPortalSession } from "@/lib/payments/stripe";
 
 /**
  * Handles GET requests to create a new Stripe billing portal session.
@@ -23,7 +23,7 @@ export async function GET() {
       const sessionUser = await findUserByClerkUserId(userId);
 
       // Create a Stripe billing portal session using the user's Stripe ID
-      const billingSession = await createBillingPortalSession(
+      const billingSession = await createStripeBillingPortalSession(
         sessionUser.stripeUserId
       );
 
