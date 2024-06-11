@@ -11,74 +11,111 @@ import { createUser, findUserByClerkUserId } from "@/lib/models/User";
  * @returns {Promise<Response>} The response to be sent back.
  */
 export async function POST(req) {
-  // Fetch the webhook secret from environment variables
-  const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET;
-
-  // Validate if the webhook secret is provided
-  if (!WEBHOOK_SECRET) {
-    throw new Error(
-      "Please add the WEBHOOK_SECRET from Clerk Dashboard to your environment variables."
-    );
-  }
-
-  // Extract headers from the incoming request
-  const headerPayload = headers();
-  const svix_id = headerPayload.get("svix-id");
-  const svix_timestamp = headerPayload.get("svix-timestamp");
-  const svix_signature = headerPayload.get("svix-signature");
-
-  // Validate if all required headers are present
-  if (!svix_id || !svix_timestamp || !svix_signature) {
-    return new Response("Error occurred -- missing svix headers", {
-      status: StatusCodes.BAD_REQUEST,
-    });
-  }
-
-  // Extract body payload
-  const payload = await req.json();
-  const body = JSON.stringify(payload);
-
-  // Create a new Svix instance with your secret
-  const webhook = new Webhook(WEBHOOK_SECRET);
-
-  let event = null;
-
-  // Verify the payload with the headers
   try {
-    event = webhook.verify(body, {
-      "svix-id": svix_id,
-      "svix-timestamp": svix_timestamp,
-      "svix-signature": svix_signature,
-    });
-  } catch (err) {
-    console.error("Error verifying webhook:", err);
+    // Fetch the webhook secret from environment variables
+    const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET;
 
-    return new Response("Error occurred", {
-      status: StatusCodes.BAD_REQUEST,
-    });
-  }
-
-  // Process the payload based on the event type
-  const { id, first_name, last_name, email_addresses } = event.data;
-  console.log(`Received webhook with ID ${id} and type ${event.type}`);
-
-  if (event.type === "user.created") {
-    const existingUser = await findUserByClerkUserId(id);
-
-    // If the user doesn't exist, create a new user
-    if (!existingUser) {
-      await createUser(
-        {
-          user_first_name: first_name,
-          user_last_name: last_name,
-          user_email: email_addresses[0].email_address,
-        },
-        id
+    if (!WEBHOOK_SECRET) {
+      throw new Error(
+        "Please add the WEBHOOK_SECRET from Clerk Dashboard to your environment variables."
       );
     }
 
-    console.log("Saved Clerk user with Clerk user ID:", event.data.id);
+    // Extract and validate headers from the incoming request
+    const { svixId, svixTimestamp, svixSignature } = getSvixHeaders();
+
+    // Extract and verify the payload
+    const payload = await req.json();
+    const event = verifyWebhookEvent(
+      payload,
+      svixId,
+      svixTimestamp,
+      svixSignature,
+      WEBHOOK_SECRET
+    );
+
+    // Handle the webhook event based on its type
+    switch (event.type) {
+      case "user.created":
+        await handleUserCreated(event);
+        break;
+    }
+
+    return new Response("", { status: StatusCodes.OK });
+  } catch (err) {
+    console.error("Error handling webhook:", err);
+    return new Response(`Webhook Error: ${err.message}`, {
+      status: StatusCodes.BAD_REQUEST,
+    });
+  }
+}
+
+/**
+ * Extracts and validates the necessary Svix headers.
+ *
+ * @returns {Object} An object containing the Svix headers.
+ * @throws {Error} If any required Svix header is missing.
+ */
+function getSvixHeaders() {
+  const headerPayload = headers();
+  const svixId = headerPayload.get("svix-id");
+  const svixTimestamp = headerPayload.get("svix-timestamp");
+  const svixSignature = headerPayload.get("svix-signature");
+
+  if (!svixId || !svixTimestamp || !svixSignature) {
+    throw new Error("Error occurred -- missing svix headers");
   }
 
-  return new Response("", { status: StatusCodes.OK });
+  return { svixId, svixTimestamp, svixSignature };
+}
+
+/**
+ * Verifies the webhook event using the Svix library.
+ *
+ * @param {Object} payload - The payload of the webhook event.
+ * @param {string} svixId - The Svix ID header.
+ * @param {string} svixTimestamp - The Svix timestamp header.
+ * @param {string} svixSignature - The Svix signature header.
+ * @param {string} secret - The webhook secret.
+ * @returns {Object} The verified webhook event.
+ * @throws {Error} If the event verification fails.
+ */
+function verifyWebhookEvent(
+  payload,
+  svixId,
+  svixTimestamp,
+  svixSignature,
+  secret
+) {
+  const body = JSON.stringify(payload);
+  const webhook = new Webhook(secret);
+
+  return webhook.verify(body, {
+    "svix-id": svixId,
+    "svix-timestamp": svixTimestamp,
+    "svix-signature": svixSignature,
+  });
+}
+
+/**
+ * Processes the user.created event.
+ *
+ * @param {Object} event - The Clerk webhook event.
+ */
+async function handleUserCreated(event) {
+  const { id, first_name, last_name, email_addresses } = event.data;
+  const existingUser = await findUserByClerkUserId(id);
+
+  if (!existingUser) {
+    await createUser(
+      {
+        user_first_name: first_name,
+        user_last_name: last_name,
+        user_email: email_addresses[0].email_address,
+      },
+      id
+    );
+
+    console.log("Saved Clerk user with Clerk user ID:", id);
+  }
 }
