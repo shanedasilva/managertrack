@@ -92,12 +92,35 @@ CREATE TABLE "resume_skills" (
 -- CreateTable
 CREATE TABLE "organizations" (
     "id" TEXT NOT NULL,
+    "external_id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
-    "website" TEXT,
+    "description" TEXT,
+    "logo_url" TEXT,
+    "website_url" TEXT,
+    "linkedin_url" TEXT,
+    "twitter_url" TEXT,
+    "slug" TEXT NOT NULL,
+    "featured" BOOLEAN NOT NULL DEFAULT false,
+    "typeId" TEXT NOT NULL,
+    "industryId" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "organizations_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "organization_types" (
+    "id" TEXT NOT NULL,
+    "external_id" TEXT NOT NULL,
+    "name" TEXT NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "organization_industries" (
+    "id" TEXT NOT NULL,
+    "external_id" TEXT NOT NULL,
+    "name" TEXT NOT NULL
 );
 
 -- CreateTable
@@ -123,6 +146,7 @@ CREATE TABLE "tag" (
 CREATE TABLE "jobs" (
     "id" TEXT NOT NULL,
     "title" TEXT NOT NULL,
+    "slug" TEXT NOT NULL,
     "jobType" "JobType" NOT NULL,
     "location" TEXT NOT NULL,
     "comp_type" "JobCompType" NOT NULL,
@@ -156,12 +180,39 @@ CREATE TABLE "job_applications" (
 );
 
 -- CreateTable
-CREATE TABLE "jobs_tags" (
+CREATE TABLE "job_tags" (
     "job_id" TEXT NOT NULL,
     "tag_id" TEXT NOT NULL,
     "assignedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT "jobs_tags_pkey" PRIMARY KEY ("job_id","tag_id")
+    CONSTRAINT "job_tags_pkey" PRIMARY KEY ("job_id","tag_id")
+);
+
+-- CreateTable
+CREATE TABLE "job_cities" (
+    "id" TEXT NOT NULL,
+    "external_id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "timezone" TEXT NOT NULL,
+    "latitude" TEXT NOT NULL,
+    "longitude" TEXT NOT NULL,
+    "countryId" TEXT NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "job_countries" (
+    "id" TEXT NOT NULL,
+    "external_id" TEXT NOT NULL,
+    "code" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "regionId" TEXT NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "job_regions" (
+    "id" TEXT NOT NULL,
+    "external_id" TEXT NOT NULL,
+    "name" TEXT NOT NULL
 );
 
 -- CreateIndex
@@ -195,7 +246,25 @@ CREATE UNIQUE INDEX "resume_skills_id_key" ON "resume_skills"("id");
 CREATE UNIQUE INDEX "organizations_id_key" ON "organizations"("id");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "organizations_external_id_key" ON "organizations"("external_id");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "organizations_name_key" ON "organizations"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "organizations_slug_key" ON "organizations"("slug");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "organization_types_id_key" ON "organization_types"("id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "organization_types_external_id_key" ON "organization_types"("external_id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "organization_industries_id_key" ON "organization_industries"("id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "organization_industries_external_id_key" ON "organization_industries"("external_id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "organizations_users_user_id_key" ON "organizations_users"("user_id");
@@ -213,16 +282,46 @@ CREATE UNIQUE INDEX "tag_name_key" ON "tag"("name");
 CREATE UNIQUE INDEX "jobs_id_key" ON "jobs"("id");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "jobs_slug_key" ON "jobs"("slug");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "jobs_stripe_session_id_key" ON "jobs"("stripe_session_id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "job_applications_id_key" ON "job_applications"("id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "jobs_tags_job_id_key" ON "jobs_tags"("job_id");
+CREATE UNIQUE INDEX "job_tags_job_id_key" ON "job_tags"("job_id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "jobs_tags_tag_id_key" ON "jobs_tags"("tag_id");
+CREATE UNIQUE INDEX "job_tags_tag_id_key" ON "job_tags"("tag_id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "job_cities_id_key" ON "job_cities"("id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "job_cities_external_id_key" ON "job_cities"("external_id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "job_countries_id_key" ON "job_countries"("id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "job_countries_external_id_key" ON "job_countries"("external_id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "job_countries_code_key" ON "job_countries"("code");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "job_countries_name_key" ON "job_countries"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "job_regions_id_key" ON "job_regions"("id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "job_regions_external_id_key" ON "job_regions"("external_id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "job_regions_name_key" ON "job_regions"("name");
 
 -- AddForeignKey
 ALTER TABLE "resumes" ADD CONSTRAINT "resumes_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -235,6 +334,12 @@ ALTER TABLE "resume_experience" ADD CONSTRAINT "resume_experience_resume_id_fkey
 
 -- AddForeignKey
 ALTER TABLE "resume_skills" ADD CONSTRAINT "resume_skills_resume_id_fkey" FOREIGN KEY ("resume_id") REFERENCES "resumes"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "organizations" ADD CONSTRAINT "organizations_typeId_fkey" FOREIGN KEY ("typeId") REFERENCES "organization_types"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "organizations" ADD CONSTRAINT "organizations_industryId_fkey" FOREIGN KEY ("industryId") REFERENCES "organization_industries"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "organizations_users" ADD CONSTRAINT "organizations_users_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -258,7 +363,13 @@ ALTER TABLE "job_applications" ADD CONSTRAINT "job_applications_resume_id_fkey" 
 ALTER TABLE "job_applications" ADD CONSTRAINT "job_applications_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "jobs_tags" ADD CONSTRAINT "jobs_tags_job_id_fkey" FOREIGN KEY ("job_id") REFERENCES "jobs"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "job_tags" ADD CONSTRAINT "job_tags_job_id_fkey" FOREIGN KEY ("job_id") REFERENCES "jobs"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "jobs_tags" ADD CONSTRAINT "jobs_tags_tag_id_fkey" FOREIGN KEY ("tag_id") REFERENCES "tag"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "job_tags" ADD CONSTRAINT "job_tags_tag_id_fkey" FOREIGN KEY ("tag_id") REFERENCES "tag"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "job_cities" ADD CONSTRAINT "job_cities_countryId_fkey" FOREIGN KEY ("countryId") REFERENCES "job_countries"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "job_countries" ADD CONSTRAINT "job_countries_regionId_fkey" FOREIGN KEY ("regionId") REFERENCES "job_regions"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

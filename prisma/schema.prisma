@@ -94,25 +94,31 @@ model ResumeSkills {
 }
 
 model Organization {
-  id         String                @unique @id @default(uuid())
-  name       String                @unique
-  slug       String                @unique
-  website    String?               @map("website")
-  featured   Boolean               @default(false) @map("featured")
-  typeId     String 
-  type       OrganizationType      @relation(fields: [typeId], references: [id])
-  industryId String 
-  industry   OrganizationIndustry  @relation(fields: [industryId], references: [id])
-  createdAt  DateTime              @default(now()) @map("created_at")
-  updatedAt  DateTime              @updatedAt @map("updated_at")
-  jobs       Job[]
-  users      OrganizationUser[]
+  id          String               @unique @id @default(uuid())
+  externalId  String               @unique @map("external_id")
+  name        String               @unique
+  description String?              @map("description")
+  logoURL     String?              @map("logo_url")
+  websiteURL  String?              @map("website_url")
+  linkedinURL String?              @map("linkedin_url")
+  twitterURL  String?              @map("twitter_url")
+  slug        String               @unique
+  featured    Boolean              @default(false) @map("featured")
+  typeId      String 
+  type        OrganizationType     @relation(fields: [typeId], references: [id])
+  industryId  String 
+  industry    OrganizationIndustry @relation(fields: [industryId], references: [id])
+  createdAt   DateTime             @default(now()) @map("created_at")
+  updatedAt   DateTime             @updatedAt @map("updated_at")
+  jobs        Job[]
+  users       OrganizationUser[]
 
   @@map("organizations")
 }
 
 model OrganizationType {
   id            String         @unique @default(uuid())
+  externalId    String         @unique @map("external_id")
   name          String         @map("name")
   organizations Organization[]
 
@@ -121,6 +127,7 @@ model OrganizationType {
 
 model OrganizationIndustry {
   id            String         @unique @default(uuid())
+  externalId    String         @unique @map("external_id")
   name          String         @map("name")
   organizations Organization[]
   
@@ -204,32 +211,35 @@ model JobTag {
 }
 
 model JobCity {
-  id        String     @unique @default(uuid())
-  name      String     @map("name")
-  timezone  String     @map("timezone")
-  latitude  String     @map("latitude")
-  longitude String     @map("longitude")
-  countryId String 
-  country   JobCountry @relation(fields: [countryId], references: [id])
+  id         String     @unique @default(uuid())
+  externalId String     @unique @map("external_id")
+  name       String     @map("name")
+  timezone   String     @map("timezone")
+  latitude   String     @map("latitude")
+  longitude  String     @map("longitude")
+  countryId  String 
+  country    JobCountry @relation(fields: [countryId], references: [id])
 
   @@map("job_cities")
 }
 
 model JobCountry {
-  id       String    @unique @default(uuid())
-  code     String    @unique @map("code")
-  name     String    @unique @map("name")
-  regionId String 
-  region   JobRegion @relation(fields: [regionId], references: [id])
-  cities   JobCity[]
+  id         String    @unique @default(uuid())
+  externalId String    @unique @map("external_id")
+  code       String    @unique @map("code")
+  name       String    @unique @map("name")
+  regionId   String 
+  region     JobRegion @relation(fields: [regionId], references: [id])
+  cities     JobCity[]
 
   @@map("job_countries")
 }
 
 model JobRegion {
-  id        String @unique @default(uuid())
-  name      String @unique @map("name")
-  countries JobCountry[]
+  id         String       @unique @default(uuid())
+  externalId String       @unique @map("external_id")
+  name       String       @unique @map("name")
+  countries  JobCountry[]
 
   @@map("job_regions")
 }
