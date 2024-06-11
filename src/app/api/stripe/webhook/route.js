@@ -1,6 +1,7 @@
 import Stripe from "stripe";
 import { NextResponse } from "next/server";
 import { headers } from "next/headers";
+import { StatusCodes } from "http-status-codes";
 
 import {
   updateJobForPaymentSuccessUsingStripeSessionId,
@@ -40,7 +41,7 @@ export async function POST(request) {
   } catch (err) {
     // Return an error response if the event verification fails
     return new NextResponse(`Webhook Error: ${err.message}`, {
-      status: 400,
+      status: StatusCodes.BAD_REQUEST,
     });
   }
 
@@ -76,7 +77,10 @@ export async function POST(request) {
         }
       } catch (error) {
         console.error("Error updating job:", error);
-        return new NextResponse("Error occurred", { status: 400 });
+
+        return new NextResponse("Error occurred", {
+          status: StatusCodes.BAD_REQUEST,
+        });
       }
       break;
 
@@ -110,5 +114,5 @@ export async function POST(request) {
   }
 
   // Return a 200 OK response to acknowledge receipt of the event
-  return new Response("", { status: 200 });
+  return new Response("", { status: StatusCodes.OK });
 }

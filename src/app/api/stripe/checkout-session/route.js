@@ -1,6 +1,8 @@
 "use server";
 
 import { NextResponse } from "next/server";
+import { StatusCodes } from "http-status-codes";
+
 import {
   createStripeCustomer,
   createStripeCheckoutSession,
@@ -35,7 +37,7 @@ export async function POST(request) {
     // Return the session ID and customer ID as the response
     return NextResponse.json(
       { session_id: stripeCheckoutSession.id, customer_id: stripeCustomer.id },
-      { status: 200 }
+      { status: StatusCodes.OK }
     );
   } catch (error) {
     // Log the error for debugging purposes
@@ -46,7 +48,7 @@ export async function POST(request) {
       {
         error: "An error occurred while processing your payment.",
       },
-      { status: 500 }
+      { status: StatusCodes.INTERNAL_SERVER_ERROR }
     );
   }
 }

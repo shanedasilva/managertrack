@@ -2,6 +2,8 @@
 
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
+import { StatusCodes } from "http-status-codes";
+
 import { findUserByClerkUserId } from "@/lib/models/User";
 import { createBillingPortalSession } from "@/lib/payments/stripe";
 
@@ -30,7 +32,7 @@ export async function GET() {
     }
 
     // If no user ID is found, return a 404 status
-    return NextResponse.json({ status: 404 });
+    return NextResponse.json({ status: StatusCodes.NOT_FOUND });
   } catch (error) {
     // Log the error for debugging purposes
     console.error("Error creating billing portal session:", error);
@@ -40,7 +42,7 @@ export async function GET() {
       {
         error: "An error occurred while creating your billing portal",
       },
-      { status: 500 }
+      { status: StatusCodes.INTERNAL_SERVER_ERROR }
     );
   }
 }

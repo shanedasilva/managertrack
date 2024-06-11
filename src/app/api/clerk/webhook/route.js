@@ -1,5 +1,7 @@
 import { Webhook } from "svix";
 import { headers } from "next/headers";
+import { StatusCodes } from "http-status-codes";
+
 import { createUser, findUserByClerkUserId } from "@/lib/models/User";
 
 /**
@@ -28,7 +30,7 @@ export async function POST(req) {
   // Validate if all required headers are present
   if (!svix_id || !svix_timestamp || !svix_signature) {
     return new Response("Error occurred -- missing svix headers", {
-      status: 400,
+      status: StatusCodes.BAD_REQUEST,
     });
   }
 
@@ -52,7 +54,7 @@ export async function POST(req) {
     console.error("Error verifying webhook:", err);
 
     return new Response("Error occurred", {
-      status: 400,
+      status: StatusCodes.BAD_REQUEST,
     });
   }
 
@@ -78,5 +80,5 @@ export async function POST(req) {
     console.log("Saved Clerk user with Clerk user ID:", event.data.id);
   }
 
-  return new Response("", { status: 200 });
+  return new Response("", { status: StatusCodes.OK });
 }
