@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { deleteSearchObjects } from "@/lib/search/client";
 
 // Declare the prisma variable to hold the PrismaClient instance
 let prisma = null;
@@ -71,7 +72,7 @@ async function main() {
 
 /**
  * Handles the find action for models that support soft deletion.
- * Ensures that only non-deleted records are returned by adding a `deleted_at: null` condition to the query.
+ * Ensures that only non-deleted records are returned by adding a `deletedAt: null` condition to the query.
  *
  * @param {Object} params - The Prisma query parameters.
  * @returns {Object} - The modified Prisma query parameters.
@@ -80,8 +81,8 @@ function handleFindAction(params) {
   try {
     // Check if the model supports soft deletion
     if (softDeletable.includes(params.model)) {
-      // Add `deleted_at: null` condition to the where clause
-      params.args.where = { ...params.args.where, deleted_at: null };
+      // Add `deletedAt: null` condition to the where clause
+      params.args.where = { ...params.args.where, deletedAt: null };
 
       console.log(
         `Find action handled for model with soft delete: ${params.model}`
@@ -96,7 +97,7 @@ function handleFindAction(params) {
 
 /**
  * Handles the findMany action for models that support soft deletion.
- * Ensures that only non-deleted records are returned by adding a `deleted_at: null` condition to the query.
+ * Ensures that only non-deleted records are returned by adding a `deletedAt: null` condition to the query.
  *
  * @param {Object} params - The Prisma query parameters.
  * @returns {Object} - The modified Prisma query parameters.
@@ -105,8 +106,8 @@ function handleFindManyAction(params) {
   try {
     // Check if the model supports soft deletion
     if (softDeletable.includes(params.model)) {
-      // Add `deleted_at: null` condition to the where clause
-      params.args.where = { ...params.args.where, deleted_at: null };
+      // Add `deletedAt: null` condition to the where clause
+      params.args.where = { ...params.args.where, deletedAt: null };
 
       console.log(
         `FindMany action handled for model with soft delete: ${params.model}`
@@ -121,7 +122,7 @@ function handleFindManyAction(params) {
 
 /**
  * Handles the delete action for models that support soft deletion.
- * Changes the action to 'update' and sets the 'deleted_at' flag.
+ * Changes the action to 'update' and sets the 'deletedAt' flag.
  *
  * @param {Object} params - The Prisma query parameters.
  * @returns {void}
@@ -130,16 +131,20 @@ function handleDeleteAction(params) {
   try {
     // Check if the model supports soft deletion
     if (softDeletable.includes(params.model)) {
-      // Change action to 'update' and set the 'deleted_at' flag
+      // Change action to 'update' and set the 'deletedAt' flag
       params.action = "update";
-      params.args.data = { deleted_at: new Date() };
+      params.args.data = { deletedAt: new Date() };
 
       console.log(`Soft delete action handled for model: ${params.model}`);
     }
 
     // Check if the model supports search indexing
-    if (searchable.includes(params.model)) {
-      console.log(`Searchable model ${params.model} found`);
+    if (process.env.SEARCH_ENABLED) {
+      if (searchable.includes(params.model)) {
+        deleteSearchObjects(params.model, params.args.data);
+
+        console.log(`Search objects deleted for model: ${params.model}`);
+      }
     }
 
     return params;
@@ -150,7 +155,7 @@ function handleDeleteAction(params) {
 
 /**
  * Handles the deleteMany action for models that support soft deletion.
- * Changes the action to 'updateMany' and sets the 'deleted_at' flag.
+ * Changes the action to 'updateMany' and sets the 'deletedAt' flag.
  *
  * @param {Object} params - The Prisma query parameters.
  * @returns {void}
@@ -159,21 +164,25 @@ function handleDeleteManyAction(params) {
   try {
     // Check if the model supports soft deletion
     if (softDeletable.includes(params.model)) {
-      // Change action to 'updateMany' and set the 'deleted_at' flag
+      // Change action to 'updateMany' and set the 'deletedAt' flag
       params.action = "updateMany";
 
       if (params.args.data !== undefined) {
-        params.args.data.deleted_at = new Date();
+        params.args.data.deletedAt = new Date();
       } else {
-        params.args.data = { deleted_at: new Date() };
+        params.args.data = { deletedAt: new Date() };
       }
 
       console.log(`Soft deleteMany action handled for model: ${params.model}`);
     }
 
     // Check if the model supports search indexing
-    if (searchable.includes(params.model)) {
-      console.log(`Searchable model ${params.model} found`);
+    if (process.env.SEARCH_ENABLED) {
+      if (searchable.includes(params.model)) {
+        deleteSearchObjects(params.model, params.args.data);
+
+        console.log(`Search objects deleted for model: ${params.model}`);
+      }
     }
 
     return params;
