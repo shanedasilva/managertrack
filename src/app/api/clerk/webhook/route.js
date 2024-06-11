@@ -173,7 +173,7 @@ async function handleUserUpdated(event) {
         lastName
       );
 
-      // Update the user's information in the local database
+      // Update the user's information in the database
       await updateUser(
         existingUser.id,
         emailAddresses[0].email_address,

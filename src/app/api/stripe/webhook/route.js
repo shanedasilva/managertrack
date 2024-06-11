@@ -69,8 +69,10 @@ async function handleCheckoutSessionCompleted(sessionId) {
   try {
     // Update the job with the Stripe session ID and activeUntil date
     const job = await updateJobForPaymentSuccessUsingStripeSessionId(sessionId);
+
     // Retrieve the full session details from Stripe
     const session = await getStripeSession(sessionId);
+
     // Update the invoice metadata with the job ID
     await updateStripeInvoiceWithJobIdMetadata(session.invoice, job.id);
 
@@ -96,6 +98,7 @@ async function handleInvoicePaid(subscriptionId) {
   try {
     // Retrieve the subscription details
     const subscription = await getStripeSubscription(subscriptionId);
+
     // Update the job associated with the subscription
     await updateJobForPaymentSuccessUsingJobId(subscription.metadata.jobId);
   } catch (error) {

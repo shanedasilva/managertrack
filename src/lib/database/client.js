@@ -16,6 +16,9 @@ const softDeletable = [
   "JobApplication",
 ];
 
+// List of models that are indexed for search
+const searchable = ["User", "Organization", "Job"];
+
 /**
  * Initializes the PrismaClient instance.
  * Uses a global instance in development to avoid multiple instances in hot-reloaded development environment.
@@ -43,29 +46,84 @@ async function main() {
    * @returns {Promise<Object>} - The result of the next middleware or query execution.
    */
   prisma.$use(async (params, next) => {
-    // Check incoming query type for the Post model
-    if (softDeletable.includes(params.model)) {
-      if (params.action === "delete") {
-        // Intercept delete queries and change action to update with a deleted flag
-        params.action = "update";
-        params.args["data"] = { deleted_at: new Date() };
-      }
-
-      if (params.action === "deleteMany") {
-        // Intercept deleteMany queries and change action to updateMany with a deleted flag
-        params.action = "updateMany";
-
-        if (params.args.data !== undefined) {
-          params.args.data["deleted_at"] = new Date();
-        } else {
-          params.args["data"] = { deleted_at: new Date() };
-        }
-      }
+    // Handle the webhook event based on its type
+    switch (params.action) {
+      case "delete":
+        params = handleDeleteAction(params);
+        break;
+      case "deleteMany":
+        params = handleDeleteManyAction(params);
+        break;
+      default:
+        break;
     }
 
     // Execute the next middleware or query
     return next(params);
   });
+}
+
+/**
+ * Handles the delete action for models that support soft deletion.
+ * Changes the action to 'update' and sets the 'deleted_at' flag.
+ *
+ * @param {Object} params - The Prisma query parameters.
+ * @returns {void}
+ */
+function handleDeleteAction(params) {
+  try {
+    // Check if the model supports soft deletion
+    if (softDeletable.includes(params.model)) {
+      // Change action to 'update' and set the 'deleted_at' flag
+      params.action = "update";
+      params.args.data = { deleted_at: new Date() };
+
+      console.log(`Soft delete action handled for model: ${params.model}`);
+    }
+
+    // Check if the model supports search indexing
+    if (searchable.includes(params.model)) {
+      console.log(`Searchable model ${params.model} found`);
+    }
+
+    return params;
+  } catch (error) {
+    console.error("Error handling delete action:", error);
+  }
+}
+
+/**
+ * Handles the deleteMany action for models that support soft deletion.
+ * Changes the action to 'updateMany' and sets the 'deleted_at' flag.
+ *
+ * @param {Object} params - The Prisma query parameters.
+ * @returns {void}
+ */
+function handleDeleteManyAction(params) {
+  try {
+    // Check if the model supports soft deletion
+    if (softDeletable.includes(params.model)) {
+      // Change action to 'updateMany' and set the 'deleted_at' flag
+      params.action = "updateMany";
+
+      if (params.args.data !== undefined) {
+        params.args.data.deleted_at = new Date();
+      } else {
+        params.args.data = { deleted_at: new Date() };
+      }
+
+      console.log(`Soft deleteMany action handled for model: ${params.model}`);
+    }
+
+    // Check if the model supports search indexing
+    if (searchable.includes(params.model)) {
+      console.log(`Searchable model ${params.model} found`);
+    }
+
+    return params;
+  } catch (error) {
+    console.error("Error handling deleteMany action:", error);
+  }
 }
 
 main().catch((e) => {
