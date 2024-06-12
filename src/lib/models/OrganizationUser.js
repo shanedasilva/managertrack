@@ -10,14 +10,22 @@ import client from "@/lib/database/client";
  */
 export async function createOrganizationUser(organizationId, userId) {
   try {
-    return await client.organizationUser.create({
-      data: {
-        organizationId: organizationId,
-        userId: userId,
-      },
-    });
+    // Query parameters for creating the organization-user association
+    const data = {
+      organizationId,
+      userId,
+    };
+
+    // Create the organization-user association
+    const organizationUser = await client.organizationUser.create({ data });
+
+    return organizationUser;
   } catch (error) {
-    console.error("Error creating organization user association: ", error);
+    console.error(
+      `Error creating organization user association for organization ID ${organizationId} and user ID ${userId}:`,
+      error.message,
+      error.stack
+    );
     throw error;
   }
 }

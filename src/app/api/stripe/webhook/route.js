@@ -96,11 +96,14 @@ async function handleCheckoutSessionCompleted(sessionId) {
  */
 async function handleInvoicePaid(subscriptionId) {
   try {
-    // Retrieve the subscription details
-    const subscription = await getStripeSubscription(subscriptionId);
+    // If a subscription invoice was paid, keep job active for another cycle
+    if (subscriptionId) {
+      // Retrieve the subscription details
+      const subscription = await getStripeSubscription(subscriptionId);
 
-    // Update the job associated with the subscription
-    await updateJobForPaymentSuccessUsingJobId(subscription.metadata.jobId);
+      // Update the job associated with the subscription
+      await updateJobForPaymentSuccessUsingJobId(subscription.metadata.jobId);
+    }
   } catch (error) {
     console.error("Error handling invoice.paid event:", error);
     throw error;

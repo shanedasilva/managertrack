@@ -79,7 +79,7 @@ export async function updateStripeCustomer(
 
     return customer;
   } catch (error) {
-    console.error("Error creating customer:", error);
+    console.error("Error updating customer:", error);
     throw error;
   }
 }

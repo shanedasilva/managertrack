@@ -1,4 +1,5 @@
 import client from "@/lib/database/client";
+import { createSearchObject, updateSearchObject } from "@/lib/search/client";
 
 /**
  * Asynchronously creates a new user.
@@ -11,20 +12,32 @@ import client from "@/lib/database/client";
  * @returns {Promise<Object>} A promise that resolves to the created user object.
  * @throws {Error} Throws an error if user creation fails.
  */
-export async function createUser(form, clerkUserId) {
+export async function createUser(
+  { user_first_name, user_last_name, user_email },
+  clerkUserId
+) {
   try {
-    const data = {
-      firstName: form.user_first_name,
-      lastName: form.user_last_name,
-      email: form.user_email,
-      clerkUserId: clerkUserId,
+    // Prepare the data for created the user
+    const createParams = {
+      data: {
+        firstName: user_first_name,
+        lastName: user_last_name,
+        email: user_email,
+        clerkUserId,
+      },
     };
 
-    return await client.user.create({
-      data: data,
-    });
+    // Prepare the user data to be inserted into the database
+    const user = await client.user.create(createParams);
+
+    // If search indexing is enabled, create search objects
+    if (process.env.SEARCH_ENABLED) {
+      await createSearchObject("User", { ...user, objectID: user.id });
+    }
+
+    return user;
   } catch (error) {
-    console.error("Error creating user: ", error);
+    console.error("Error creating user:", error.message, error.stack);
     throw error;
   }
 }
@@ -40,20 +53,30 @@ export async function createUser(form, clerkUserId) {
  */
 export async function updateUser(id, email, firstName, lastName) {
   try {
-    const data = {
-      where: {
-        id: id,
-      },
-      data: {
-        email: email,
-        firstName: firstName,
-        lastName: lastName,
-      },
+    // Prepare the data for updating the user
+    const updateParams = {
+      where: { id },
+      data: { email, firstName, lastName },
     };
 
-    return await client.user.update(data);
+    // Update the user in the database
+    const updatedUser = await client.user.update(updateParams);
+
+    // If search is enabled, create search objects
+    if (process.env.SEARCH_ENABLED) {
+      await updateSearchObject("User", {
+        ...updatedUser,
+        objectID: updatedUser.id,
+      });
+    }
+
+    return updatedUser;
   } catch (error) {
-    console.error("Error updating user: ", error);
+    console.error(
+      `Error updating user with ID ${id}:`,
+      error.message,
+      error.stack
+    );
     throw error;
   }
 }
@@ -71,16 +94,22 @@ export async function updateUserWithStripeCustomerIdUsingId(
   stripeUserId
 ) {
   try {
-    return await client.user.update({
-      where: {
-        id: userId,
-      },
-      data: {
-        stripeUserId: stripeUserId,
-      },
-    });
+    // Prepare the data for updating the user's Stripe customer ID
+    const updateParams = {
+      where: { id: userId },
+      data: { stripeUserId },
+    };
+
+    // Update the user's Stripe customer ID in the database
+    const updatedUser = await client.user.update(updateParams);
+
+    return updatedUser;
   } catch (error) {
-    console.error("Error updating user with Stripe customer ID: ", error);
+    console.error(
+      `Error updating user with ID ${userId} and Stripe customer ID ${stripeUserId}:`,
+      error.message,
+      error.stack
+    );
     throw error;
   }
 }
@@ -94,16 +123,22 @@ export async function updateUserWithStripeCustomerIdUsingId(
  */
 export async function findUserByClerkUserId(clerkUserId) {
   try {
-    return await client.user.findUnique({
-      where: {
-        clerkUserId: clerkUserId,
-      },
-      include: {
-        organization: true,
-      },
-    });
+    // Query parameters for finding the user
+    const queryParams = {
+      where: { clerkUserId },
+      include: { organization: true },
+    };
+
+    // Find the user by Clerk user ID
+    const user = await client.user.findUnique(queryParams);
+
+    return user;
   } catch (error) {
-    console.error("Error finding user by Clerk user ID: ", error);
+    console.error(
+      `Error finding user by Clerk user ID ${clerkUserId}:`,
+      error.message,
+      error.stack
+    );
     throw error;
   }
 }

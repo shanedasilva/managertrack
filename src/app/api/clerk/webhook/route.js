@@ -164,18 +164,10 @@ async function handleUserUpdated(event) {
     // Check if the user already exists in the database
     const existingUser = await findUserByClerkUserId(clerkUserId);
 
-    if (existingUser) {
+    if (existingUser.stripeUserId) {
       // Update the user's information in Stripe
       await updateStripeCustomer(
         existingUser.stripeUserId,
-        emailAddresses[0].email_address,
-        firstName,
-        lastName
-      );
-
-      // Update the user's information in the database
-      await updateUser(
-        existingUser.id,
         emailAddresses[0].email_address,
         firstName,
         lastName
@@ -185,9 +177,17 @@ async function handleUserUpdated(event) {
         "Updated Stripe user with updated Clerk information:",
         clerkUserId
       );
-    } else {
-      console.log("No existing user found with Clerk user ID:", clerkUserId);
     }
+
+    // Update the user's information in the database
+    await updateUser(
+      existingUser.id,
+      emailAddresses[0].email_address,
+      firstName,
+      lastName
+    );
+
+    console.log("Updated user with updated Clerk information:", clerkUserId);
   } catch (error) {
     // Log any errors that occur during the process
     console.error("Error handling user.updated event:", error);

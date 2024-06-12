@@ -100,7 +100,7 @@ model ResumeSkills {
 
 model Organization {
   id          String               @unique @id @default(uuid())
-  externalId  String               @unique @map("external_id")
+  externalId  String?              @unique @map("external_id")
   name        String               @unique
   description String?              @map("description")
   logoURL     String?              @map("logo_url")
@@ -108,11 +108,11 @@ model Organization {
   linkedinURL String?              @map("linkedin_url")
   twitterURL  String?              @map("twitter_url")
   slug        String               @unique
-  featured    Boolean              @default(false) @map("featured")
-  typeId      String 
-  type        OrganizationType     @relation(fields: [typeId], references: [id])
-  industryId  String 
-  industry    OrganizationIndustry @relation(fields: [industryId], references: [id])
+  featured    Boolean?             @default(false) @map("featured")
+  typeId      String? 
+  type        OrganizationType?     @relation(fields: [typeId], references: [id])
+  industryId  String?
+  industry    OrganizationIndustry? @relation(fields: [industryId], references: [id])
   jobs        Job[]
   users       OrganizationUser[]
   createdAt   DateTime             @default(now()) @map("created_at")
@@ -124,7 +124,7 @@ model Organization {
 
 model OrganizationType {
   id            String         @unique @default(uuid())
-  externalId    String         @unique @map("external_id")
+  externalId    String?        @unique @map("external_id")
   name          String         @map("name")
   organizations Organization[]
 
@@ -133,7 +133,7 @@ model OrganizationType {
 
 model OrganizationIndustry {
   id            String         @unique @default(uuid())
-  externalId    String         @unique @map("external_id")
+  externalId    String?        @unique @map("external_id")
   name          String         @map("name")
   organizations Organization[]
   
@@ -166,7 +166,7 @@ model Job {
   id              String           @unique @id @default(uuid())
   title           String
   slug            String           @unique
-  jobType         JobType
+  jobType         JobType?
   location        String
   compType        JobCompType      @map("comp_type")
   payScaleBegin   Int              @map("pay_scale_begin")
@@ -221,7 +221,7 @@ model JobTag {
 
 model JobCity {
   id         String     @unique @default(uuid())
-  externalId String     @unique @map("external_id")
+  externalId String?    @unique @map("external_id")
   name       String     @map("name")
   timezone   String     @map("timezone")
   latitude   String     @map("latitude")
@@ -234,7 +234,7 @@ model JobCity {
 
 model JobCountry {
   id         String    @unique @default(uuid())
-  externalId String    @unique @map("external_id")
+  externalId String?   @unique @map("external_id")
   code       String    @unique @map("code")
   name       String    @unique @map("name")
   regionId   String 
@@ -246,7 +246,7 @@ model JobCountry {
 
 model JobRegion {
   id         String       @unique @default(uuid())
-  externalId String       @unique @map("external_id")
+  externalId String?      @unique @map("external_id")
   name       String       @unique @map("name")
   countries  JobCountry[]
 

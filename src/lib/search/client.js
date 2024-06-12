@@ -4,26 +4,26 @@ let client;
 
 if (process.env.SEARCH_ENABLED) {
   // Initialize the Algolia client with the given application ID and API key
-  client = algoliasearch("latency", "6be0576ff61c053d5f9a3225e2a90f76");
+  client = algoliasearch(
+    process.env.ALGOLIA_SEARCH_APP_ID,
+    process.env.ALGOLIA_SEARCH_API_KEY
+  );
 }
 
 /**
  * Creates or updates objects in the specified index.
  *
  * @param {string} indexName - The name of the index.
- * @param {Array<Object>} objects - The array of objects to be added to the index.
+ * @param {<Object>} object - The objects to be added to the index.
  */
-export const createSearchObjects = async (indexName, objects) => {
+export const createSearchObject = async (indexName, object) => {
   // Initialize the index
   const index = client.initIndex(indexName);
 
   try {
-    // Save objects with auto-generated IDs if they don't exist
-    await index.saveObjects(objects, {
-      autoGenerateObjectIDIfNotExist: true,
-    });
+    await index.saveObject(object);
   } catch (error) {
-    console.error("Error creating objects:", error);
+    console.error("Error creating algolia search object:", error);
   }
 };
 
@@ -31,17 +31,17 @@ export const createSearchObjects = async (indexName, objects) => {
  * Replaces all objects in the specified index with the given objects.
  *
  * @param {string} indexName - The name of the index.
- * @param {Array<Object>} objects - The array of objects to replace the existing objects in the index.
+ * @param {Object} object - The objects to replace the existing objects in the index.
  */
-export const updateSearchObjects = async (indexName, objects) => {
+export const updateSearchObject = async (indexName, object) => {
   // Initialize the index
   const index = client.initIndex(indexName);
 
   try {
     // Replace all objects in the index
-    await index.replaceAllObjects(objects);
+    await index.partialUpdateObject(object);
   } catch (error) {
-    console.error("Error updating objects:", error);
+    console.error("Error updating algolia search object:", error);
   }
 };
 
@@ -49,19 +49,16 @@ export const updateSearchObjects = async (indexName, objects) => {
  * Deletes objects from the specified index.
  *
  * @param {string} indexName - The name of the index.
- * @param {Array<Object>} objects - The array of objects to be deleted from the index.
+ * @param {Object} object - The  object to be deleted from the index.
  */
-export const deleteSearchObjects = async (indexName, objects) => {
+export const deleteSearchObjects = async (indexName, object) => {
   // Initialize the index
   const index = client.initIndex(indexName);
 
-  // Extract the IDs of the objects to be deleted
-  const idsArray = objects.map(({ id }) => id);
-
   try {
     // Delete objects by their IDs
-    await index.deleteObjects(idsArray);
+    await index.deleteObjects([object.id]);
   } catch (error) {
-    console.error("Error deleting objects:", error);
+    console.error("Error deleting algolia search object:", error);
   }
 };

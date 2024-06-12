@@ -97,7 +97,7 @@ CREATE TABLE "resume_skills" (
 -- CreateTable
 CREATE TABLE "organizations" (
     "id" TEXT NOT NULL,
-    "external_id" TEXT NOT NULL,
+    "external_id" TEXT,
     "name" TEXT NOT NULL,
     "description" TEXT,
     "logo_url" TEXT,
@@ -105,9 +105,9 @@ CREATE TABLE "organizations" (
     "linkedin_url" TEXT,
     "twitter_url" TEXT,
     "slug" TEXT NOT NULL,
-    "featured" BOOLEAN NOT NULL DEFAULT false,
-    "typeId" TEXT NOT NULL,
-    "industryId" TEXT NOT NULL,
+    "featured" BOOLEAN DEFAULT false,
+    "typeId" TEXT,
+    "industryId" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
     "deleted_at" TIMESTAMP(3),
@@ -118,14 +118,14 @@ CREATE TABLE "organizations" (
 -- CreateTable
 CREATE TABLE "organization_types" (
     "id" TEXT NOT NULL,
-    "external_id" TEXT NOT NULL,
+    "external_id" TEXT,
     "name" TEXT NOT NULL
 );
 
 -- CreateTable
 CREATE TABLE "organization_industries" (
     "id" TEXT NOT NULL,
-    "external_id" TEXT NOT NULL,
+    "external_id" TEXT,
     "name" TEXT NOT NULL
 );
 
@@ -200,7 +200,7 @@ CREATE TABLE "job_tags" (
 -- CreateTable
 CREATE TABLE "job_cities" (
     "id" TEXT NOT NULL,
-    "external_id" TEXT NOT NULL,
+    "external_id" TEXT,
     "name" TEXT NOT NULL,
     "timezone" TEXT NOT NULL,
     "latitude" TEXT NOT NULL,
@@ -211,7 +211,7 @@ CREATE TABLE "job_cities" (
 -- CreateTable
 CREATE TABLE "job_countries" (
     "id" TEXT NOT NULL,
-    "external_id" TEXT NOT NULL,
+    "external_id" TEXT,
     "code" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "regionId" TEXT NOT NULL
@@ -220,7 +220,7 @@ CREATE TABLE "job_countries" (
 -- CreateTable
 CREATE TABLE "job_regions" (
     "id" TEXT NOT NULL,
-    "external_id" TEXT NOT NULL,
+    "external_id" TEXT,
     "name" TEXT NOT NULL
 );
 
@@ -345,10 +345,10 @@ ALTER TABLE "resume_experience" ADD CONSTRAINT "resume_experience_resume_id_fkey
 ALTER TABLE "resume_skills" ADD CONSTRAINT "resume_skills_resume_id_fkey" FOREIGN KEY ("resume_id") REFERENCES "resumes"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "organizations" ADD CONSTRAINT "organizations_typeId_fkey" FOREIGN KEY ("typeId") REFERENCES "organization_types"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "organizations" ADD CONSTRAINT "organizations_typeId_fkey" FOREIGN KEY ("typeId") REFERENCES "organization_types"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "organizations" ADD CONSTRAINT "organizations_industryId_fkey" FOREIGN KEY ("industryId") REFERENCES "organization_industries"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "organizations" ADD CONSTRAINT "organizations_industryId_fkey" FOREIGN KEY ("industryId") REFERENCES "organization_industries"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "organizations_users" ADD CONSTRAINT "organizations_users_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
