@@ -17,7 +17,7 @@ const formatter = new Intl.NumberFormat("en-US", {
  */
 export default function JobListItem({ job, avatarUrl }) {
   return (
-    <li key={job.id} className="flex justify-between gap-x-6 py-4">
+    <li key={job.id} className="flex justify-between gap-x-6 py-4 align-middle">
       <div className="flex min-w-0 gap-x-4">
         <div className="h-12 w-12 rounded-lg relative">
           <Link href={`/management-jobs/${job.slug}`}>
@@ -77,12 +77,13 @@ export default function JobListItem({ job, avatarUrl }) {
             >
               Save
             </button>
-            <button
-              type="button"
+            <Link
               className="rounded bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-slate-600"
+              href={job.applyURL}
+              target="_blank"
             >
               Apply
-            </button>
+            </Link>
           </div>
         </div>
       </div>

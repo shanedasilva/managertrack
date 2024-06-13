@@ -170,7 +170,7 @@ function HeroSection() {
           />
         </div>
         <div className="w-full shrink-0 px-10 text-center lg:w-auto xl:px-20">
-          <h1 className="mb-4 mt-6 text-2xl font-medium uppercase tracking-widest lg:mb-6">
+          <h1 className="mb-4 mt-6 text-2xl font-medium uppercase tracking-widest lg:mb-3">
             Over 3k executive & management jobs
           </h1>
           <h2 className="text-2xl font-bold !leading-[1.2] md:mb-10 md:text-5xl xxl:text-[4.5rem]">
