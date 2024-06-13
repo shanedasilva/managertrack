@@ -14,6 +14,17 @@ import { Input } from "@/components/ui/input";
 import { getFeedJobs } from "@/lib/models/Job";
 import { getFeaturedOrganizations } from "@/lib/models/Organization";
 
+import {
+  fetchJobRegions,
+  fetchJobCountries,
+  fetchJobCities,
+  fetchJobIndustries,
+  fetchJobTypes,
+  fetchOrganizationTypes,
+  fetchOrganizations,
+  fetchJobs,
+} from "@/lib/backfill";
+
 const formatter = new Intl.NumberFormat("en-US", {
   style: "currency",
   currency: "USD",
@@ -25,6 +36,15 @@ const avatarUrl =
 export default async function Page() {
   const jobs = await getFeedJobs();
   const featuredOrganizations = await getFeaturedOrganizations();
+
+  // await fetchJobRegions();
+  // await fetchJobCountries();
+  // await fetchJobCities();
+  // await fetchJobIndustries();
+  // await fetchJobTypes();
+  // await fetchOrganizationTypes();
+  // await fetchOrganizations();
+  // await fetchJobs();
 
   return (
     <main>
@@ -264,3 +284,72 @@ function Sidebar() {
     </div>
   );
 }
+
+export const metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_APP_URL),
+  openGraph: {
+    siteName: "Blog | ManagerTrack",
+    type: "website",
+    locale: "en_US",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    "max-image-preview": "large",
+    "max-snippet": -1,
+    "max-video-preview": -1,
+    googleBot: "index, follow",
+  },
+  alternates: {
+    types: {
+      "application/rss+xml": `${process.env.NEXT_PUBLIC_BASE_APP_URL}/rss.xml`,
+    },
+  },
+  applicationName: "ManagerTrack",
+  appleWebApp: {
+    title: "ManagerTrack",
+    statusBarStyle: "default",
+    capable: true,
+  },
+  verification: {
+    google: "YOUR_DATA",
+    yandex: ["YOUR_DATA"],
+    other: {
+      "msvalidate.01": ["YOUR_DATA"],
+      "facebook-domain-verification": ["YOUR_DATA"],
+    },
+  },
+  icons: {
+    icon: [
+      {
+        url: "/favicon.ico",
+        type: "image/x-icon",
+      },
+      {
+        url: "/favicon-16x16.png",
+        sizes: "16x16",
+        type: "image/png",
+      },
+      // add favicon-32x32.png, favicon-96x96.png, android-chrome-192x192.png
+    ],
+    shortcut: [
+      {
+        url: "/favicon.ico",
+        type: "image/x-icon",
+      },
+    ],
+    apple: [
+      {
+        url: "/apple-icon-57x57.png",
+        sizes: "57x57",
+        type: "image/png",
+      },
+      {
+        url: "/apple-icon-60x60.png",
+        sizes: "60x60",
+        type: "image/png",
+      },
+      // add apple-icon-72x72.png, apple-icon-76x76.png, apple-icon-114x114.png, apple-icon-120x120.png, apple-icon-144x144.png, apple-icon-152x152.png, apple-icon-180x180.png
+    ],
+  },
+};

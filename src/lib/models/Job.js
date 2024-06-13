@@ -210,7 +210,12 @@ export async function updateJobForPaymentSuccessUsingJobId(id) {
  * @returns {Promise<Object>} - A promise that resolves to the created job object.
  * @throws {Error} - Throws an error if job creation fails.
  */
-export async function createJob(form, organizationId, userId) {
+export async function createJob(
+  form,
+  organizationId,
+  userId,
+  status = STATUS_DRAFT
+) {
   try {
     // Prepare data for job creation
     const jobData = {
@@ -223,15 +228,17 @@ export async function createJob(form, organizationId, userId) {
       payScaleEnd: form.job_salary_high,
       description: form.job_description,
       jobLocType: form.job_location_requirement,
-      category: "form.job_category",
-      status: STATUS_DRAFT,
+      status: status,
       organization: {
         connect: { id: organizationId },
       },
-      user: {
-        connect: { id: userId },
-      },
     };
+
+    if (userId) {
+      jobData.user = {
+        connect: { id: userId },
+      };
+    }
 
     // Create the job in the database
     const createdJob = await client.job.create({

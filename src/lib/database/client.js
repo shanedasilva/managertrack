@@ -88,12 +88,12 @@ function handleFindAction(params) {
  */
 function handleFindManyAction(params) {
   try {
-    if (softDeletable.includes(params.model)) {
-      params.args.where = { ...params.args.where, deletedAt: null };
-      console.log(
-        `FindMany action handled for model with soft delete: ${params.model}`
-      );
-    }
+    // if (softDeletable.includes(params.model)) {
+    //   params.args.where = { ...params.args.where, deletedAt: null };
+    //   console.log(
+    //     `FindMany action handled for model with soft delete: ${params.model}`
+    //   );
+    // }
 
     return params;
   } catch (error) {

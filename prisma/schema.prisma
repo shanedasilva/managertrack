@@ -100,8 +100,8 @@ model ResumeSkills {
 
 model Organization {
   id          String               @unique @id @default(uuid())
-  externalId  String?              @unique @map("external_id")
-  name        String               @unique
+  externalId  Int?                 @unique @map("external_id")
+  name        String               @map("name")
   description String?              @map("description")
   logoURL     String?              @map("logo_url")
   websiteURL  String?              @map("website_url")
@@ -111,8 +111,6 @@ model Organization {
   featured    Boolean?             @default(false) @map("featured")
   typeId      String? 
   type        OrganizationType?     @relation(fields: [typeId], references: [id])
-  industryId  String?
-  industry    OrganizationIndustry? @relation(fields: [industryId], references: [id])
   jobs        Job[]
   users       OrganizationUser[]
   createdAt   DateTime             @default(now()) @map("created_at")
@@ -124,20 +122,11 @@ model Organization {
 
 model OrganizationType {
   id            String         @unique @default(uuid())
-  externalId    String?        @unique @map("external_id")
+  externalId    Int?           @unique @map("external_id")
   name          String         @map("name")
   organizations Organization[]
 
   @@map("organization_types")
-}
-
-model OrganizationIndustry {
-  id            String         @unique @default(uuid())
-  externalId    String?        @unique @map("external_id")
-  name          String         @map("name")
-  organizations Organization[]
-  
-  @@map("organization_industries")
 }
 
 model OrganizationUser {
@@ -164,26 +153,32 @@ model Tag {
 
 model Job {
   id              String           @unique @id @default(uuid())
-  title           String
-  slug            String           @unique
-  jobType         JobType?
-  location        String
+  externalId      Int?             @unique @map("external_id")
+  title           String           @map("title")
+  slug            String           @unique @map("slug")
+  applyURL        String           @map("apply_url")
   compType        JobCompType      @map("comp_type")
-  payScaleBegin   Int              @map("pay_scale_begin")
-  payScaleEnd     Int              @map("pay_scale_end")
-  description     String
+  payScaleBegin   Int?             @map("pay_scale_begin")
+  payScaleEnd     Int?             @map("pay_scale_end")
+  payCurrency     String?          @map("pay_currency")
+  description     String           @map("description")
   jobLocType      JobLocType       @map("job_location_type")
   status          JobStatus        @default(DRAFT)
-  category        String           @map("category")
   customQuestions Json[]           @map("custom_questions")
   stripeSessionId String?          @unique @map("stripe_session_id")
-  organizationId  String           @map("organization_id")
-  userId          String           @map("user_id")
   activeUntil     DateTime?        @map("active_until")
-  tags            JobTag[]       
-  applications    JobApplication[]
+  tags            JobTag[]         
+  applications    JobApplication[] 
+  typeId          String           @map("job_id")
+  type            JobType          @relation(fields: [typeId], references: [id])
+  organizationId  String
   organization    Organization     @relation(fields: [organizationId], references: [id])
-  user            User             @relation(fields: [userId], references: [id])
+  userId          String?          @map("user_id")
+  user            User?            @relation(fields: [userId], references: [id])
+  industryId      String?          @map("industry_id")
+  industry        JobIndustry?     @relation(fields: [industryId], references: [id])
+  cityId          String?          @map("city_id")
+  city            JobCity?         @relation(fields: [cityId], references: [id])
   createdAt       DateTime         @default(now()) @map("created_at")
   updatedAt       DateTime         @updatedAt @map("updated_at")
   deletedAt       DateTime?        @map("deleted_at")
@@ -221,20 +216,21 @@ model JobTag {
 
 model JobCity {
   id         String     @unique @default(uuid())
-  externalId String?    @unique @map("external_id")
+  externalId Int?       @unique @map("external_id")
   name       String     @map("name")
   timezone   String     @map("timezone")
   latitude   String     @map("latitude")
   longitude  String     @map("longitude")
   countryId  String 
   country    JobCountry @relation(fields: [countryId], references: [id])
+  jobs       Job[]
 
   @@map("job_cities")
 }
 
 model JobCountry {
   id         String    @unique @default(uuid())
-  externalId String?   @unique @map("external_id")
+  externalId Int?      @unique @map("external_id")
   code       String    @unique @map("code")
   name       String    @unique @map("name")
   regionId   String 
@@ -246,22 +242,34 @@ model JobCountry {
 
 model JobRegion {
   id         String       @unique @default(uuid())
-  externalId String?      @unique @map("external_id")
+  externalId Int?         @unique @map("external_id")
   name       String       @unique @map("name")
   countries  JobCountry[]
 
   @@map("job_regions")
 }
 
-enum OrganizationRole {
-  RECRUITER
-  ADMIN
+model JobIndustry {
+  id            String         @unique @default(uuid())
+  externalId    Int?           @unique @map("external_id")
+  name          String         @map("name")
+  jobs          Job[]
+  
+  @@map("job_industries")
 }
 
-enum JobType {
-  FULL_TIME
-  PART_TIME
-  CONTRACT
+model JobType {
+  id            String         @unique @default(uuid())
+  externalId    Int?           @unique @map("external_id")
+  name          String         @map("name")
+  jobs          Job[]
+  
+  @@map("job_types")
+}
+
+enum OrganizationRole {
+  ADMIN
+  RECRUITER
 }
 
 enum JobLocType {
