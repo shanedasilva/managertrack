@@ -45,6 +45,38 @@ export async function getFeedJobs() {
 }
 
 /**
+ * Retrieves all active jobs
+ *
+ * @returns {Promise<Array<Object>>} - A promise that resolves to an array of jobs.
+ * @throws {Error} - Throws an error if the retrieval process fails.
+ */
+export async function getAllJobSlugsWithModifyTime() {
+  try {
+    // Retrieve all active jobs
+    const queryParams = {
+      where: {
+        activeUntil: {
+          gte: new Date(),
+        },
+        status: STATUS_OPEN,
+      },
+      select: {
+        id: true,
+        slug: true,
+        updatedAt: true,
+      },
+    };
+
+    const feedJobs = await client.job.findMany(queryParams);
+
+    return feedJobs;
+  } catch (error) {
+    console.error("Error retrieving all jobs:", error.message, error.stack);
+    throw error;
+  }
+}
+
+/**
  * Updates a job for payment processing using its ID.
  *
  * @param {number} jobId - The ID of the job to be updated.
