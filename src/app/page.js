@@ -11,8 +11,9 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 
-import { getFeedJobs } from "@/lib/models/Job";
 import { getFeaturedOrganizations } from "@/lib/models/Organization";
+
+import client from "@/lib/database/client";
 
 import {
   fetchJobRegions,
@@ -30,11 +31,7 @@ const formatter = new Intl.NumberFormat("en-US", {
   currency: "USD",
 });
 
-const avatarUrl =
-  "https://pbs.twimg.com/profile_images/1641476962362302464/K8lb6OtN_400x400.jpg";
-
 export default async function Page() {
-  const jobs = await getFeedJobs();
   const featuredOrganizations = await getFeaturedOrganizations();
 
   // await fetchJobRegions();
@@ -50,10 +47,22 @@ export default async function Page() {
     <main>
       <Header />
       <HeroSection />
-      <FeaturedOrganizationsSection
+      <TrendingOrganizationsSection
         featuredOrganizations={featuredOrganizations}
       />
-      <JobListSection jobs={jobs} />
+
+      <div className="mx-auto max-w-7xl px-4 lg:px-0 pb-4 relative z-10 bg-white">
+        <div className="mx-auto grid max-w-2xl grid-cols-1 grid-rows-1 items-start gap-x-8 gap-y-8 lg:mx-0 lg:max-w-none lg:grid-cols-12">
+          <div className="space-y-6 md:space-y-8 col-span-8">
+            <div className="prose prose-lg dark:prose-invert">
+              <JobListSection />
+            </div>
+          </div>
+
+          <Sidebar />
+        </div>
+      </div>
+
       <Footer />
     </main>
   );
@@ -153,18 +162,13 @@ function SearchBar() {
   );
 }
 
-function FeaturedOrganizationsSection({ featuredOrganizations }) {
+function TrendingOrganizationsSection({ featuredOrganizations }) {
   return (
     <div className="mx-auto max-w-7xl px-4 lg:px-0 pb-16 relative z-10">
       <div className="pb-6 sm:flex sm:items-center sm:justify-between">
         <h3 className="text-2xl font-semibold tracking-tight">
-          Featured organizations hiring now
+          Trending organizations hiring now
         </h3>
-        <div className="mt-3 flex sm:ml-4 sm:mt-0">
-          <p className="truncate text-base text-gray-900 underline cursor-pointer hover:no-underline">
-            Feature your organization
-          </p>
-        </div>
       </div>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {featuredOrganizations.map((organization) => (
@@ -184,7 +188,7 @@ function FeaturedOrganizationCard({ organization }) {
       <CardHeader className="flex flex-row items-top justify-start space-y-0 space-x-3 pb-4">
         <Link href={`/organizations/${organization.slug}`}>
           <Avatar className="h-12 w-12">
-            <AvatarImage src={avatarUrl} alt={organization.name} />
+            <AvatarImage src={organization.logoURL} alt={organization.name} />
             <AvatarFallback>MT</AvatarFallback>
           </Avatar>
         </Link>
@@ -206,44 +210,70 @@ function FeaturedOrganizationCard({ organization }) {
   );
 }
 
-function JobListSection({ jobs }) {
-  return (
-    <div className="mx-auto max-w-7xl px-4 lg:px-0 pb-4 relative z-10 bg-white">
-      <div className="mx-auto grid max-w-2xl grid-cols-1 grid-rows-1 items-start gap-x-8 gap-y-8 lg:mx-0 lg:max-w-none lg:grid-cols-12">
-        <div className="space-y-6 md:space-y-8 col-span-8">
-          <div className="prose prose-lg dark:prose-invert">
-            {Array.from({ length: 5 }).map((_, index) => (
-              <TrendingJobPostings key={index} jobs={jobs} />
-            ))}
-          </div>
-        </div>
-        <Sidebar />
-      </div>
-    </div>
-  );
+async function JobListSection() {
+  const popularIndustries = await client.jobIndustry.findMany({
+    take: 8,
+    orderBy: {
+      jobs: {
+        _count: "desc",
+      },
+    },
+  });
+
+  return popularIndustries.map(async (industry) => {
+    const jobs = await client.job.findMany({
+      where: {
+        industryId: industry.id,
+      },
+      include: {
+        organization: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            logoURL: true,
+          },
+        },
+        city: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+      take: 6,
+    });
+
+    return <JobsByIndustry key={industry.id} industry={industry} jobs={jobs} />;
+  });
 }
 
-function TrendingJobPostings({ jobs }) {
+function JobsByIndustry({ industry, jobs }) {
   return (
-    <div className="pb-12">
+    <div className="pb-8">
       <div className="pb-6 sm:flex sm:items-center sm:justify-between">
         <h3 className="text-2xl font-semibold tracking-tight">
-          Trending Job Postings
+          Trending {industry.name} Job Postings
         </h3>
         <div className="mt-3 flex sm:ml-4 sm:mt-0">
-          <p className="truncate text-base text-gray-900 underline cursor-pointer hover:no-underline">
-            View all jobs
-          </p>
+          <Link
+            className="truncate text-base text-gray-900 underline cursor-pointer hover:no-underline"
+            href={`/remote-jobs/${industry.id}`}
+          >
+            View more
+          </Link>
         </div>
       </div>
-      {jobs.map((job) => (
-        <JobListItem
-          key={job.id}
-          job={job}
-          formatter={formatter}
-          avatarUrl={avatarUrl}
-        />
-      ))}
+      <ul role="list" className="divide-y divide-gray-300">
+        {jobs.map((job) => (
+          <JobListItem
+            key={job.id}
+            job={job}
+            formatter={formatter}
+            avatarUrl={job.organization.logoURL}
+          />
+        ))}
+      </ul>
     </div>
   );
 }

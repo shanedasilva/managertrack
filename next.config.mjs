@@ -4,7 +4,7 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "pbs.twimg.com",
+        hostname: "jobdataapi.com",
       },
       {
         protocol: "https",

@@ -18,20 +18,12 @@ export async function getFeaturedOrganizations() {
   try {
     // Query parameters for finding the organizations
     const queryParams = {
-      where: {
-        featured: true,
-      },
-      select: {
-        id: true,
-        name: true,
-        slug: true,
-        _count: {
-          select: {
-            jobs: { where: { status: STATUS_OPEN } },
-          },
+      take: 4,
+      orderBy: {
+        jobs: {
+          _count: "desc",
         },
       },
-      take: 4,
     };
 
     const featuredOrganizations = await client.organization.findMany(

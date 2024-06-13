@@ -29,6 +29,7 @@ export async function getFeedJobs() {
             id: true,
             name: true,
             slug: true,
+            logoURL: true,
           },
         },
       },

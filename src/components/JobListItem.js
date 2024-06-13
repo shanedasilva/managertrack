@@ -1,9 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 
-const AVATAR_URL =
-  "https://pbs.twimg.com/profile_images/1641476962362302464/K8lb6OtN_400x400.jpg";
-
 const formatter = new Intl.NumberFormat("en-US", {
   style: "currency",
   currency: "USD",
@@ -18,9 +15,9 @@ const formatter = new Intl.NumberFormat("en-US", {
  * @param {string} props.job.imageUrl - The URL of the job image.
  * @returns {JSX.Element} - The JSX for the featured job.
  */
-export default function JobListItem({ job }) {
+export default function JobListItem({ job, avatarUrl }) {
   return (
-    <li key={job.id} className="flex justify-between gap-x-6 py-3">
+    <li key={job.id} className="flex justify-between gap-x-6 py-4">
       <div className="flex min-w-0 gap-x-4">
         <div className="h-12 w-12 rounded-lg relative">
           <Link href={`/management-jobs/${job.slug}`}>
@@ -28,7 +25,7 @@ export default function JobListItem({ job }) {
               alt={job.title}
               className="rounded-lg"
               fill={true}
-              src={AVATAR_URL}
+              src={avatarUrl}
               style={{ objectFit: "cover" }}
             />
           </Link>
@@ -49,10 +46,20 @@ export default function JobListItem({ job }) {
             <svg viewBox="0 0 2 2" className="h-0.5 w-0.5 text-gray-900">
               <circle cx={1} cy={1} r={1} />
             </svg>
-            <p className="truncate text-sm text-gray-500">{job.location}</p>
-            <svg viewBox="0 0 2 2" className="h-0.5 w-0.5 text-gray-900">
-              <circle cx={1} cy={1} r={1} />
-            </svg>
+            {job.city && (
+              <>
+                <Link
+                  className="truncate text-sm text-gray-500 hover:underline"
+                  href={`/management-jobs/${job.city.id}`}
+                >
+                  {job.city.name}
+                </Link>
+                <svg viewBox="0 0 2 2" className="h-0.5 w-0.5 text-gray-900">
+                  <circle cx={1} cy={1} r={1} />
+                </svg>
+              </>
+            )}
+
             <p className="truncate text-sm text-gray-500">
               {formatter.format(job.payScaleBegin)} -{" "}
               {formatter.format(job.payScaleEnd)}
@@ -62,7 +69,7 @@ export default function JobListItem({ job }) {
       </div>
 
       <div className="hidden shrink-0 sm:flex">
-        <div className="flex justify-between gap-x-2 align-middle py-2">
+        <div className="flex justify-between gap-x-2 align-middle">
           <div>
             <button
               type="button"
