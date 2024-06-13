@@ -268,6 +268,12 @@ async function JobListSection() {
           select: {
             id: true,
             name: true,
+            country: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
           },
         },
       },

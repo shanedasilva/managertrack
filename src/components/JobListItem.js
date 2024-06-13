@@ -46,13 +46,13 @@ export default function JobListItem({ job, avatarUrl }) {
             <svg viewBox="0 0 2 2" className="h-0.5 w-0.5">
               <circle cx={1} cy={1} r={1} />
             </svg>
-            {job.city && (
+            {job.city && job.city.country && (
               <>
                 <Link
                   className="truncate text-sm text-slate-500 hover:underline"
                   href={`/management-jobs/${job.city.id}`}
                 >
-                  {job.city.name}
+                  {job.city.name}, {job.city.country.name}
                 </Link>
                 <svg viewBox="0 0 2 2" className="h-0.5 w-0.5">
                   <circle cx={1} cy={1} r={1} />
