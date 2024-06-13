@@ -128,8 +128,8 @@ function UserActions() {
 function HeroSection() {
   return (
     <div className="bg-white py-32 sm:py-48 lg:pt-24 lg:pb-10">
-      <div class="lg:w-max-full mb-6 mt-20 flex flex-row items-center justify-between md:mb-8 lg:mt-8 xl:mx-auto xl:max-w-screen-xxl">
-        <div class="hidden shrink lg:block">
+      <div className="lg:w-max-full mb-6 mt-20 flex flex-row items-center justify-between md:mb-8 lg:mt-8 xl:mx-auto xl:max-w-screen-xxl">
+        <div className="hidden shrink lg:block">
           <img
             alt=""
             className="h-[180px] xl:h-[250px]"
@@ -137,12 +137,12 @@ function HeroSection() {
             src="https://wellfound.com/images/jobs/hero-1.png"
           />
         </div>
-        <div class="w-full shrink-0 px-10 text-center lg:w-auto xl:px-20">
-          <h1 class="mb-4 mt-6 text-2xl font-medium uppercase tracking-widest lg:mb-6">
+        <div className="w-full shrink-0 px-10 text-center lg:w-auto xl:px-20">
+          <h1 className="mb-4 mt-6 text-2xl font-medium uppercase tracking-widest lg:mb-6">
             Over 3k executive & management jobs
           </h1>
-          <h2 class="text-2xl font-bold !leading-[1.2] md:mb-10 md:text-5xl xxl:text-[4.5rem]">
-            Find what's next<span class="text-red-600">:</span>
+          <h2 className="text-2xl font-bold !leading-[1.2] md:mb-10 md:text-5xl xxl:text-[4.5rem]">
+            Find what&apos;s next<span className="text-red-600">:</span>
           </h2>
 
           <SearchBar />
@@ -210,7 +210,7 @@ function FeaturedOrganizationCard({ organization }) {
         </Link>
         <CardTitle>
           <Link href={`/organizations/${organization.slug}`}>
-            <p className="text-base font-semibold hover:underline cursor-pointer">
+            <p className="text-lg font-semibold hover:underline cursor-pointer">
               {organization.name}
             </p>
           </Link>
