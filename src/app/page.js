@@ -70,7 +70,7 @@ export default async function Page() {
 
 function Header() {
   return (
-    <div className="border-b fixed top-0 w-full bg-[#FFF8F5] z-50">
+    <div className="border-b fixed top-0 w-full bg-white z-50">
       <div className="grid gap-4 items-center md:grid-cols-2 lg:grid-cols-3 px-4 h-16">
         <Navigation />
         <NavLinks />
@@ -127,17 +127,33 @@ function UserActions() {
 
 function HeroSection() {
   return (
-    <div className="bg-[#FFF8F5] mb-16">
-      <div className="mx-auto max-w-3xl py-32 sm:py-48 lg:pt-36 lg:pb-24">
-        <div className="text-center">
-          <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-            Find your dream exec job without the hassle
+    <div className="bg-white py-32 sm:py-48 lg:pt-24 lg:pb-10">
+      <div class="lg:w-max-full mb-6 mt-20 flex flex-row items-center justify-between md:mb-8 lg:mt-8 xl:mx-auto xl:max-w-screen-xxl">
+        <div class="hidden shrink lg:block">
+          <img
+            alt=""
+            className="h-[180px] xl:h-[250px]"
+            loading="lazy"
+            src="https://wellfound.com/images/jobs/hero-1.png"
+          />
+        </div>
+        <div class="w-full shrink-0 px-10 text-center lg:w-auto xl:px-20">
+          <h1 class="mb-4 mt-6 text-2xl font-medium uppercase tracking-widest lg:mb-6">
+            Over 3k executive & management jobs
           </h1>
-          <p className="mt-6 text-lg leading-8 text-gray-600">
-            ManagerTrack is where top executives go to easily access active and
-            fully remote job opportunities from vetted tech companies.
-          </p>
+          <h2 class="text-2xl font-bold !leading-[1.2] md:mb-10 md:text-5xl xxl:text-[4.5rem]">
+            Find what's next<span class="text-red-600">:</span>
+          </h2>
+
           <SearchBar />
+        </div>
+        <div className="hidden shrink lg:block">
+          <img
+            alt=""
+            className="h-[180px] xl:h-[250px]"
+            loading="lazy"
+            src="https://wellfound.com/images/jobs/hero-2.png"
+          />
         </div>
       </div>
     </div>
@@ -150,10 +166,10 @@ function SearchBar() {
       <div className="bg-background/95 p-4 backdrop-blur supports-[backdrop-filter]:bg-background/60 w-full">
         <form>
           <div className="relative">
-            <Search className="absolute left-3 top-4 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute left-4 top-4 mt-1 h-5 w-5 text-muted-foreground" />
             <Input
-              placeholder="Search 200 management jobs"
-              className="indent-5 px-6 py-6 text-base bg-white"
+              placeholder="Search..."
+              className="indent-5 px-6 py-7 text-base bg-white border-gray-900"
             />
           </div>
         </form>
