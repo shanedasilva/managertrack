@@ -73,7 +73,7 @@ export default function JobListItem({ job, avatarUrl }) {
           <div>
             <button
               type="button"
-              className="rounded bg-white px-5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-900 hover:bg-slate-100 mr-2"
+              className="rounded bg-white px-5 py-2.5 text-sm font-semibold text-gray-900 border border-slate-900 hover:bg-slate-100 mr-2"
             >
               Save
             </button>

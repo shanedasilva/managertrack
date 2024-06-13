@@ -135,7 +135,12 @@ function UserActions() {
       <SignedOut>
         <SignInButton>
           <Button variant="outline" asChild>
-            <Link href="/login">Sign In</Link>
+            <Link
+              className="rounded bg-white px-5 py-2.5 text-sm font-semibold text-gray-900 border-slate-900 hover:bg-slate-100"
+              href="/login"
+            >
+              Sign In
+            </Link>
           </Button>
         </SignInButton>
       </SignedOut>
