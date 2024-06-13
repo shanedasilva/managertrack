@@ -31,36 +31,36 @@ export default function JobListItem({ job, avatarUrl }) {
           </Link>
         </div>
 
-        <div className="min-w-0 flex-auto">
+        <div className="min-w-0 flex-auto text-slate-900">
           <Link href={`/management-jobs/${job.slug}`}>
-            <p className="text-lg font-semibold leading-6 text-gray-900 hover:underline cursor-pointer">
+            <p className="text-lg font-semibold leading-6 hover:underline cursor-pointer">
               {job.title}
             </p>
           </Link>
           <div className="mt-1 flex items-center gap-x-1.5 text-xs">
             <Link href={`/organizations/${job.organization.slug}`}>
-              <p className="truncate text-sm text-gray-900 hover:underline cursor-pointer">
+              <p className="truncate text-sm font-medium hover:underline cursor-pointer">
                 {job.organization.name}
               </p>
             </Link>
-            <svg viewBox="0 0 2 2" className="h-0.5 w-0.5 text-gray-900">
+            <svg viewBox="0 0 2 2" className="h-0.5 w-0.5">
               <circle cx={1} cy={1} r={1} />
             </svg>
             {job.city && (
               <>
                 <Link
-                  className="truncate text-sm text-gray-500 hover:underline"
+                  className="truncate text-sm text-slate-500 hover:underline"
                   href={`/management-jobs/${job.city.id}`}
                 >
                   {job.city.name}
                 </Link>
-                <svg viewBox="0 0 2 2" className="h-0.5 w-0.5 text-gray-900">
+                <svg viewBox="0 0 2 2" className="h-0.5 w-0.5">
                   <circle cx={1} cy={1} r={1} />
                 </svg>
               </>
             )}
 
-            <p className="truncate text-sm text-gray-500">
+            <p className="truncate text-sm text-slate-500">
               {formatter.format(job.payScaleBegin)} -{" "}
               {formatter.format(job.payScaleEnd)}
             </p>
@@ -73,13 +73,13 @@ export default function JobListItem({ job, avatarUrl }) {
           <div>
             <button
               type="button"
-              className="rounded bg-white px-5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-900 hover:bg-gray-50 mr-2"
+              className="rounded bg-white px-5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-900 hover:bg-slate-100 mr-2"
             >
               Save
             </button>
             <button
               type="button"
-              className="rounded bg-gray-900 px-5 py-2.5 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+              className="rounded bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-slate-600"
             >
               Apply
             </button>

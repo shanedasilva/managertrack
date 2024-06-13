@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CircleChevronRight, Search } from "lucide-react";
+import { CircleChevronRight, Search, ChevronRight } from "lucide-react";
 import { SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
 
 import Footer from "@/components/Footer";
@@ -210,17 +210,31 @@ function FeaturedOrganizationCard({ organization }) {
         </Link>
         <CardTitle>
           <Link href={`/organizations/${organization.slug}`}>
-            <p className="text-lg font-semibold hover:underline cursor-pointer">
+            <p className="text-lg font-semibold hover:underline cursor-pointer text-slate-900">
               {organization.name}
             </p>
           </Link>
-          <p className="text-sm">+20.1% from last month</p>
+          <p className="text-sm text-slate-900">+20.1% from last month</p>
         </CardTitle>
       </CardHeader>
       <CardContent>
         <p className="text-base font-normal">
           Creating an open financial system for the world
         </p>
+      </CardContent>
+      <CardContent className="p-0 border-t border-slate-300">
+        <Link
+          className="px-5 py-3 block hover:bg-slate-100 rounded-b-md"
+          href="/"
+        >
+          <div className="flex justify-between items-center">
+            <p className="text-sm font-normal">
+              {organization._count.jobs} open positions
+            </p>
+
+            <ChevronRight className="ml-2 h-4 w-4" />
+          </div>
+        </Link>
       </CardContent>
     </Card>
   );
@@ -268,19 +282,20 @@ function JobsByIndustry({ industry, jobs }) {
   return (
     <div className="pb-8">
       <div className="pb-6 sm:flex sm:items-center sm:justify-between">
-        <h3 className="text-2xl font-semibold tracking-tight">
+        <h3 className="text-2xl font-semibold tracking-tight text-slate-900">
           Trending {industry.name} Job Postings
         </h3>
         <div className="mt-3 flex sm:ml-4 sm:mt-0">
           <Link
-            className="truncate text-base text-gray-900 underline cursor-pointer hover:no-underline"
+            className="truncate flex justify-between items-center font-medium text-sm text-slate-900 cursor-pointer"
             href={`/remote-jobs/${industry.id}`}
           >
             View more
+            <ChevronRight className="ml-1 h-4 w-4" />
           </Link>
         </div>
       </div>
-      <ul role="list" className="divide-y divide-gray-300">
+      <ul role="list" className="divide-y divide-slate-300">
         {jobs.map((job) => (
           <JobListItem
             key={job.id}

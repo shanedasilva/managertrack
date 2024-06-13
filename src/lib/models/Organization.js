@@ -24,6 +24,9 @@ export async function getFeaturedOrganizations() {
           _count: "desc",
         },
       },
+      include: {
+        _count: { select: { jobs: true } },
+      },
     };
 
     const featuredOrganizations = await client.organization.findMany(
