@@ -97,7 +97,7 @@ export default async function Page() {
 
 function Header() {
   return (
-    <div className="border-b fixed top-0 w-full bg-white z-50">
+    <div className="border-b border-slate-300 fixed top-0 w-full bg-white z-50">
       <div className="grid gap-4 items-center md:grid-cols-2 lg:grid-cols-3 px-4 h-16">
         <Navigation />
         <NavLinks />

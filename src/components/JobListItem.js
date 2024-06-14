@@ -1,6 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { Button } from "@/components/ui/button";
+
 const formatter = new Intl.NumberFormat("en-US", {
   style: "currency",
   currency: "USD",
@@ -70,20 +72,23 @@ export default function JobListItem({ job, avatarUrl }) {
 
       <div className="hidden shrink-0 sm:flex">
         <div className="flex justify-between gap-x-2 align-middle">
-          <div>
+          <div className="pt-1.5">
             <button
               type="button"
-              className="rounded bg-white px-5 py-2.5 text-sm font-semibold text-gray-900 border border-slate-900 hover:bg-slate-100 mr-2"
+              className="rounded bg-white px-5 py-1.5 text-sm font-semibold text-gray-900 border border-slate-900 hover:bg-slate-100 mr-2"
             >
               Save
             </button>
-            <Link
+
+            <Button
               className="rounded bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-slate-600"
-              href={job.applyURL}
-              target="_blank"
+              variant="ghost"
+              asChild
             >
-              Apply
-            </Link>
+              <Link href={job.applyURL} target="_blank">
+                Apply
+              </Link>
+            </Button>
           </div>
         </div>
       </div>
