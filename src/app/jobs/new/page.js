@@ -2,7 +2,7 @@ import Link from "next/link";
 import { auth } from "@clerk/nextjs/server";
 import { SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
 
-import { JobForm } from "@/app/management-jobs/new/components/JobForm";
+import { JobForm } from "@/app/jobs/new/components/JobForm";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import UserNavigation from "@/components/UserNavigation";
 import { Button } from "@/components/ui/button";

@@ -25,7 +25,7 @@ export default async function sitemap() {
         priority: 1,
       },
       {
-        url: `${baseAppUrl}/management-jobs/new`,
+        url: `${baseAppUrl}/jobs/new`,
         lastModified: currentDate,
         changeFrequency: "monthly",
         priority: 0.9,
@@ -34,7 +34,7 @@ export default async function sitemap() {
 
     // Map job slugs to their respective sitemap entries
     const jobPages = jobs.map((job) => ({
-      url: `${baseAppUrl}/management-jobs/${job.slug}`,
+      url: `${baseAppUrl}/jobs/${jobs.industry.slug}/${job.slug}`,
       lastModified: job.updatedAt,
       changeFrequency: "daily",
       priority: 0.8,

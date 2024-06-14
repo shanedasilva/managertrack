@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { CircleChevronRight, Search, ChevronRight } from "lucide-react";
 import { SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
-import { XMarkIcon } from "@heroicons/react/20/solid";
 
 import Footer from "@/components/Footer";
 import JobListItem from "@/components/JobListItem";
@@ -13,7 +12,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 
 import { getFeaturedOrganizations } from "@/lib/models/Organization";
-
 import client from "@/lib/database/client";
 
 import {
@@ -82,12 +80,13 @@ export default async function Page() {
               <span aria-hidden="true">&rarr;</span>
             </a>
           </p>
+
           <button
             type="button"
             className="-m-3 flex-none p-3 focus-visible:outline-offset-[-4px]"
           >
             <span className="sr-only">Dismiss</span>
-            <XMarkIcon className="h-5 w-5 text-white" aria-hidden="true" />
+            {/* <XMarkIcon className="h-5 w-5 text-white" aria-hidden="true" /> */}
           </button>
         </div>
       </div>
@@ -146,7 +145,7 @@ function UserActions() {
       </SignedOut>
       <Button asChild>
         <Link
-          href="/management-jobs/new"
+          href="/jobs/new"
           className="text-sm font-medium transition-colors hover:text-primary"
         >
           Post a Job
@@ -326,7 +325,7 @@ function JobsByIndustry({ industry, jobs }) {
         <div className="mt-3 flex sm:ml-4 sm:mt-0">
           <Link
             className="truncate flex justify-between items-center font-medium text-sm text-slate-900 cursor-pointer"
-            href={`/remote-jobs/${industry.id}`}
+            href={`/remote-jobs/${industry.slug}`}
           >
             View more
             <ChevronRight className="ml-1 h-4 w-4" />
@@ -336,10 +335,11 @@ function JobsByIndustry({ industry, jobs }) {
       <ul role="list" className="divide-y divide-slate-300">
         {jobs.map((job) => (
           <JobListItem
-            key={job.id}
-            job={job}
-            formatter={formatter}
             avatarUrl={job.organization.logoURL}
+            formatter={formatter}
+            industry={industry}
+            job={job}
+            key={job.id}
           />
         ))}
       </ul>

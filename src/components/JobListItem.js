@@ -17,12 +17,12 @@ const formatter = new Intl.NumberFormat("en-US", {
  * @param {string} props.job.imageUrl - The URL of the job image.
  * @returns {JSX.Element} - The JSX for the featured job.
  */
-export default function JobListItem({ job, avatarUrl }) {
+export default function JobListItem({ avatarUrl, industry, job }) {
   return (
     <li key={job.id} className="flex justify-between gap-x-6 py-4 align-middle">
       <div className="flex min-w-0 gap-x-4">
         <div className="h-12 w-12 rounded-lg relative">
-          <Link href={`/management-jobs/${job.slug}`}>
+          <Link href={`/jobs/${industry.slug}/${job.slug}`}>
             <Image
               alt={job.title}
               className="rounded-lg"
@@ -34,7 +34,7 @@ export default function JobListItem({ job, avatarUrl }) {
         </div>
 
         <div className="min-w-0 flex-auto text-slate-900">
-          <Link href={`/management-jobs/${job.slug}`}>
+          <Link href={`/jobs/${industry.slug}/${job.slug}`}>
             <p className="text-lg font-semibold leading-6 hover:underline cursor-pointer">
               {job.title}
             </p>
@@ -52,7 +52,7 @@ export default function JobListItem({ job, avatarUrl }) {
               <>
                 <Link
                   className="truncate text-sm text-slate-500 hover:underline"
-                  href={`/management-jobs/${job.city.id}`}
+                  href={`/jobs/${industry.slug}/${job.city.id}`}
                 >
                   {job.city.name}, {job.city.country.name}
                 </Link>

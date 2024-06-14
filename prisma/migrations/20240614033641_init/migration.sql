@@ -115,7 +115,8 @@ CREATE TABLE "organizations" (
 CREATE TABLE "organization_types" (
     "id" TEXT NOT NULL,
     "external_id" INTEGER,
-    "name" TEXT NOT NULL
+    "name" TEXT NOT NULL,
+    "slug" TEXT NOT NULL
 );
 
 -- CreateTable
@@ -194,6 +195,7 @@ CREATE TABLE "job_cities" (
     "id" TEXT NOT NULL,
     "external_id" INTEGER,
     "name" TEXT NOT NULL,
+    "slug" TEXT NOT NULL,
     "timezone" TEXT NOT NULL,
     "latitude" TEXT NOT NULL,
     "longitude" TEXT NOT NULL,
@@ -206,6 +208,7 @@ CREATE TABLE "job_countries" (
     "external_id" INTEGER,
     "code" TEXT NOT NULL,
     "name" TEXT NOT NULL,
+    "slug" TEXT NOT NULL,
     "regionId" TEXT NOT NULL
 );
 
@@ -213,21 +216,24 @@ CREATE TABLE "job_countries" (
 CREATE TABLE "job_regions" (
     "id" TEXT NOT NULL,
     "external_id" INTEGER,
-    "name" TEXT NOT NULL
+    "name" TEXT NOT NULL,
+    "slug" TEXT NOT NULL
 );
 
 -- CreateTable
 CREATE TABLE "job_industries" (
     "id" TEXT NOT NULL,
     "external_id" INTEGER,
-    "name" TEXT NOT NULL
+    "name" TEXT NOT NULL,
+    "slug" TEXT NOT NULL
 );
 
 -- CreateTable
 CREATE TABLE "job_types" (
     "id" TEXT NOT NULL,
     "external_id" INTEGER,
-    "name" TEXT NOT NULL
+    "name" TEXT NOT NULL,
+    "slug" TEXT NOT NULL
 );
 
 -- CreateIndex
@@ -273,6 +279,9 @@ CREATE UNIQUE INDEX "organization_types_id_key" ON "organization_types"("id");
 CREATE UNIQUE INDEX "organization_types_external_id_key" ON "organization_types"("external_id");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "organization_types_slug_key" ON "organization_types"("slug");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "organizations_users_user_id_key" ON "organizations_users"("user_id");
 
 -- CreateIndex
@@ -312,6 +321,9 @@ CREATE UNIQUE INDEX "job_cities_id_key" ON "job_cities"("id");
 CREATE UNIQUE INDEX "job_cities_external_id_key" ON "job_cities"("external_id");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "job_cities_slug_key" ON "job_cities"("slug");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "job_countries_id_key" ON "job_countries"("id");
 
 -- CreateIndex
@@ -324,6 +336,9 @@ CREATE UNIQUE INDEX "job_countries_code_key" ON "job_countries"("code");
 CREATE UNIQUE INDEX "job_countries_name_key" ON "job_countries"("name");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "job_countries_slug_key" ON "job_countries"("slug");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "job_regions_id_key" ON "job_regions"("id");
 
 -- CreateIndex
@@ -333,16 +348,25 @@ CREATE UNIQUE INDEX "job_regions_external_id_key" ON "job_regions"("external_id"
 CREATE UNIQUE INDEX "job_regions_name_key" ON "job_regions"("name");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "job_regions_slug_key" ON "job_regions"("slug");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "job_industries_id_key" ON "job_industries"("id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "job_industries_external_id_key" ON "job_industries"("external_id");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "job_industries_slug_key" ON "job_industries"("slug");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "job_types_id_key" ON "job_types"("id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "job_types_external_id_key" ON "job_types"("external_id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "job_types_slug_key" ON "job_types"("slug");
 
 -- AddForeignKey
 ALTER TABLE "resumes" ADD CONSTRAINT "resumes_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

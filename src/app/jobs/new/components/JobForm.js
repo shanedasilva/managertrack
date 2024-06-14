@@ -33,10 +33,10 @@ import {
   createNewJob,
   updateJobForPaymentProcessing,
   updateUserWithStripeCustomerId,
-} from "@/app/management-jobs/new/actions";
+} from "@/app/jobs/new/actions";
 
 import getStripe from "@/lib/payments/stripe";
-import getFormSchema from "@/app/management-jobs/new/schema";
+import getFormSchema from "@/app/jobs/new/schema";
 import {
   PAYMENT_TYPE_ONE_TIME,
   PAYMENT_TYPE_RECURRING,

@@ -65,6 +65,9 @@ export async function getAllJobSlugsWithModifyTime() {
         id: true,
         slug: true,
         updatedAt: true,
+        industry: {
+          slug: true,
+        },
       },
     };
 

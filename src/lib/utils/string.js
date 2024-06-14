@@ -6,8 +6,8 @@
  */
 export function convertToSlug(title) {
   const generateUniqueHash = () => {
-    // Get last 7 digits of the current timestamp
-    const timestamp = Date.now().toString().slice(-7);
+    // Get last 4 digits of the current timestamp
+    const timestamp = Date.now().toString().slice(-4);
     // Generate a 4-digit random number
     const randomNum = Math.floor(1000 + Math.random() * 9000).toString();
     // Combine them to form the unique hash
@@ -19,7 +19,7 @@ export function convertToSlug(title) {
     .trim() // Trim leading and trailing whitespace
     .replace(/[^\w\s-]/g, "") // Remove all non-word characters except spaces and hyphens
     .split(/\s+/) // Split the title into words
-    .slice(0, 10) // Limit to the first 10 words
+    .slice(0, 5) // Limit to the first 5 words
     .join(" ") // Rejoin the words into a string
     .replace(/\s+/g, "-") // Replace spaces with hyphens
     .replace(/-+/g, "-") // Replace multiple hyphens with a single hyphen

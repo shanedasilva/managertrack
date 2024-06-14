@@ -2,6 +2,7 @@ import client from "@/lib/database/client";
 
 import { convertToSlug } from "@/lib/utils/string";
 import { STATUS_OPEN } from "@/lib/models/Job";
+
 /**
  * Fetches job regions from the external API and stores them in the database.
  *
@@ -9,7 +10,7 @@ import { STATUS_OPEN } from "@/lib/models/Job";
  * @throws {Error} Will throw an error if the API request fails or if there is an issue with database operations.
  */
 export async function fetchJobRegions() {
-  const url = `${process.env.JOB_DATA_BASE_URL}/jobregions/`;
+  const url = `https://jobdataapi.com/api/jobregions/`;
   const headers = {
     Authorization: `Api-Key ${process.env.JOB_DATA_API_KEY}`,
   };
@@ -32,6 +33,7 @@ export async function fetchJobRegions() {
     const createData = data.map((item) => ({
       externalId: item.id,
       name: item.name,
+      slug: convertToSlug(item.name),
     }));
 
     // Store job regions in the database
@@ -54,7 +56,7 @@ export async function fetchJobRegions() {
  * @throws {Error} Will throw an error if the API request fails or if there is an issue with database operations.
  */
 export async function fetchJobCountries() {
-  const url = `${process.env.JOB_DATA_BASE_URL}/jobcountries/`;
+  const url = `https://jobdataapi.com/api/jobcountries/`;
   const headers = {
     Authorization: `Api-Key ${process.env.JOB_DATA_API_KEY}`,
   };
@@ -110,6 +112,7 @@ export async function fetchJobCountries() {
           name: item.name,
           externalId: item.externalId,
           regionId: jobRegion.id,
+          slug: convertToSlug(item.name),
         }));
 
         stuff = [...stuff, ...saveData];
@@ -151,7 +154,7 @@ export async function fetchJobCities() {
     };
 
     for (const country of countries) {
-      const url = `${process.env.JOB_DATA_BASE_URL}/jobcities/?country_code=${country.code}&page_size=5000`;
+      const url = `https://jobdataapi.com/api/jobcities/?country_code=${country.code}&page_size=5000`;
 
       // Make the GET request to the API
       const response = await fetch(url, { headers });
@@ -172,6 +175,7 @@ export async function fetchJobCities() {
         latitude: item.latitude,
         longitude: item.longitude,
         countryId: country.id,
+        slug: convertToSlug(item.name),
       }));
 
       await client.jobCity.createMany({
@@ -194,7 +198,7 @@ export async function fetchJobCities() {
  * @throws {Error} Will throw an error if the API request fails or if there is an issue with database operations.
  */
 export async function fetchJobIndustries() {
-  const url = `${process.env.JOB_DATA_BASE_URL}/industries/`;
+  const url = `https://jobdataapi.com/api/industries/`;
   const headers = {
     Authorization: `Api-Key ${process.env.JOB_DATA_API_KEY}`,
   };
@@ -217,6 +221,7 @@ export async function fetchJobIndustries() {
     const createData = data.map((item) => ({
       externalId: item.id,
       name: item.name,
+      slug: convertToSlug(item.name),
     }));
 
     // Store job regions in the database
@@ -239,7 +244,7 @@ export async function fetchJobIndustries() {
  * @throws {Error} Will throw an error if the API request fails or if there is an issue with database operations.
  */
 export async function fetchJobTypes() {
-  const url = `${process.env.JOB_DATA_BASE_URL}/jobtypes/`;
+  const url = `https://jobdataapi.com/api/jobtypes/`;
   const headers = {
     Authorization: `Api-Key ${process.env.JOB_DATA_API_KEY}`,
   };
@@ -262,6 +267,7 @@ export async function fetchJobTypes() {
     const createData = data.map((item) => ({
       externalId: item.id,
       name: item.name,
+      slug: convertToSlug(item.name),
     }));
 
     // Store job regions in the database
@@ -284,7 +290,7 @@ export async function fetchJobTypes() {
  * @throws {Error} Will throw an error if the API request fails or if there is an issue with database operations.
  */
 export async function fetchOrganizationTypes() {
-  const url = `${process.env.JOB_DATA_BASE_URL}/companytypes/`;
+  const url = `https://jobdataapi.com/api/companytypes/`;
   const headers = {
     Authorization: `Api-Key ${process.env.JOB_DATA_API_KEY}`,
   };
@@ -307,6 +313,7 @@ export async function fetchOrganizationTypes() {
     const createData = data.map((item) => ({
       externalId: item.id,
       name: item.name,
+      slug: convertToSlug(item.name),
     }));
 
     // Store job regions in the database
@@ -330,7 +337,7 @@ export async function fetchOrganizationTypes() {
  * @throws {Error} Will throw an error if the API request fails or if there is an issue with database operations.
  */
 export async function fetchOrganizations() {
-  const url = `${process.env.JOB_DATA_BASE_URL}/jobs/?experience_level=EX&max_age=30`;
+  const url = `https://jobdataapi.com/api/jobs/?experience_level=EX&max_age=30`;
   const headers = {
     Authorization: `Api-Key ${process.env.JOB_DATA_API_KEY}`,
   };
@@ -367,7 +374,7 @@ export async function fetchOrganizations() {
 
     for (const item of results) {
       // Fetch company details
-      const companyURL = `${process.env.JOB_DATA_BASE_URL}/companies/${item.company.id}`;
+      const companyURL = `https://jobdataapi.com/api/companies/${item.company.id}`;
       const companyResponse = await fetch(companyURL, { headers });
 
       // Check if the company response is ok (status code 200-299)
@@ -468,7 +475,7 @@ export async function fetchJobs() {
     });
 
     for (const organization of organizations) {
-      const url = `${process.env.JOB_DATA_BASE_URL}/jobs/?company_id=${organization.externalId}&experience_level=EX&max_age=30`;
+      const url = `https://jobdataapi.com/api/jobs/?company_id=${organization.externalId}&experience_level=EX&max_age=30`;
 
       // Make the GET request to the API
       const response = await fetch(url, { headers });
@@ -501,7 +508,7 @@ export async function fetchJobs() {
         // Fetch company details from cache or API
         let companyData = companyCache.get(item.company.id);
         if (!companyData) {
-          const companyURL = `${process.env.JOB_DATA_BASE_URL}/companies/${item.company.id}`;
+          const companyURL = `https://jobdataapi.com/api/companies/${item.company.id}`;
           const companyResponse = await fetch(companyURL, { headers });
 
           // Check if the company response is ok (status code 200-299)

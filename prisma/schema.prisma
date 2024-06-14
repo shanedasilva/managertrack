@@ -124,6 +124,7 @@ model OrganizationType {
   id            String         @unique @default(uuid())
   externalId    Int?           @unique @map("external_id")
   name          String         @map("name")
+  slug          String         @unique @map("slug")
   organizations Organization[]
 
   @@map("organization_types")
@@ -218,7 +219,7 @@ model JobCity {
   id         String     @unique @default(uuid())
   externalId Int?       @unique @map("external_id")
   name       String     @map("name")
-  slug       String?     @unique @map("slug")
+  slug       String     @unique @map("slug")
   timezone   String     @map("timezone")
   latitude   String     @map("latitude")
   longitude  String     @map("longitude")
@@ -234,7 +235,7 @@ model JobCountry {
   externalId Int?      @unique @map("external_id")
   code       String    @unique @map("code")
   name       String    @unique @map("name")
-  slug       String?    @unique @map("slug")
+  slug       String    @unique @map("slug")
   regionId   String 
   region     JobRegion @relation(fields: [regionId], references: [id])
   cities     JobCity[]
@@ -246,7 +247,7 @@ model JobRegion {
   id         String       @unique @default(uuid())
   externalId Int?         @unique @map("external_id")
   name       String       @unique @map("name")
-  slug       String?       @unique @map("slug")
+  slug       String       @unique @map("slug")
   countries  JobCountry[]
 
   @@map("job_regions")
@@ -256,7 +257,7 @@ model JobIndustry {
   id            String         @unique @default(uuid())
   externalId    Int?           @unique @map("external_id")
   name          String         @map("name")
-  slug          String?         @unique @map("slug")
+  slug          String         @unique @map("slug")
   jobs          Job[]
   
   @@map("job_industries")
@@ -266,7 +267,7 @@ model JobType {
   id            String         @unique @default(uuid())
   externalId    Int?           @unique @map("external_id")
   name          String         @map("name")
-  slug          String?         @unique @map("slug")
+  slug          String         @unique @map("slug")
   jobs          Job[]
   
   @@map("job_types")
