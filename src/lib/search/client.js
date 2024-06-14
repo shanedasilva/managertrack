@@ -14,16 +14,25 @@ if (process.env.SEARCH_ENABLED) {
  * Creates or updates objects in the specified index.
  *
  * @param {string} indexName - The name of the index.
- * @param {<Object>} object - The objects to be added to the index.
+ * @param {<Object>} data - The objects to be added to the index.
  */
-export const createSearchObject = async (indexName, object) => {
+export const createSearchObjects = async (
+  indexName,
+  obj,
+  objectIdKey = "id"
+) => {
   // Initialize the index
   const index = client.initIndex(indexName);
 
   try {
-    await index.saveObject(object);
+    if (obj.hasOwnProperty("description")) {
+      delete obj.description;
+    }
+
+    await index.saveObject({ ...obj, objectID: obj[objectIdKey] });
   } catch (error) {
     console.error("Error creating algolia search object:", error);
+    throw error;
   }
 };
 
@@ -33,7 +42,7 @@ export const createSearchObject = async (indexName, object) => {
  * @param {string} indexName - The name of the index.
  * @param {Object} object - The objects to replace the existing objects in the index.
  */
-export const updateSearchObject = async (indexName, object) => {
+export const updateSearchObjects = async (indexName, object) => {
   // Initialize the index
   const index = client.initIndex(indexName);
 
@@ -42,6 +51,7 @@ export const updateSearchObject = async (indexName, object) => {
     await index.partialUpdateObject(object);
   } catch (error) {
     console.error("Error updating algolia search object:", error);
+    throw error;
   }
 };
 
@@ -60,5 +70,6 @@ export const deleteSearchObjects = async (indexName, object) => {
     await index.deleteObjects([object.id]);
   } catch (error) {
     console.error("Error deleting algolia search object:", error);
+    throw error;
   }
 };

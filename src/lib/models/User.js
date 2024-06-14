@@ -1,5 +1,4 @@
 import client from "@/lib/database/client";
-import { createSearchObject, updateSearchObject } from "@/lib/search/client";
 
 /**
  * Asynchronously creates a new user.
@@ -28,14 +27,7 @@ export async function createUser(
     };
 
     // Prepare the user data to be inserted into the database
-    const user = await client.user.create(createParams);
-
-    // If search indexing is enabled, create search objects
-    if (process.env.SEARCH_ENABLED) {
-      await createSearchObject("User", { ...user, objectID: user.id });
-    }
-
-    return user;
+    return await client.user.create(createParams);
   } catch (error) {
     console.error("Error creating user:", error.message, error.stack);
     throw error;
@@ -60,17 +52,7 @@ export async function updateUser(id, email, firstName, lastName) {
     };
 
     // Update the user in the database
-    const updatedUser = await client.user.update(updateParams);
-
-    // If search is enabled, create search objects
-    if (process.env.SEARCH_ENABLED) {
-      await updateSearchObject("User", {
-        ...updatedUser,
-        objectID: updatedUser.id,
-      });
-    }
-
-    return updatedUser;
+    return await client.user.update(updateParams);
   } catch (error) {
     console.error(
       `Error updating user with ID ${id}:`,

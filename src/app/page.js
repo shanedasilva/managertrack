@@ -325,7 +325,7 @@ function JobsByIndustry({ industry, jobs }) {
         <div className="mt-3 flex sm:ml-4 sm:mt-0">
           <Link
             className="truncate flex justify-between items-center font-medium text-sm text-slate-900 cursor-pointer"
-            href={`/remote-jobs/${industry.slug}`}
+            href={`/jobs/${industry.slug}`}
           >
             View more
             <ChevronRight className="ml-1 h-4 w-4" />

@@ -1,7 +1,5 @@
 import client from "@/lib/database/client";
 import { convertToSlug } from "@/lib/utils/string";
-import { STATUS_OPEN } from "@/lib/models/Job";
-import { createSearchObject } from "@/lib/search/client";
 
 /**
  * Asynchronously retrieves featured organizations from the database.
@@ -61,21 +59,9 @@ export async function createOrganization(form) {
     };
 
     // Create the organization in the database
-    const newOrganization = await client.organization.create({
+    return await client.organization.create({
       data: organizationData,
     });
-
-    // Optionally index the organization for search
-    if (process.env.SEARCH_ENABLED) {
-      await createSearchObject("Organization", {
-        ...newOrganization,
-        objectID: newOrganization.id,
-      });
-
-      console.log(`Organization indexed for search: ${newOrganization.name}`);
-    }
-
-    return newOrganization;
   } catch (error) {
     console.error("Error creating organization:", error.message, error.stack);
     throw error;

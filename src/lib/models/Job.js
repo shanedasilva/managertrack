@@ -1,6 +1,5 @@
 import client from "@/lib/database/client";
 import { convertToSlug } from "@/lib/utils/string";
-import { createSearchObject, updateSearchObject } from "@/lib/search/client";
 
 // Constants
 export const STATUS_OPEN = "OPEN";
@@ -128,7 +127,7 @@ export async function updateJobForPaymentSuccessUsingStripeSessionId(
     const activeUntil = new Date(today.setDate(today.getDate() + 30));
 
     // Update the job for payment success
-    const updatedJob = await client.job.update({
+    return await client.job.update({
       where: {
         stripeSessionId: stripeSessionId,
       },
@@ -137,16 +136,6 @@ export async function updateJobForPaymentSuccessUsingStripeSessionId(
         status: STATUS_OPEN,
       },
     });
-
-    // If search is enabled, update search objects
-    if (process.env.SEARCH_ENABLED) {
-      await updateSearchObject("Job", {
-        ...updatedJob,
-        objectID: updatedJob.id,
-      });
-    }
-
-    return updatedJob;
   } catch (error) {
     console.error(
       `Error updating job for payment success with Stripe session ID ${stripeSessionId}:`,
@@ -171,7 +160,7 @@ export async function updateJobForPaymentSuccessUsingJobId(id) {
     const activeUntil = new Date(today.setDate(today.getDate() + 30));
 
     // Update the job in the database
-    const updatedJob = await client.job.update({
+    return await client.job.update({
       where: {
         id: id,
       },
@@ -180,16 +169,6 @@ export async function updateJobForPaymentSuccessUsingJobId(id) {
         status: STATUS_OPEN,
       },
     });
-
-    // If search is enabled, update search objects
-    if (process.env.SEARCH_ENABLED) {
-      await updateSearchObject("Job", {
-        ...updatedJob,
-        objectID: updatedJob.id,
-      });
-    }
-
-    return updatedJob;
   } catch (error) {
     // Log and throw the error for debugging
     console.error(
@@ -240,19 +219,9 @@ export async function createJob(
     }
 
     // Create the job in the database
-    const createdJob = await client.job.create({
+    return await client.job.create({
       data: jobData,
     });
-
-    // If search is enabled, create search objects
-    if (process.env.SEARCH_ENABLED) {
-      await createSearchObject("Job", {
-        ...createdJob,
-        objectID: createdJob.id,
-      });
-    }
-
-    return createdJob;
   } catch (error) {
     // Log and throw the error for debugging
     console.error(`Error creating job: ${error.message}`, error.stack);

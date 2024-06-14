@@ -175,7 +175,7 @@ export async function fetchJobCities() {
         latitude: item.latitude,
         longitude: item.longitude,
         countryId: country.id,
-        slug: convertToSlug(item.name),
+        slug: convertToSlug(item.name, true),
       }));
 
       await client.jobCity.createMany({
@@ -418,7 +418,7 @@ export async function fetchOrganizations() {
               externalId: companyData.id,
               name: companyData.name,
               logoURL: companyData.logo,
-              slug: convertToSlug(companyData.name),
+              slug: convertToSlug(companyData.name, true),
               websiteURL: companyData.website_url,
               linkedinURL: companyData.linkedin_url,
               twitterURL: companyData.twitter_handle,
@@ -493,7 +493,7 @@ export async function fetchJobs() {
         const jobData = {
           title: item.title,
           externalId: item.id,
-          slug: convertToSlug(item.title),
+          slug: convertToSlug(item.title, true),
           applyURL: item.application_url,
           compType: "SALARY",
           payScaleBegin: parseInt(item.salary_min),

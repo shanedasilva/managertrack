@@ -4,7 +4,7 @@
  * @param {string} title - The job post title to be converted.
  * @returns {string} - The URL slug with a unique hash.
  */
-export function convertToSlug(title) {
+export function convertToSlug(title, unique = false) {
   const generateUniqueHash = () => {
     // Get last 4 digits of the current timestamp
     const timestamp = Date.now().toString().slice(-4);
@@ -17,6 +17,8 @@ export function convertToSlug(title) {
   const slug = title
     .toLowerCase() // Convert to lowercase
     .trim() // Trim leading and trailing whitespace
+    .replace(/\b(and)\b/g, "") // Remove the word "and"
+    .replace(/\//g, " ") // Replace "/" with a space
     .replace(/[^\w\s-]/g, "") // Remove all non-word characters except spaces and hyphens
     .split(/\s+/) // Split the title into words
     .slice(0, 5) // Limit to the first 5 words
@@ -27,5 +29,9 @@ export function convertToSlug(title) {
 
   const uniqueHash = generateUniqueHash();
 
-  return `${slug}-${uniqueHash}`;
+  if (unique) {
+    return `${slug}-${uniqueHash}`;
+  }
+
+  return slug;
 }
