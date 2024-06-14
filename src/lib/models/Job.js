@@ -61,13 +61,8 @@ export async function getAllJobSlugsWithModifyTime() {
         },
         status: STATUS_OPEN,
       },
-      select: {
-        id: true,
-        slug: true,
-        updatedAt: true,
-        industry: {
-          slug: true,
-        },
+      include: {
+        industry: true,
       },
     };
 

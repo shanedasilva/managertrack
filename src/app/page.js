@@ -127,7 +127,7 @@ function NavLinks() {
 
 function UserActions() {
   return (
-    <div className="ml-auto flex items-center space-x-4">
+    <div className="ml-auto flex items-center space-x-2">
       <SignedIn>
         <UserNavigation />
       </SignedIn>
@@ -149,7 +149,7 @@ function UserActions() {
           className="text-sm font-medium transition-colors hover:text-primary"
         >
           Post a Job
-          <CircleChevronRight className="ml-2 h-4 w-4" />
+          <CircleChevronRight className="ml-1 h-4 w-4" />
         </Link>
       </Button>
     </div>

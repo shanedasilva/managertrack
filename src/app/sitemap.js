@@ -33,12 +33,14 @@ export default async function sitemap() {
     ];
 
     // Map job slugs to their respective sitemap entries
-    const jobPages = jobs.map((job) => ({
-      url: `${baseAppUrl}/jobs/${jobs.industry.slug}/${job.slug}`,
-      lastModified: job.updatedAt,
-      changeFrequency: "daily",
-      priority: 0.8,
-    }));
+    const jobPages = jobs.map((job) => {
+      return {
+        url: `${baseAppUrl}/jobs/${job.industry.slug}/${job.slug}`,
+        lastModified: job.updatedAt,
+        changeFrequency: "daily",
+        priority: 0.8,
+      };
+    });
 
     // Combine default pages and job pages into the final sitemap array
     return [...defaultPages, ...jobPages];
