@@ -14,33 +14,8 @@ import { Input } from "@/components/ui/input";
 import { getFeaturedOrganizations } from "@/lib/models/Organization";
 import client from "@/lib/database/client";
 
-import {
-  fetchJobRegions,
-  fetchJobCountries,
-  fetchJobCities,
-  fetchJobIndustries,
-  fetchJobTypes,
-  fetchOrganizationTypes,
-  fetchOrganizations,
-  fetchJobs,
-} from "@/lib/backfill";
-
-const formatter = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-});
-
 export default async function Page() {
   const featuredOrganizations = await getFeaturedOrganizations();
-
-  // await fetchJobRegions();
-  // await fetchJobCountries();
-  // await fetchJobCities();
-  // await fetchJobIndustries();
-  // await fetchJobTypes();
-  // await fetchOrganizationTypes();
-  // await fetchOrganizations();
-  // await fetchJobs();
 
   return (
     <main>
@@ -336,7 +311,6 @@ function JobsByIndustry({ industry, jobs }) {
         {jobs.map((job) => (
           <JobListItem
             avatarUrl={job.organization.logoURL}
-            formatter={formatter}
             industry={industry}
             job={job}
             key={job.id}

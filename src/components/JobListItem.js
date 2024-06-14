@@ -2,11 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
-
-const formatter = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-});
+import { currencyFormatter } from "@/lib/utils/number";
 
 /**
  * Renders a JobList job.
@@ -21,7 +17,7 @@ export default function JobListItem({ avatarUrl, industry, job }) {
   return (
     <li key={job.id} className="flex justify-between gap-x-6 py-4 align-middle">
       <div className="flex min-w-0 gap-x-4">
-        <div className="h-12 w-12 rounded-lg relative">
+        <div className="h-12 w-12 relative rounded-lg">
           <Link href={`/jobs/${industry.slug}/${job.slug}`}>
             <Image
               alt={job.title}
@@ -63,8 +59,8 @@ export default function JobListItem({ avatarUrl, industry, job }) {
             )}
 
             <p className="truncate text-sm text-slate-500">
-              {formatter.format(job.payScaleBegin)} -{" "}
-              {formatter.format(job.payScaleEnd)}
+              {currencyFormatter.format(job.payScaleBegin)} -{" "}
+              {currencyFormatter.format(job.payScaleEnd)}
             </p>
           </div>
         </div>

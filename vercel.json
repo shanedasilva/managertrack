@@ -1,0 +1,12 @@
+{
+    "crons": [
+        {
+            "path": "/api/backfill/organizations",
+            "schedule": "0 0 * * *"
+        },
+        {
+            "path": "/api/backfill/jobs",
+            "schedule": "0 0 * * *"
+        }
+    ]
+  }
