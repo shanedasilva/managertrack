@@ -113,7 +113,7 @@ async function ensureOrganizationCreatedAndCached(
  * @param {Object} req - The request object.
  * @param {Object} res - The response object.
  */
-export default async function GET(req, res) {
+export async function GET(req, res) {
   if (
     req.headers.get("Authorization") !== `Bearer ${process.env.CRON_SECRET}`
   ) {
