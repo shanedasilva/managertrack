@@ -257,7 +257,7 @@ function FeaturedOrganizationCard({ organization }) {
       <CardContent className="p-0 border-t border-slate-300">
         <Link
           className="px-5 py-3 block hover:bg-slate-100 rounded-b-md"
-          href="/"
+          href={`/organizations/${organization.slug}`}
         >
           <div className="flex justify-between items-center">
             <p className="text-sm font-normal">
@@ -350,37 +350,63 @@ function JobsByIndustry({ industry, jobs }) {
 function Sidebar() {
   return (
     <div className="sticky top-24 self-start space-y-6 md:space-y-8 h-fit col-span-4">
-      <div>
-        <h2 className="text-xl md:text-2xl font-bold">Sidebar</h2>
-        <p className="text-gray-500 dark:text-gray-400 mt-2">
-          This is the sidebar content. It will remain fixed in place as the user
-          scrolls.
-        </p>
-      </div>
-      <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 md:p-6">
-        <h3 className="text-lg md:text-xl font-bold">Quick Links</h3>
-        <nav className="mt-4 space-y-2">
-          <Link
-            href="#"
-            className="block text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-50 transition-colors"
-          >
-            Link 1
-          </Link>
-          <Link
-            href="#"
-            className="block text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-50 transition-colors"
-          >
-            Link 2
-          </Link>
-          <Link
-            href="#"
-            className="block text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-50 transition-colors"
-          >
-            Link 3
-          </Link>
-        </nav>
-      </div>
+      <Card className="w-full">
+        <CardHeader className="flex flex-row items-top justify-start space-y-0 space-x-3 pb-4">
+          <CardTitle className="text-lg font-semibold tracking-tight">
+            Want more management jobs?
+          </CardTitle>
+        </CardHeader>
+
+        <CardContent className="p-0 border-t border-slate-300">
+          test
+        </CardContent>
+      </Card>
+
+      <Card className="w-full">
+        <CardHeader className="flex flex-row items-top justify-start space-y-0 space-x-3 pb-4">
+          <CardTitle className="text-lg font-semibold tracking-tight">
+            Want more management jobs?
+          </CardTitle>
+        </CardHeader>
+
+        <CardContent className="p-0 border-t border-slate-300">
+          test
+        </CardContent>
+      </Card>
     </div>
+    // <div className="sticky top-24 self-start space-y-6 md:space-y-8 h-fit col-span-4">
+    //   <div>
+    //     <p className="text-gray-500 dark:text-gray-400 mt-2">
+    //       Want more remote jobs?
+    //     </p>
+    //     <p className="text-gray-500 dark:text-gray-400 mt-2">
+    //       Upgrade to access 30,146 jobs!
+    //     </p>
+    //   </div>
+    //   <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 md:p-6">
+    //     <h3 className="text-lg md:text-xl font-bold">Quick Links</h3>
+    //     <nav className="mt-4 space-y-2">
+    //       <Link
+    //         href="#"
+    //         className="block text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-50 transition-colors"
+    //       >
+    //         Link 1
+    //       </Link>
+    //       <Link
+    //         href="#"
+    //         className="block text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-50 transition-colors"
+    //       >
+    //         Link 2
+    //       </Link>
+    //       <Link
+    //         href="#"
+    //         className="block text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-50 transition-colors"
+    //       >
+    //         Link 3
+    //       </Link>
+    //     </nav>
+    //   </div>
+    // </div>
   );
 }
 
