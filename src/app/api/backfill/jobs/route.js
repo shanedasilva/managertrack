@@ -407,7 +407,7 @@ export async function GET({ headers }, res) {
     for (const organization of organizations) {
       const url = `https://jobdataapi.com/api/jobs/?company_id=${
         organization.externalId
-      }&experience_level=EX&exclude_expired=true&language=en&max_age=30&page_size=50&region_id=5&title=${convertToUrlSearchString(
+      }&experience_level=EX&exclude_expired=true&language=en&max_age=1&page_size=50&region_id=5&title=${convertToUrlSearchString(
         SEARCH_TERMS
       )}`;
 

@@ -323,7 +323,7 @@ export async function GET({ headers }, res) {
     });
   }
 
-  const url = `https://jobdataapi.com/api/jobs/?experience_level=EX&exclude_expired=true&language=en&max_age=30&page_size=50&region_id=5&title=${convertToUrlSearchString(
+  const url = `https://jobdataapi.com/api/jobs/?experience_level=EX&exclude_expired=true&language=en&max_age=1&page_size=50&region_id=5&title=${convertToUrlSearchString(
     SEARCH_TERMS
   )}`;
   const requestHeaders = {

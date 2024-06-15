@@ -75,6 +75,40 @@ export async function getAllJobSlugsWithModifyTime() {
 }
 
 /**
+ * Retrieves all active jobs
+ *
+ * @returns {Promise<Array<Object>>} - A promise that resolves to an array of jobs.
+ * @throws {Error} - Throws an error if the retrieval process fails.
+ */
+export async function getSingleJobBySlug(slug) {
+  try {
+    // Retrieve all active jobs
+    const queryParams = {
+      where: {
+        slug: slug,
+        status: STATUS_OPEN,
+      },
+      include: {
+        industry: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+          },
+        },
+      },
+    };
+
+    return await client.job.findUnique(queryParams);
+
+    return feedJobs;
+  } catch (error) {
+    console.error("Error retrieving jobs:", error.message, error.stack);
+    throw error;
+  }
+}
+
+/**
  * Updates a job for payment processing using its ID.
  *
  * @param {number} jobId - The ID of the job to be updated.

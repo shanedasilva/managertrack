@@ -352,39 +352,6 @@ function Sidebar() {
         </CardContent>
       </Card>
     </div>
-    // <div className="sticky top-24 self-start space-y-6 md:space-y-8 h-fit col-span-4">
-    //   <div>
-    //     <p className="text-gray-500 dark:text-gray-400 mt-2">
-    //       Want more remote jobs?
-    //     </p>
-    //     <p className="text-gray-500 dark:text-gray-400 mt-2">
-    //       Upgrade to access 30,146 jobs!
-    //     </p>
-    //   </div>
-    //   <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 md:p-6">
-    //     <h3 className="text-lg md:text-xl font-bold">Quick Links</h3>
-    //     <nav className="mt-4 space-y-2">
-    //       <Link
-    //         href="#"
-    //         className="block text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-50 transition-colors"
-    //       >
-    //         Link 1
-    //       </Link>
-    //       <Link
-    //         href="#"
-    //         className="block text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-50 transition-colors"
-    //       >
-    //         Link 2
-    //       </Link>
-    //       <Link
-    //         href="#"
-    //         className="block text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-50 transition-colors"
-    //       >
-    //         Link 3
-    //       </Link>
-    //     </nav>
-    //   </div>
-    // </div>
   );
 }
 
