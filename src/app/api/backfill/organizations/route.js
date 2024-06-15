@@ -211,6 +211,8 @@ async function ensureOrganizationCreatedAndCached(
   let organizationId = organizationCache.get(companyData.id);
 
   if (!organizationId) {
+    console.log(`Saving organization: ${companyData.externalId}`);
+
     const organization = await client.organization.upsert({
       create: {
         externalId: companyData.id,

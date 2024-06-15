@@ -1,6 +1,6 @@
 import { Inter as FontSans } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
-import { Analytics } from "@vercel/analytics/react";
+import Script from "next/script";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
 import "../styles/globals.css";
@@ -38,7 +38,11 @@ export default function RootLayout({ children }) {
         >
           <main>{children}</main>
 
-          <Analytics />
+          <Script
+            async
+            src="https://cloud.umami.is/script.js"
+            data-website-id="78db0d63-9409-47bf-ad77-bd47e1e234a5"
+          />
           <SpeedInsights />
         </body>
       </html>
