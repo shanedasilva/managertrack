@@ -41,7 +41,7 @@ export default async function Page() {
         featuredOrganizations={featuredOrganizations}
       />
 
-      <div className="mx-auto max-w-7xl px-4 lg:px-0 pb-4 relative z-10 bg-white">
+      <div className="mx-auto max-w-7xl px-4 lg:px-0 pb-4 relative z-10 bg-white pb-32">
         <div className="mx-auto grid max-w-2xl grid-cols-1 grid-rows-1 items-start gap-x-8 gap-y-8 lg:mx-0 lg:max-w-none lg:grid-cols-12">
           <div className="space-y-6 md:space-y-8 col-span-8">
             <div className="prose prose-lg dark:prose-invert">
@@ -54,33 +54,6 @@ export default async function Page() {
       </div>
 
       <Footer />
-
-      <div className="pointer-events-none fixed z-50 inset-x-0 bottom-0 sm:px-6 sm:pb-5 lg:px-8">
-        <div className="pointer-events-auto flex items-center justify-between gap-x-6 bg-gray-900 px-6 py-2.5 sm:rounded-xl sm:py-3 sm:pl-4 sm:pr-3.5">
-          <p className="text-sm leading-6 text-white">
-            <a href="#">
-              <strong className="font-semibold">GeneriCon 2023</strong>
-              <svg
-                viewBox="0 0 2 2"
-                className="mx-2 inline h-0.5 w-0.5 fill-current"
-                aria-hidden="true"
-              >
-                <circle cx={1} cy={1} r={1} />
-              </svg>
-              Join us in Denver from June 7 – 9 to see what’s coming next&nbsp;
-              <span aria-hidden="true">&rarr;</span>
-            </a>
-          </p>
-
-          <button
-            type="button"
-            className="-m-3 flex-none p-3 focus-visible:outline-offset-[-4px]"
-          >
-            <span className="sr-only">Dismiss</span>
-            {/* <XMarkIcon className="h-5 w-5 text-white" aria-hidden="true" /> */}
-          </button>
-        </div>
-      </div>
     </main>
   );
 }
@@ -159,7 +132,7 @@ function HeroSection() {
             src="https://wellfound.com/images/jobs/hero-1.png"
           />
         </div>
-        <div className="w-full shrink-0 px-10 text-center lg:w-auto xl:px-20">
+        <div className="w-full shrink-0 px-10 text-center lg:w-auto xl:px-12">
           <h1 className="mb-4 mt-6 text-xl font-medium uppercase tracking-widest lg:mb-3">
             Over 10k executive & management jobs
           </h1>
@@ -302,10 +275,10 @@ async function JobListSection() {
       },
       orderBy: [
         {
-          payScaleBegin: { sort: "desc", nulls: "last" },
+          activeUntil: "desc",
         },
         {
-          activeUntil: "desc",
+          payScaleBegin: { sort: "desc", nulls: "last" },
         },
         {
           payScaleEnd: { sort: "desc", nulls: "last" },
@@ -320,10 +293,10 @@ async function JobListSection() {
 
 function JobsByIndustry({ industry, jobs }) {
   return (
-    <div className="pb-8">
+    <div className="[&:not(:last-child)]:pb-16">
       <div className="pb-6 sm:flex sm:items-center sm:justify-between">
         <h3 className="text-2xl font-semibold tracking-tight text-slate-900">
-          Trending {industry.name} Job Postings
+          {industry.name} Job Postings
         </h3>
         <div className="mt-3 flex sm:ml-4 sm:mt-0">
           <Link
@@ -335,7 +308,10 @@ function JobsByIndustry({ industry, jobs }) {
           </Link>
         </div>
       </div>
-      <ul role="list" className="divide-y divide-slate-300">
+      <ul
+        role="list"
+        className="divide-y divide-slate-300 border-b border-slate-300"
+      >
         {jobs.map((job) => (
           <JobListItem
             avatarUrl={job.organization.logoURL}

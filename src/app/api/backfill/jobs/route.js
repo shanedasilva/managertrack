@@ -423,6 +423,10 @@ export async function GET({ headers }, res) {
     }
 
     console.log("Fetched and saved jobs successfully");
+
+    return new NextResponse("Jobs fetched and saved successfully", {
+      status: StatusCodes.OK,
+    });
   } catch (error) {
     console.error("Error fetching jobs:", error.message);
 
