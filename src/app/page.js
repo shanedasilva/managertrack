@@ -14,7 +14,23 @@ import { Input } from "@/components/ui/input";
 import { getFeaturedOrganizations } from "@/lib/models/Organization";
 import client from "@/lib/database/client";
 
+import {
+  fetchJobRegions,
+  fetchJobCountries,
+  fetchJobCities,
+  fetchJobIndustries,
+  fetchJobTypes,
+  fetchOrganizationTypes,
+} from "@/lib/backfill";
+
 export default async function Page() {
+  // await fetchJobRegions();
+  // await fetchJobCountries();
+  // await fetchJobCities();
+  // await fetchJobIndustries();
+  // await fetchJobTypes();
+  // await fetchOrganizationTypes();
+
   const featuredOrganizations = await getFeaturedOrganizations();
 
   return (
@@ -83,7 +99,7 @@ function Header() {
 
 function NavLinks() {
   return (
-    <div>
+    <div className="text-center">
       <Button variant="ghost" asChild>
         <Link href="/examples/dashboard">Browse Jobs</Link>
       </Button>
@@ -133,7 +149,7 @@ function UserActions() {
 
 function HeroSection() {
   return (
-    <div className="bg-white py-32 sm:py-48 lg:pt-24 lg:pb-10">
+    <div className="bg-white py-32 sm:py-48 lg:pt-32 lg:pb-24">
       <div className="lg:w-max-full mb-6 mt-20 flex flex-row items-center justify-between md:mb-8 lg:mt-8 xl:mx-auto xl:max-w-screen-xxl">
         <div className="hidden shrink lg:block">
           <img
@@ -144,8 +160,8 @@ function HeroSection() {
           />
         </div>
         <div className="w-full shrink-0 px-10 text-center lg:w-auto xl:px-20">
-          <h1 className="mb-4 mt-6 text-2xl font-medium uppercase tracking-widest lg:mb-3">
-            Over 3k executive & management jobs
+          <h1 className="mb-4 mt-6 text-xl font-medium uppercase tracking-widest lg:mb-3">
+            Over 10k executive & management jobs
           </h1>
           <h2 className="text-2xl font-bold !leading-[1.2] md:mb-10 md:text-5xl xxl:text-[4.5rem]">
             Find what&apos;s next<span className="text-red-600">:</span>
@@ -216,7 +232,7 @@ function FeaturedOrganizationCard({ organization }) {
         </Link>
         <CardTitle>
           <Link href={`/organizations/${organization.slug}`}>
-            <p className="text-lg font-semibold hover:underline cursor-pointer text-slate-900">
+            <p className="text-lg font-semibold hover:underline cursor-pointer text-slate-900 truncate">
               {organization.name}
             </p>
           </Link>
@@ -248,7 +264,7 @@ function FeaturedOrganizationCard({ organization }) {
 
 async function JobListSection() {
   const popularIndustries = await client.jobIndustry.findMany({
-    take: 8,
+    take: 10,
     orderBy: {
       jobs: {
         _count: "desc",
@@ -274,6 +290,7 @@ async function JobListSection() {
           select: {
             id: true,
             name: true,
+            slug: true,
             country: {
               select: {
                 id: true,
@@ -283,6 +300,17 @@ async function JobListSection() {
           },
         },
       },
+      orderBy: [
+        {
+          payScaleBegin: { sort: "desc", nulls: "last" },
+        },
+        {
+          activeUntil: "desc",
+        },
+        {
+          payScaleEnd: { sort: "desc", nulls: "last" },
+        },
+      ],
       take: 6,
     });
 

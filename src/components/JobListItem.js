@@ -31,7 +31,7 @@ export default function JobListItem({ avatarUrl, industry, job }) {
 
         <div className="min-w-0 flex-auto text-slate-900">
           <Link href={`/jobs/${industry.slug}/${job.slug}`}>
-            <p className="text-lg font-semibold leading-6 hover:underline cursor-pointer">
+            <p className="text-lg font-semibold leading-6 hover:underline cursor-pointer truncate">
               {job.title}
             </p>
           </Link>
@@ -41,27 +41,34 @@ export default function JobListItem({ avatarUrl, industry, job }) {
                 {job.organization.name}
               </p>
             </Link>
-            <svg viewBox="0 0 2 2" className="h-0.5 w-0.5">
-              <circle cx={1} cy={1} r={1} />
-            </svg>
+
             {job.city && job.city.country && (
               <>
-                <Link
-                  className="truncate text-sm text-slate-500 hover:underline"
-                  href={`/jobs/${industry.slug}/${job.city.id}`}
-                >
-                  {job.city.name}, {job.city.country.name}
-                </Link>
                 <svg viewBox="0 0 2 2" className="h-0.5 w-0.5">
                   <circle cx={1} cy={1} r={1} />
                 </svg>
+
+                <Link
+                  className="truncate text-sm text-slate-500 hover:underline"
+                  href={`/locations/${job.city.slug}`}
+                >
+                  {job.city.name}, {job.city.country.name}
+                </Link>
               </>
             )}
 
-            <p className="truncate text-sm text-slate-500">
-              {currencyFormatter.format(job.payScaleBegin)} -{" "}
-              {currencyFormatter.format(job.payScaleEnd)}
-            </p>
+            {job.payScaleBegin && job.payScaleEnd && (
+              <>
+                <svg viewBox="0 0 2 2" className="h-0.5 w-0.5">
+                  <circle cx={1} cy={1} r={1} />
+                </svg>
+
+                <p className="truncate text-sm text-slate-500">
+                  {currencyFormatter.format(job.payScaleBegin)} -{" "}
+                  {currencyFormatter.format(job.payScaleEnd)}
+                </p>
+              </>
+            )}
           </div>
         </div>
       </div>
