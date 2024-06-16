@@ -1,4 +1,6 @@
 import { PrismaClient } from "@prisma/client";
+import { paginate } from "prisma-extension-pagination";
+
 import {
   createSearchObjects,
   updateSearchObjects,
@@ -22,11 +24,23 @@ const searchable = ["User", "Organization", "Job"];
 if (process.env.NODE_ENV === "production") {
   prisma = new PrismaClient({
     errorFormat: "pretty",
+  }).$extends({
+    model: {
+      job: {
+        paginate,
+      },
+    },
   });
 } else {
   if (!global.prisma) {
     global.prisma = new PrismaClient({
       errorFormat: "pretty",
+    }).$extends({
+      model: {
+        job: {
+          paginate,
+        },
+      },
     });
   }
 
