@@ -60,7 +60,7 @@ model ResumeEducation {
   currentlyEnrolled Boolean   @default(false) @map("currently_enrolled")
   enrolledFrom      DateTime? @map("enrolled_from")
   enrolledTo        DateTime? @map("enrolled_to")
-  resume            Resume    @relation(fields: [resumeId], references: [id])
+  resume            Resume    @relation(fields: [resumeId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   createdAt         DateTime  @default(now()) @map("created_at")
   updatedAt         DateTime  @updatedAt @map("updated_at")
   deletedAt         DateTime? @map("deleted_at")
@@ -78,7 +78,7 @@ model ResumeExperience {
   startDate         DateTime? @map("start_date")
   endDate           DateTime? @map("end_date")
   description       String?
-  resume            Resume?   @relation(fields: [resumeId], references: [id])
+  resume            Resume?   @relation(fields: [resumeId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   createdAt         DateTime  @default(now()) @map("created_at")
   updatedAt         DateTime  @updatedAt @map("updated_at")
   deletedAt         DateTime? @map("deleted_at")
@@ -110,7 +110,7 @@ model Organization {
   slug        String               @unique
   featured    Boolean?             @default(false) @map("featured")
   typeId      String? 
-  type        OrganizationType?     @relation(fields: [typeId], references: [id])
+  type        OrganizationType?    @relation(fields: [typeId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   jobs        Job[]
   users       OrganizationUser[]
   createdAt   DateTime             @default(now()) @map("created_at")
@@ -133,7 +133,7 @@ model OrganizationType {
 model OrganizationUser {
   user           User         @relation(fields: [userId], references: [id])
   userId         String       @unique @map("user_id")
-  organization   Organization @relation(fields: [organizationId], references: [id])
+  organization   Organization @relation(fields: [organizationId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   organizationId String       @unique @map("organization_id")
   assignedAt     DateTime     @default(now())
 
@@ -171,15 +171,15 @@ model Job {
   tags            JobTag[]         
   applications    JobApplication[] 
   typeId          String           @map("job_id")
-  type            JobType          @relation(fields: [typeId], references: [id])
+  type            JobType          @relation(fields: [typeId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   organizationId  String
-  organization    Organization     @relation(fields: [organizationId], references: [id])
+  organization    Organization     @relation(fields: [organizationId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   userId          String?          @map("user_id")
-  user            User?            @relation(fields: [userId], references: [id])
+  user            User?            @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   industryId      String?          @map("industry_id")
-  industry        JobIndustry?     @relation(fields: [industryId], references: [id])
+  industry        JobIndustry?     @relation(fields: [industryId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   cityId          String?          @map("city_id")
-  city            JobCity?         @relation(fields: [cityId], references: [id])
+  city            JobCity?         @relation(fields: [cityId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   createdAt       DateTime         @default(now()) @map("created_at")
   updatedAt       DateTime         @updatedAt @map("updated_at")
   deletedAt       DateTime?        @map("deleted_at")
@@ -193,9 +193,9 @@ model JobApplication {
   userId          String               @map("user_id")
   status          JobApplicationStatus @default(APPLIED)
   resumeId        String               @map("resume_id")
-  job             Job                  @relation(fields: [jobId], references: [id])
-  resume          Resume               @relation(fields: [resumeId], references: [id])
-  user            User                 @relation(fields: [userId], references: [id])
+  job             Job                  @relation(fields: [jobId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  resume          Resume               @relation(fields: [resumeId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  user            User                 @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   questionAnswers Json[]               @map("question_answers")
   createdAt       DateTime             @default(now()) @map("created_at")
   updatedAt       DateTime             @updatedAt @map("updated_at")
@@ -205,9 +205,9 @@ model JobApplication {
 }
 
 model JobTag {
-  job        Job      @relation(fields: [jobId], references: [id])
+  job        Job      @relation(fields: [jobId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   jobId      String   @unique @map("job_id")
-  tag        Tag      @relation(fields: [tagId], references: [id])
+  tag        Tag      @relation(fields: [tagId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   tagId      String   @unique @map("tag_id")
   assignedAt DateTime @default(now())
 
@@ -224,7 +224,7 @@ model JobCity {
   latitude   String     @map("latitude")
   longitude  String     @map("longitude")
   countryId  String 
-  country    JobCountry @relation(fields: [countryId], references: [id])
+  country    JobCountry @relation(fields: [countryId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   jobs       Job[]
 
   @@map("job_cities")
@@ -237,7 +237,7 @@ model JobCountry {
   name       String    @unique @map("name")
   slug       String    @unique @map("slug")
   regionId   String 
-  region     JobRegion @relation(fields: [regionId], references: [id])
+  region     JobRegion @relation(fields: [regionId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   cities     JobCity[]
 
   @@map("job_countries")

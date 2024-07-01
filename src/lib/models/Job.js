@@ -1,3 +1,4 @@
+import { faker } from "@faker-js/faker";
 import client from "@/lib/database/client";
 import { convertToSlug } from "@/lib/utils/string";
 
@@ -261,4 +262,127 @@ export async function createJob(
     console.error(`Error creating job: ${error.message}`, error.stack);
     throw error;
   }
+}
+
+export async function getJobsByIndustryId(industryId) {
+  try {
+    const queryParams = {
+      where: {
+        industryId: industryId,
+      },
+      include: {
+        organization: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            logoURL: true,
+          },
+        },
+        city: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            country: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
+      },
+      orderBy: [
+        {
+          activeUntil: "desc",
+        },
+        {
+          payScaleBegin: { sort: "desc", nulls: "last" },
+        },
+        {
+          payScaleEnd: { sort: "desc", nulls: "last" },
+        },
+      ],
+      take: 6,
+    };
+
+    // const jobs = await client.job.findMany(queryParams);
+    const jobs = await generateJobs(6);
+
+    return jobs;
+  } catch (error) {
+    console.error(
+      "Error retrieving jobs by industry id:",
+      error.message,
+      error.stack
+    );
+
+    throw error;
+  }
+}
+
+const JobCompType = {
+  SALARY: "SALARY",
+  HOURLY: "HOURLY",
+  CONTRACT: "CONTRACT",
+};
+
+const JobLocType = {
+  REMOTE: "REMOTE",
+  ONSITE: "ONSITE",
+  HYBRID: "HYBRID",
+};
+
+const JobStatus = {
+  DRAFT: "DRAFT",
+  ACTIVE: "ACTIVE",
+  INACTIVE: "INACTIVE",
+};
+
+async function generateJobs(count) {
+  const jobs = [];
+
+  for (let i = 0; i < count; i++) {
+    const job = {
+      id: faker.datatype.uuid(),
+      externalId: faker.datatype.number(),
+      title: faker.name.jobTitle(),
+      slug: faker.helpers.slugify(faker.name.jobTitle().toLowerCase()),
+      applyURL: faker.internet.url(),
+      compType: faker.helpers.arrayElement(Object.values(JobCompType)),
+      payScaleBegin: faker.datatype.number({ min: 30000, max: 50000 }),
+      payScaleEnd: faker.datatype.number({ min: 50001, max: 100000 }),
+      payCurrency: faker.finance.currencyCode(),
+      description: faker.lorem.paragraphs(2),
+      jobLocType: faker.helpers.arrayElement(Object.values(JobLocType)),
+      status: JobStatus.DRAFT,
+      customQuestions: [],
+      stripeSessionId: faker.datatype.uuid(),
+      activeUntil: faker.date.future(),
+      typeId: faker.datatype.uuid(),
+      organizationId: faker.datatype.uuid(),
+      userId: faker.datatype.uuid(),
+      industryId: faker.datatype.uuid(),
+      cityId: faker.datatype.uuid(),
+      createdAt: faker.date.recent(),
+      updatedAt: faker.date.recent(),
+      deletedAt: null,
+      organization: {
+        name: faker.company.name(),
+        logoURL:
+          "https://pbs.twimg.com/profile_images/1217566226827759616/hM6lnfw8_400x400.jpg",
+      },
+      city: {
+        name: faker.location.city(),
+        country: {
+          name: faker.location.country(),
+        },
+      },
+    };
+
+    jobs.push(job);
+  }
+
+  return jobs;
 }

@@ -37,14 +37,9 @@ export default function RootLayout({ children }) {
           )}
         >
           <main>{children}</main>
-
-          <Script
-            async
-            src="https://cloud.umami.is/script.js"
-            data-website-id="78db0d63-9409-47bf-ad77-bd47e1e234a5"
-          />
-          <SpeedInsights />
         </body>
+
+        <Script src="https://scripts.simpleanalyticscdn.com/latest.js" />
       </html>
     </ClerkProvider>
   );

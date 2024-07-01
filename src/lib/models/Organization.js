@@ -1,3 +1,4 @@
+import { faker } from "@faker-js/faker";
 import client from "@/lib/database/client";
 import { convertToSlug } from "@/lib/utils/string";
 
@@ -27,9 +28,11 @@ export async function getFeaturedOrganizations() {
       },
     };
 
-    const featuredOrganizations = await client.organization.findMany(
-      queryParams
-    );
+    // const featuredOrganizations = await client.organization.findMany(
+    //   queryParams
+    // );
+
+    const featuredOrganizations = await generateOrganizations(4);
 
     return featuredOrganizations;
   } catch (error) {
@@ -66,4 +69,35 @@ export async function createOrganization(form) {
     console.error("Error creating organization:", error.message, error.stack);
     throw error;
   }
+}
+
+async function generateOrganizations(count) {
+  const organizations = [];
+
+  for (let i = 0; i < count; i++) {
+    const organization = {
+      id: faker.datatype.uuid(),
+      externalId: faker.datatype.number(),
+      name: faker.company.name(),
+      description: faker.lorem.paragraph(),
+      logoURL:
+        "https://pbs.twimg.com/profile_images/1217566226827759616/hM6lnfw8_400x400.jpg",
+      websiteURL: faker.internet.url(),
+      linkedinURL: `https://linkedin.com/${faker.internet.userName()}`,
+      twitterURL: `https://twitter.com/${faker.internet.userName()}`,
+      slug: faker.helpers.slugify(faker.company.name().toLowerCase()),
+      featured: faker.datatype.boolean(),
+      typeId: faker.datatype.uuid(),
+      createdAt: faker.date.recent(),
+      updatedAt: faker.date.recent(),
+      deletedAt: null,
+      _count: {
+        jobs: faker.datatype.number(),
+      },
+    };
+
+    organizations.push(organization);
+  }
+
+  return organizations;
 }

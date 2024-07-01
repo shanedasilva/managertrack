@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { auth } from "@clerk/nextjs/server";
-import { CircleChevronRight } from "lucide-react";
+import { CircleChevronRight, ChevronRight } from "lucide-react";
 import { SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
 
 import { findUserByClerkUserId } from "@/lib/models/User";
 import { getSingleJobBySlug } from "@/lib/models/Job";
 import Navigation from "@/components/Navigation";
+import JobListItem from "@/components/JobListItem";
 import UserNavigation from "@/components/UserNavigation";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -17,13 +18,17 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 
+import client from "@/lib/database/client";
+
 export const metadata = {
   title: "Authentication",
   description: "Authentication forms built using the components.",
 };
 
 function createMarkup(markup) {
-  return { __html: markup };
+  const htmlContent = markup.replace(/<p><\/p>/g, "").replace(/&nbsp;/g, "");
+
+  return { __html: htmlContent };
 }
 
 export default async function Page({ params }) {
@@ -40,9 +45,9 @@ export default async function Page({ params }) {
     <main>
       <Header />
 
-      <div className="mx-auto max-w-full px-4 lg:px-0 pb-4 relative z-10 bg-white pt-16 mb-32">
+      <div className="mx-auto max-w-full px-4 lg:px-0 relative z-10 bg-white pt-16">
         <div className="mx-auto grid max-w-2xl grid-cols-1 grid-rows-1 items-start gap-x-8 gap-y-8 lg:mx-0 lg:max-w-none lg:grid-cols-12 divide-x divide-slate-300">
-          <div className="sticky top-24 self-start space-y-6 md:space-y-8 h-fit col-span-4 px-12 py-4">
+          <div className="sticky top-16 self-start space-y-6 md:space-y-8 h-fit col-span-4 px-12 py-12">
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem>
@@ -62,9 +67,14 @@ export default async function Page({ params }) {
             </h1>
           </div>
 
-          <div className="space-y-6 md:space-y-8 col-span-8">
-            <div className="prose prose-lg dark:prose-invert px-36 py-16">
-              <div dangerouslySetInnerHTML={createMarkup(job.description)} />
+          <div className="space-y-6 md:space-y-8 col-span-8 py-12">
+            <div className="prose prose-lg dark:prose-invert px-36">
+              <div
+                className="job-description pb-16"
+                dangerouslySetInnerHTML={createMarkup(job.description)}
+              />
+
+              <JobListSection industryId={params.industry} />
             </div>
           </div>
         </div>
@@ -133,6 +143,91 @@ function UserActions() {
           <CircleChevronRight className="ml-1 h-4 w-4" />
         </Link>
       </Button>
+    </div>
+  );
+}
+
+async function JobListSection({ industryId }) {
+  const industry = await client.jobIndustry.findUnique({
+    where: {
+      slug: industryId,
+    },
+  });
+
+  const jobs = await client.job.findMany({
+    where: {
+      industryId: industry.id,
+    },
+    include: {
+      organization: {
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+          logoURL: true,
+        },
+      },
+      city: {
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+          country: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+      },
+    },
+    orderBy: [
+      {
+        activeUntil: "desc",
+      },
+      {
+        payScaleBegin: { sort: "desc", nulls: "last" },
+      },
+      {
+        payScaleEnd: { sort: "desc", nulls: "last" },
+      },
+    ],
+    take: 4,
+  });
+
+  return <JobsByIndustry key={industry.id} industry={industry} jobs={jobs} />;
+}
+
+function JobsByIndustry({ industry, jobs }) {
+  return (
+    <div className="[&:not(:last-child)]:pb-16">
+      <div className="pb-6 sm:flex sm:items-center sm:justify-between">
+        <h3 className="text-2xl font-semibold tracking-tight text-slate-900">
+          {industry.name} Job Postings
+        </h3>
+        <div className="mt-3 flex sm:ml-4 sm:mt-0">
+          <Link
+            className="truncate flex justify-between items-center font-medium text-sm text-slate-900 cursor-pointer"
+            href={`/jobs/${industry.slug}`}
+          >
+            View more
+            <ChevronRight className="ml-1 h-4 w-4" />
+          </Link>
+        </div>
+      </div>
+      <ul
+        role="list"
+        className="divide-y divide-slate-300 border-b border-slate-300"
+      >
+        {jobs.map((job) => (
+          <JobListItem
+            avatarUrl={job.organization.logoURL}
+            industry={industry}
+            job={job}
+            key={job.id}
+          />
+        ))}
+      </ul>
     </div>
   );
 }

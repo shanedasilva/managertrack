@@ -18,6 +18,10 @@ const nextConfig = {
         protocol: "https",
         hostname: "wellfound.com",
       },
+      {
+        protocol: "https",
+        hostname: "pbs.twimg.com",
+      },
     ],
   },
 };

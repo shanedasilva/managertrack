@@ -1,5 +1,12 @@
 import Link from "next/link";
-import { CircleChevronRight, Search, ChevronRight } from "lucide-react";
+import {
+  Search,
+  ChevronRight,
+  ChevronDown,
+  SlidersHorizontal,
+  LayoutList,
+  Clock10,
+} from "lucide-react";
 import { SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
 
 import Footer from "@/components/Footer";
@@ -10,27 +17,18 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 import { getFeaturedOrganizations } from "@/lib/models/Organization";
-import client from "@/lib/database/client";
-
-import {
-  fetchJobRegions,
-  fetchJobCountries,
-  fetchJobCities,
-  fetchJobIndustries,
-  fetchJobTypes,
-  fetchOrganizationTypes,
-} from "@/lib/backfill";
+import { getPopularIndustries } from "@/lib/models/Industry";
+import { getJobsByIndustryId } from "@/lib/models/Job";
 
 export default async function Page() {
-  // await fetchJobRegions();
-  // await fetchJobCountries();
-  // await fetchJobCities();
-  // await fetchJobIndustries();
-  // await fetchJobTypes();
-  // await fetchOrganizationTypes();
-
   const featuredOrganizations = await getFeaturedOrganizations();
 
   return (
@@ -41,7 +39,7 @@ export default async function Page() {
         featuredOrganizations={featuredOrganizations}
       />
 
-      <div className="mx-auto max-w-7xl px-4 lg:px-0 pb-4 relative z-10 bg-white mb-32">
+      <div className="mx-auto max-w-7xl px-4 pb-4 relative z-10 bg-white mb-32">
         <div className="mx-auto grid max-w-2xl grid-cols-1 grid-rows-1 items-start gap-x-8 gap-y-8 lg:mx-0 lg:max-w-none lg:grid-cols-12">
           <div className="space-y-6 md:space-y-8 col-span-8">
             <div className="prose prose-lg dark:prose-invert">
@@ -72,9 +70,11 @@ function Header() {
 
 function NavLinks() {
   return (
-    <div className="text-center">
+    <div className="text-center hidden md:block">
       <Button variant="ghost" asChild>
-        <Link href="/examples/dashboard">Browse Jobs</Link>
+        <Link href="/examples/dashboard">
+          Jobs <ChevronDown className="ml-1 h-4 w-4 ml-1" />
+        </Link>
       </Button>
       <Button variant="ghost" asChild>
         <Link href="/examples/dashboard">Organizations</Link>
@@ -83,7 +83,9 @@ function NavLinks() {
         <Link href="/examples/dashboard">Advertise</Link>
       </Button>
       <Button variant="ghost" asChild>
-        <Link href="/examples/dashboard">More</Link>
+        <Link href="/examples/dashboard">
+          More <ChevronDown className="ml-1 h-4 w-4 ml-1" />
+        </Link>
       </Button>
     </div>
   );
@@ -91,7 +93,7 @@ function NavLinks() {
 
 function UserActions() {
   return (
-    <div className="ml-auto flex items-center space-x-2">
+    <div className="ml-auto flex items-center space-x-2 hidden md:block">
       <SignedIn>
         <UserNavigation />
       </SignedIn>
@@ -113,7 +115,7 @@ function UserActions() {
           className="text-sm font-medium transition-colors hover:text-primary"
         >
           Post a Job
-          <CircleChevronRight className="ml-1 h-4 w-4" />
+          <ChevronRight className="ml-1 h-4 w-4" />
         </Link>
       </Button>
     </div>
@@ -122,8 +124,8 @@ function UserActions() {
 
 function HeroSection() {
   return (
-    <div className="bg-white py-32 sm:py-48 lg:pt-32 lg:pb-24">
-      <div className="lg:w-max-full mb-6 mt-20 flex flex-row items-center justify-between md:mb-8 lg:mt-8 xl:mx-auto xl:max-w-screen-xxl">
+    <div className="bg-white py-16 lg:py-32 sm:py-48 lg:pt-32 lg:pb-24">
+      <div className="lg:w-max-full mb-6 mt-10 lg:mt-20 flex flex-row items-center justify-between md:mb-8 lg:mt-8 xl:mx-auto xl:max-w-screen-xxl">
         <div className="hidden shrink lg:block">
           <img
             alt=""
@@ -132,7 +134,8 @@ function HeroSection() {
             src="https://wellfound.com/images/jobs/hero-1.png"
           />
         </div>
-        <div className="w-full shrink-0 px-10 text-center lg:w-auto xl:px-12">
+
+        <div className="w-full shrink-0 px-4 md:px-10 text-center lg:w-auto xl:px-12">
           <h1 className="mb-4 mt-6 text-xl font-medium uppercase tracking-widest lg:mb-3">
             Over 10k executive & management jobs
           </h1>
@@ -142,6 +145,7 @@ function HeroSection() {
 
           <SearchBar />
         </div>
+
         <div className="hidden shrink lg:block">
           <img
             alt=""
@@ -158,7 +162,7 @@ function HeroSection() {
 function SearchBar() {
   return (
     <div className="mt-10 w-full flex gap-x-6">
-      <div className="bg-background/95 p-4 backdrop-blur supports-[backdrop-filter]:bg-background/60 w-full">
+      <div className="bg-background/95 p-0 sm:p-4 backdrop-blur supports-[backdrop-filter]:bg-background/60 w-full">
         <form>
           <div className="relative">
             <Search className="absolute left-4 top-4 mt-1 h-5 w-5 text-muted-foreground" />
@@ -175,12 +179,13 @@ function SearchBar() {
 
 function TrendingOrganizationsSection({ featuredOrganizations }) {
   return (
-    <div className="mx-auto max-w-7xl px-4 lg:px-0 pb-16 relative z-10">
+    <div className="mx-auto max-w-7xl px-4 pb-16 relative z-10">
       <div className="pb-6 sm:flex sm:items-center sm:justify-between">
-        <h3 className="text-2xl font-semibold tracking-tight">
+        <h3 className="text-xl font-semibold tracking-tight">
           Trending organizations hiring now
         </h3>
       </div>
+
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {featuredOrganizations.map((organization) => (
           <FeaturedOrganizationCard
@@ -236,56 +241,10 @@ function FeaturedOrganizationCard({ organization }) {
 }
 
 async function JobListSection() {
-  const popularIndustries = await client.jobIndustry.findMany({
-    take: 10,
-    orderBy: {
-      jobs: {
-        _count: "desc",
-      },
-    },
-  });
+  const popularIndustries = await getPopularIndustries();
 
   return popularIndustries.map(async (industry) => {
-    const jobs = await client.job.findMany({
-      where: {
-        industryId: industry.id,
-      },
-      include: {
-        organization: {
-          select: {
-            id: true,
-            name: true,
-            slug: true,
-            logoURL: true,
-          },
-        },
-        city: {
-          select: {
-            id: true,
-            name: true,
-            slug: true,
-            country: {
-              select: {
-                id: true,
-                name: true,
-              },
-            },
-          },
-        },
-      },
-      orderBy: [
-        {
-          activeUntil: "desc",
-        },
-        {
-          payScaleBegin: { sort: "desc", nulls: "last" },
-        },
-        {
-          payScaleEnd: { sort: "desc", nulls: "last" },
-        },
-      ],
-      take: 6,
-    });
+    const jobs = await getJobsByIndustryId(industry.id);
 
     return <JobsByIndustry key={industry.id} industry={industry} jobs={jobs} />;
   });
@@ -293,9 +252,9 @@ async function JobListSection() {
 
 function JobsByIndustry({ industry, jobs }) {
   return (
-    <div className="[&:not(:last-child)]:pb-16">
-      <div className="pb-6 sm:flex sm:items-center sm:justify-between">
-        <h3 className="text-2xl font-semibold tracking-tight text-slate-900">
+    <div className="[&:not(:last-child)]:pb-10 sm:[&:not(:last-child)]:pb-16">
+      <div className="pb-6 sm:flex sm:items-center sm:justify-between border-b border-slate-300">
+        <h3 className="text-lg md:text-xl font-semibold tracking-tight text-slate-900">
           {industry.name} Job Postings
         </h3>
         <div className="mt-3 flex sm:ml-4 sm:mt-0">
@@ -326,29 +285,94 @@ function JobsByIndustry({ industry, jobs }) {
 }
 
 function Sidebar() {
+  const features = [
+    {
+      name: "Quaility Job Listings.",
+      description:
+        "Only top quality management jobs. We screen, curate & categorize all jobs.",
+      icon: LayoutList,
+    },
+    {
+      name: "Advanced Search Filters.",
+      description:
+        "Find management jobs tailored to your location and experience. Entry level to executive. Startup to GAFAM.",
+      icon: SlidersHorizontal,
+    },
+    {
+      name: "Save Time.",
+      description:
+        "We spend the equivalent of 300+ hours/day scanning every job for you. Get a job faster with personalized job alerts.",
+      icon: Clock10,
+    },
+  ];
+
   return (
     <div className="sticky top-24 self-start space-y-6 md:space-y-8 h-fit col-span-4">
       <Card className="w-full">
         <CardHeader className="flex flex-row items-top justify-start space-y-0 space-x-3 pb-4">
           <CardTitle className="text-lg font-semibold tracking-tight">
-            Want more management jobs?
+            Search for jobs perfect for you
           </CardTitle>
         </CardHeader>
 
-        <CardContent className="p-0 border-t border-slate-300">
-          test
+        <CardContent className="border-t border-slate-300 pb-0">
+          <Accordion type="single" collapsible>
+            <AccordionItem value="item-1">
+              <AccordionTrigger>Filter by keyword</AccordionTrigger>
+              <AccordionContent>
+                Yes. It adheres to the WAI-ARIA design pattern.
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="item-2">
+              <AccordionTrigger>Filter by location</AccordionTrigger>
+              <AccordionContent>
+                Yes. It adheres to the WAI-ARIA design pattern.
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="item-3">
+              <AccordionTrigger>Filter by salary</AccordionTrigger>
+              <AccordionContent>
+                Yes. It adheres to the WAI-ARIA design pattern.
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
         </CardContent>
       </Card>
 
-      <Card className="w-full">
+      <Card className="w-full bg-slate-50">
         <CardHeader className="flex flex-row items-top justify-start space-y-0 space-x-3 pb-4">
           <CardTitle className="text-lg font-semibold tracking-tight">
-            Want more management jobs?
+            Upgrade to find your dream job
           </CardTitle>
         </CardHeader>
 
-        <CardContent className="p-0 border-t border-slate-300">
-          test
+        <CardContent className="border-t border-slate-300 pt-5">
+          <dl className="mb-6 max-w-xl space-y-4 text-sm leading-6 text-slate-900 lg:max-w-none">
+            {features.map((feature) => (
+              <div key={feature.name} className="relative pl-9">
+                <dt className="inline font-semibold text-gray-900">
+                  <feature.icon
+                    aria-hidden="true"
+                    className="absolute left-1 top-1 h-5 w-5 text-slate-900"
+                  />
+                  {feature.name}
+                </dt>{" "}
+                <dd className="inline">{feature.description}</dd>
+              </div>
+            ))}
+          </dl>
+
+          <Button asChild>
+            <Link
+              href="/jobs/new"
+              className="w-full py-5 rounded-md text-sm font-medium transition-colors hover:text-primary"
+            >
+              Sign Up
+              <ChevronRight className="ml-1 h-4 w-4" />
+            </Link>
+          </Button>
         </CardContent>
       </Card>
     </div>

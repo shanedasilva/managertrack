@@ -151,15 +151,14 @@ async function fetchData(url, headers) {
  *
  * @param {Function} findManyFunc - The function to fetch records from the database.
  * @param {string} keyField - The field to use as the key in the cache.
- * @param {string} valueField - The field to use as the value in the cache.
  * @returns {Promise<Map>} - A Map with cached records.
  */
-async function cacheExistingRecords(findManyFunc, keyField, valueField) {
+async function cacheExistingRecords(findManyFunc, keyField) {
   const cache = new Map();
   const records = await findManyFunc();
 
   records.forEach((record) => {
-    cache.set(record[keyField], record[valueField]);
+    cache.set(record[keyField], record);
   });
 
   return cache;
@@ -174,20 +173,19 @@ async function cacheExistingRecords(findManyFunc, keyField, valueField) {
  * @returns {Promise<number>} - The job type ID.
  */
 async function ensureJobTypeCached(jobTypeCache, jobTypeInfo, client) {
-  let jobTypeId = jobTypeCache.get(jobTypeInfo.id);
+  let jobType = jobTypeCache.get(jobTypeInfo.id);
 
-  if (!jobTypeId) {
-    const jobType = await client.jobType.findUnique({
-      where: { externalId: parseInt(jobTypeInfo.id) },
+  if (!jobType) {
+    jobType = await client.jobType.findUnique({
+      where: { externalId: parseInt(jobType.id) },
     });
 
     if (jobType) {
-      jobTypeId = jobType.id;
-      jobTypeCache.set(jobTypeInfo.id, jobTypeId);
+      jobTypeCache.set(jobTypeInfo.id, jobType);
     }
   }
 
-  return jobTypeId;
+  return jobType;
 }
 
 /**
@@ -199,130 +197,178 @@ async function ensureJobTypeCached(jobTypeCache, jobTypeInfo, client) {
  * @returns {Promise<number>} - The job city ID.
  */
 async function ensureJobCityCached(jobCityCache, cityInfo, client) {
-  let jobCityId = jobCityCache.get(cityInfo.geonameid);
+  let jobCity = jobCityCache.get(cityInfo.geonameid);
 
-  if (!jobCityId) {
-    const jobCity = await client.jobCity.findUnique({
+  if (!jobCity) {
+    jobCity = await client.jobCity.findUnique({
       where: { externalId: parseInt(cityInfo.geonameid) },
     });
 
     if (jobCity) {
-      jobCityId = jobCity.id;
-      jobCityCache.set(cityInfo.geonameid, jobCityId);
+      jobCityCache.set(cityInfo.geonameid, jobCity);
     }
   }
 
-  return jobCityId;
+  return jobCity;
 }
 
 /**
  * Ensures the company data is cached and returns it.
  *
  * @param {Object} companyCache - The cache for company data.
- * @param {number} companyId - The company ID.
+ * @param {Object} JobTypeCache - The cache for company types.
+ * @param {number} externalCompanyId - The company ID.
  * @param {Object} headers - The headers for the API request.
  * @returns {Promise<Object>} - The company data.
  */
-async function ensureCompanyCached(companyCache, companyId, headers) {
-  let companyData = companyCache.get(companyId);
+async function ensureCompanyCached(
+  companyCache,
+  externalCompanyId,
+  organizationTypeCache,
+  headers
+) {
+  let companyData = companyCache.get(externalCompanyId);
+  let savedCompany;
 
   if (!companyData) {
-    const companyURL = `https://jobdataapi.com/api/companies/${companyId}`;
+    const companyURL = `https://jobdataapi.com/api/companies/${externalCompanyId}`;
     companyData = await fetchData(companyURL, headers);
-    companyCache.set(companyId, companyData);
+
+    if (!companyData) {
+      throw new Error(`Company with ID ${externalCompanyId} not found`);
+    }
+
+    if (Array.isArray(companyData.info_type)) {
+      const organizationType = organizationTypeCache.get(
+        companyData.info_type[0].id
+      );
+
+      try {
+        savedCompany = await client.organization.create({
+          data: {
+            externalId: externalCompanyId,
+            name: companyData.name,
+            slug: convertToSlug(companyData.name, true),
+            description: companyData.info_description,
+            logoURL: companyData.logo,
+            websiteURL: companyData.website_url,
+            linkedinURL: companyData.linkedin_url,
+            twitterURL: companyData.twitter_handle,
+            typeId: organizationType.id,
+          },
+        });
+      } catch (error) {
+        console.error("Code: ", error);
+      }
+
+      delete savedCompany.description;
+
+      companyCache.set(externalCompanyId, {
+        id: savedCompany.id,
+        industryId: companyData.info_industry.id,
+      });
+
+      console.log("sdfsdfsfsf");
+
+      companyData = {
+        id: savedCompany.id,
+        industryId: companyData.info_industry.id,
+      };
+    }
   }
 
   return companyData;
 }
 
 /**
- * Processes job results and fetches related company data.
+ * Processes job results and fetches related organization data.
  *
  * @param {Array} results - The job results from the API.
  * @param {Object} headers - The headers for the API request.
  * @param {Object} jobTypeCache - The cache for job types.
  * @param {Object} jobCityCache - The cache for job cities.
- * @param {Object} companyCache - The cache for company data.
- * @param {Object} client - The database client.
+ * @param {Object} jobIndustryCache - The cache for job industries.
+ * @param {Object} organizationCache - The cache for organization data.
  */
 async function processJobResults(
   results,
   headers,
   jobTypeCache,
   jobCityCache,
+  jobIndustryCache,
   companyCache,
-  organization
+  organizationTypeCache
 ) {
-  for (const item of results) {
-    // Prepare data for job creation
-    const jobData = {
-      title: item.title,
-      externalId: item.id,
-      slug: convertToSlug(item.title, true),
-      applyURL: item.application_url,
-      compType: "SALARY",
-      payScaleBegin: parseInt(item.salary_min),
-      payScaleEnd: parseInt(item.salary_max),
-      payCurrency: item.salary_currency,
-      description: item.description,
-      jobLocType: item.has_remote ? "REMOTE" : "HYBRID",
-      status: STATUS_OPEN,
-      organizationId: organization.id,
-    };
+  const formattedJobs = [];
 
+  for (const item of results) {
     // Fetch company details
     const companyData = await ensureCompanyCached(
       companyCache,
       item.company.id,
+      organizationTypeCache,
       headers
     );
 
-    // Fetch job type
-    const jobTypeId = await ensureJobTypeCached(
-      jobTypeCache,
-      item.types[0],
-      client
-    );
-
-    jobData.typeId = jobTypeId;
-
-    // Fetch job city if available
-    if (item.cities.length) {
-      const jobCityId = await ensureJobCityCached(
-        jobCityCache,
-        item.cities[0],
+    if (companyData.industryId) {
+      // Fetch job type
+      const jobType = await ensureJobTypeCached(
+        jobTypeCache,
+        item.types[0],
         client
       );
 
-      jobData.cityId = jobCityId;
-    }
+      // Prepare data for job creation
+      const jobData = {
+        title: item.title,
+        externalId: item.id,
+        slug: convertToSlug(item.title, true),
+        applyURL: item.application_url,
+        compType: "SALARY",
+        payScaleBegin: parseInt(item.salary_min),
+        payScaleEnd: parseInt(item.salary_max),
+        payCurrency: item.salary_currency,
+        description: item.description,
+        jobLocType: item.has_remote ? "REMOTE" : "HYBRID",
+        status: STATUS_OPEN,
+        organizationId: companyData.id,
+      };
 
-    // Fetch industry ID if available
-    if (companyData.info_industry) {
-      const jobIndustry = await client.jobIndustry.findUnique({
-        where: { externalId: parseInt(companyData.info_industry.id) },
-      });
+      jobData.typeId = jobType.id;
+
+      // Fetch job city if available
+      if (item.cities.length) {
+        const jobCity = await ensureJobCityCached(
+          jobCityCache,
+          item.cities[0],
+          client
+        );
+
+        jobData.cityId = jobCity.id;
+      }
+
+      const jobIndustry = jobIndustryCache.get(companyData.industryId);
 
       if (jobIndustry) {
         jobData.industryId = jobIndustry.id;
       }
+
+      // Calculate activeUntil (30 days from item.published)
+      jobData.activeUntil = new Date(
+        new Date(item.published).getTime() + 30 * 24 * 60 * 60 * 1000
+      );
+
+      formattedJobs.push(jobData);
     }
+  }
 
-    // Calculate activeUntil (30 days from item.published)
-    jobData.activeUntil = new Date(
-      new Date(item.published).getTime() + 30 * 24 * 60 * 60 * 1000
-    );
-
-    console.log(`Saving jobs for organization: ${jobData.externalId}`);
-
-    // Save job in the database
-    await client.job.upsert({
-      create: jobData,
-      update: {},
-      where: {
-        externalId: item.id,
-      },
+  if (formattedJobs.length > 0) {
+    await client.job.createMany({
+      data: formattedJobs,
+      skipDuplicates: true,
     });
+
+    console.log(`Saved ${results.length} jobs`);
   }
 }
 
@@ -333,24 +379,28 @@ async function processJobResults(
  * @param {Object} headers - The headers for the API request.
  * @param {Object} jobTypeCache - The cache for job types.
  * @param {Object} jobCityCache - The cache for job cities.
- * @param {Object} companyCache - The cache for company data.
+ * @param {Object} jobIndustryCache - The cache for job industries.
+ * @param {Object} organizationCache - The cache for organizatino data.
  */
 async function fetchAndProcessJobs(
   url,
   headers,
   jobTypeCache,
   jobCityCache,
-  companyCache,
-  organization
+  jobIndustryCache,
+  organizationCache,
+  organizationTypeCache
 ) {
   const { next, results } = await fetchData(url, headers);
+
   await processJobResults(
     results,
     headers,
     jobTypeCache,
     jobCityCache,
-    companyCache,
-    organization
+    jobIndustryCache,
+    organizationCache,
+    organizationTypeCache
   );
 
   if (next !== null) {
@@ -359,8 +409,9 @@ async function fetchAndProcessJobs(
       headers,
       jobTypeCache,
       jobCityCache,
-      companyCache,
-      organization
+      jobIndustryCache,
+      organizationCache,
+      organizationTypeCache
     );
   }
 }
@@ -380,47 +431,57 @@ export async function GET({ headers }, res) {
 
   const requestHeaders = {
     Authorization: `Api-Key ${process.env.JOB_DATA_API_KEY}`,
+    cache: "no-store",
   };
 
   try {
     console.log("Fetching and saving jobs...");
 
-    // Fetch all organizations from the database
-    const organizations = await client.organization.findMany();
-
-    // Cache existing job types, job cities, and companies
+    // Cache existing job types
     const jobTypeCache = await cacheExistingRecords(
       client.jobType.findMany,
-      "externalId",
-      "id"
+      "externalId"
     );
 
+    // Cache existing job cities
     const jobCityCache = await cacheExistingRecords(
       client.jobCity.findMany,
-      "externalId",
-      "id"
+      "externalId"
     );
 
-    const companyCache = new Map();
+    // Cache existing job industries
+    const jobIndustryCache = await cacheExistingRecords(
+      client.jobIndustry.findMany,
+      "externalId"
+    );
 
-    // Process each organization
-    for (const organization of organizations) {
-      const url = `https://jobdataapi.com/api/jobs/?company_id=${
-        organization.externalId
-      }&experience_level=EX&exclude_expired=true&language=en&max_age=1&page_size=50&region_id=5&title=${convertToUrlSearchString(
-        SEARCH_TERMS
-      )}`;
+    // Cache existing organizations
+    const organizationCache = await cacheExistingRecords(
+      client.organization.findMany,
+      "externalId"
+    );
 
-      // Fetch and process job data
-      await fetchAndProcessJobs(
-        url,
-        requestHeaders,
-        jobTypeCache,
-        jobCityCache,
-        companyCache,
-        organization
-      );
-    }
+    // Cache existing organization types
+    const organizationTypeCache = await cacheExistingRecords(
+      client.organizationType.findMany,
+      "externalId"
+    );
+
+    // Process each pagination set of job results
+    const url = `https://jobdataapi.com/api/jobs/?experience_level=EX&exclude_expired=true&language=en&max_age=30&page_size=200&region_id=5&title=${convertToUrlSearchString(
+      SEARCH_TERMS
+    )}`;
+
+    // Fetch and process job data
+    await fetchAndProcessJobs(
+      url,
+      requestHeaders,
+      jobTypeCache,
+      jobCityCache,
+      jobIndustryCache,
+      organizationCache,
+      organizationTypeCache
+    );
 
     console.log("Fetched and saved jobs successfully");
 

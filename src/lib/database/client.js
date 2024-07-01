@@ -59,48 +59,45 @@ async function main() {
    * @param {Function} next - The next middleware or query execution function.
    * @returns {Promise<Object>} - The result of the next middleware or query execution.
    */
-  prisma.$use(async (params, next) => {
-    // Handle handle any post processing actions
-    switch (params.action) {
-      case "find":
-        params = await handleFindAction(params);
-        break;
-      case "findMany":
-        params = await handleFindManyAction(params);
-        break;
-      default:
-        break;
-    }
-
-    // Execute the next middleware or query
-    const executed = await next(params);
-
-    // Handle handle any post processing actions
-    switch (params.action) {
-      case "create":
-        handleCreateAction(params, executed);
-        break;
-      case "createMany":
-        handleCreateManyAction(params, executed);
-        break;
-      case "update":
-        handleUpdateAction(params, executed);
-        break;
-      case "updateMany":
-        handleUpdateManyAction(params, executed);
-        break;
-      case "delete":
-        handleDeleteAction(params, executed);
-        break;
-      case "deleteMany":
-        handleDeleteManyAction(params, executed);
-        break;
-      default:
-        break;
-    }
-
-    return executed;
-  });
+  //   prisma.$use(async (params, next) => {
+  //     // Handle handle any post processing actions
+  //     switch (params.action) {
+  //       case "find":
+  //         params = await handleFindAction(params);
+  //         break;
+  //       case "findMany":
+  //         params = await handleFindManyAction(params);
+  //         break;
+  //       default:
+  //         break;
+  //     }
+  //     // Execute the next middleware or query
+  //     const executed = await next(params);
+  //     // Handle handle any post processing actions
+  //     switch (params.action) {
+  //       case "create":
+  //         handleCreateAction(params, executed);
+  //         break;
+  //       case "createMany":
+  //         handleCreateManyAction(params, executed);
+  //         break;
+  //       case "update":
+  //         handleUpdateAction(params, executed);
+  //         break;
+  //       case "updateMany":
+  //         handleUpdateManyAction(params, executed);
+  //         break;
+  //       case "delete":
+  //         handleDeleteAction(params, executed);
+  //         break;
+  //       case "deleteMany":
+  //         handleDeleteManyAction(params, executed);
+  //         break;
+  //       default:
+  //         break;
+  //     }
+  //     return executed;
+  //   });
 }
 
 /**

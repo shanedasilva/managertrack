@@ -182,7 +182,7 @@ export async function fetchJobCities() {
       });
     }
 
-    console.log("Fetched and saved job countries successfully");
+    console.log("Fetched and saved job cities successfully");
   } catch (error) {
     console.error("Error fetching or creating job cities:", error.message);
     throw error; // Propagate the error to the caller

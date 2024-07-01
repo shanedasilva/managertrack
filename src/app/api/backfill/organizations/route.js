@@ -293,6 +293,12 @@ async function fetchAndProcessJobs(
 ) {
   const { next, results } = await fetchData(url, headers);
 
+  console.log("---");
+  console.log("---");
+  console.log("results", results);
+  console.log("---");
+  console.log("---");
+
   await processJobResults(
     results,
     headers,
@@ -323,7 +329,7 @@ export async function GET({ headers }, res) {
     });
   }
 
-  const url = `https://jobdataapi.com/api/jobs/?experience_level=EX&exclude_expired=true&language=en&max_age=1&page_size=50&region_id=5&title=${convertToUrlSearchString(
+  const url = `https://jobdataapi.com/api/jobs/?experience_level=EX&exclude_expired=true&language=en&max_age=2&page_size=50&region_id=5&title=${convertToUrlSearchString(
     SEARCH_TERMS
   )}`;
   const requestHeaders = {
