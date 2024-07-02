@@ -33,8 +33,8 @@ export default async function Page() {
       <Hero />
       <TrendingOrganizations featuredOrganizations={featuredOrganizations} />
 
-      <div className="mx-auto max-w-7xl px-4 pb-4 relative z-10 bg-white mb-32">
-        <div className="mx-auto grid max-w-2xl grid-cols-1 grid-rows-1 items-start gap-x-8 gap-y-8 lg:mx-0 lg:max-w-none lg:grid-cols-12">
+      <div className="mx-auto max-w-7xl px-4 pb-4 relative z-10 bg-white mb-16 lg:mb-32">
+        <div className="mx-auto lg:grid grid-cols-1 grid-rows-1 items-start gap-x-8 gap-y-8 lg:mx-0 lg:max-w-none lg:grid-cols-12">
           <div className="space-y-6 md:space-y-8 col-span-8">
             <div className="prose prose-lg dark:prose-invert">
               <IndustryJobList />
@@ -138,7 +138,7 @@ function Sidebar() {
   ];
 
   return (
-    <div className="sticky top-24 self-start space-y-6 md:space-y-8 h-fit col-span-4">
+    <div className="lg:sticky top-24 self-start space-y-6 md:space-y-8 h-fit col-span-4 mt-8 lg:mt-0">
       <Card className="w-full">
         <CardHeader className="flex flex-row items-top justify-start space-y-0 space-x-3 pb-4">
           <CardTitle className="text-lg font-semibold tracking-tight">
