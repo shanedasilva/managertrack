@@ -1,7 +1,6 @@
 import { Inter as FontSans } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import Script from "next/script";
-import { SpeedInsights } from "@vercel/speed-insights/next";
 
 import "../styles/globals.css";
 

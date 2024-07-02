@@ -97,7 +97,7 @@ function UserActions() {
         <SignInButton>
           <Button variant="outline" asChild>
             <Link
-              className="rounded bg-white px-5 py-2.5 text-sm font-semibold text-gray-900 border-slate-900 hover:bg-slate-100"
+              className="rounded bg-white px-5 py-2.5 text-sm font-semibold text-slate-900 border-slate-900 hover:bg-slate-100"
               href="/login"
             >
               Sign In
@@ -162,7 +162,7 @@ function SearchBar() {
             <Search className="absolute left-4 top-4 mt-1 h-5 w-5 text-muted-foreground" />
             <Input
               placeholder="Search..."
-              className="indent-5 px-6 py-7 text-base bg-white border-gray-900"
+              className="indent-5 px-6 py-7 text-base bg-white border-slate-900"
             />
           </div>
         </form>

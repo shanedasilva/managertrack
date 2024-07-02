@@ -1,3 +1,5 @@
+"use server";
+
 import { SignOutButton } from "@clerk/nextjs";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import Link from "next/link";

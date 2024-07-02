@@ -52,7 +52,7 @@ function TopRightActions() {
 
 function Sidebar() {
   return (
-    <div className="bg-gray-100 dark:bg-gray-800 col-span-2 relative bg-muted p-10 text-white">
+    <div className="bg-slate-100 dark:bg-slate-800 col-span-2 relative bg-muted p-10 text-white">
       <div className="absolute inset-0 bg-zinc-900" />
       <div className="relative z-20 flex items-center text-lg font-medium">
         <Link href={process.env.NEXT_PUBLIC_BASE_APP_URL}>

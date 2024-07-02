@@ -1,22 +1,18 @@
 import Link from "next/link";
 import {
-  Search,
   ChevronRight,
-  ChevronDown,
   SlidersHorizontal,
   LayoutList,
   Clock10,
 } from "lucide-react";
-import { SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
 
-import Footer from "@/components/Footer";
 import JobListItem from "@/components/JobListItem";
-import Navigation from "@/components/Navigation";
-import UserNavigation from "@/components/UserNavigation";
+import Header from "@/components/Header";
+import Hero from "@/components/Hero";
+import Footer from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Input } from "@/components/ui/input";
+import OrganizationCard from "@/components/OrganizationCard";
 import {
   Accordion,
   AccordionContent,
@@ -34,16 +30,14 @@ export default async function Page() {
   return (
     <main>
       <Header />
-      <HeroSection />
-      <TrendingOrganizationsSection
-        featuredOrganizations={featuredOrganizations}
-      />
+      <Hero />
+      <TrendingOrganizations featuredOrganizations={featuredOrganizations} />
 
       <div className="mx-auto max-w-7xl px-4 pb-4 relative z-10 bg-white mb-32">
         <div className="mx-auto grid max-w-2xl grid-cols-1 grid-rows-1 items-start gap-x-8 gap-y-8 lg:mx-0 lg:max-w-none lg:grid-cols-12">
           <div className="space-y-6 md:space-y-8 col-span-8">
             <div className="prose prose-lg dark:prose-invert">
-              <JobListSection />
+              <IndustryJobList />
             </div>
           </div>
 
@@ -56,128 +50,7 @@ export default async function Page() {
   );
 }
 
-function Header() {
-  return (
-    <div className="border-b border-slate-300 fixed top-0 w-full bg-white z-50">
-      <div className="grid gap-4 items-center md:grid-cols-2 lg:grid-cols-3 px-4 h-16">
-        <Navigation />
-        <NavLinks />
-        <UserActions />
-      </div>
-    </div>
-  );
-}
-
-function NavLinks() {
-  return (
-    <div className="text-center hidden md:block">
-      <Button variant="ghost" asChild>
-        <Link href="/examples/dashboard">
-          Jobs <ChevronDown className="ml-1 h-4 w-4 ml-1" />
-        </Link>
-      </Button>
-      <Button variant="ghost" asChild>
-        <Link href="/examples/dashboard">Organizations</Link>
-      </Button>
-      <Button variant="ghost" asChild>
-        <Link href="/examples/dashboard">Advertise</Link>
-      </Button>
-      <Button variant="ghost" asChild>
-        <Link href="/examples/dashboard">
-          More <ChevronDown className="ml-1 h-4 w-4 ml-1" />
-        </Link>
-      </Button>
-    </div>
-  );
-}
-
-function UserActions() {
-  return (
-    <div className="ml-auto flex items-center space-x-2 hidden md:block">
-      <SignedIn>
-        <UserNavigation />
-      </SignedIn>
-      <SignedOut>
-        <SignInButton>
-          <Button variant="outline" asChild>
-            <Link
-              className="rounded bg-white px-5 py-2.5 text-sm font-semibold text-gray-900 border-slate-900 hover:bg-slate-100"
-              href="/login"
-            >
-              Sign In
-            </Link>
-          </Button>
-        </SignInButton>
-      </SignedOut>
-      <Button asChild>
-        <Link
-          href="/jobs/new"
-          className="text-sm font-medium transition-colors hover:text-primary"
-        >
-          Post a Job
-          <ChevronRight className="ml-1 h-4 w-4" />
-        </Link>
-      </Button>
-    </div>
-  );
-}
-
-function HeroSection() {
-  return (
-    <div className="bg-white py-16 lg:py-32 sm:py-48 lg:pt-32 lg:pb-24">
-      <div className="lg:w-max-full mb-6 mt-10 lg:mt-20 flex flex-row items-center justify-between md:mb-8 lg:mt-8 xl:mx-auto xl:max-w-screen-xxl">
-        <div className="hidden shrink lg:block">
-          <img
-            alt=""
-            className="h-[180px] xl:h-[250px]"
-            loading="lazy"
-            src="https://wellfound.com/images/jobs/hero-1.png"
-          />
-        </div>
-
-        <div className="w-full shrink-0 px-4 md:px-10 text-center lg:w-auto xl:px-12">
-          <h1 className="mb-4 mt-6 text-xl font-medium uppercase tracking-widest lg:mb-3">
-            Over 10k executive & management jobs
-          </h1>
-          <h2 className="text-2xl font-bold !leading-[1.2] md:mb-10 md:text-5xl xxl:text-[4.5rem]">
-            Find what&apos;s next<span className="text-red-600">:</span>
-          </h2>
-
-          <SearchBar />
-        </div>
-
-        <div className="hidden shrink lg:block">
-          <img
-            alt=""
-            className="h-[180px] xl:h-[250px]"
-            loading="lazy"
-            src="https://wellfound.com/images/jobs/hero-2.png"
-          />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function SearchBar() {
-  return (
-    <div className="mt-10 w-full flex gap-x-6">
-      <div className="bg-background/95 p-0 sm:p-4 backdrop-blur supports-[backdrop-filter]:bg-background/60 w-full">
-        <form>
-          <div className="relative">
-            <Search className="absolute left-4 top-4 mt-1 h-5 w-5 text-muted-foreground" />
-            <Input
-              placeholder="Search..."
-              className="indent-5 px-6 py-7 text-base bg-white border-gray-900"
-            />
-          </div>
-        </form>
-      </div>
-    </div>
-  );
-}
-
-function TrendingOrganizationsSection({ featuredOrganizations }) {
+function TrendingOrganizations({ featuredOrganizations }) {
   return (
     <div className="mx-auto max-w-7xl px-4 pb-16 relative z-10">
       <div className="pb-6 sm:flex sm:items-center sm:justify-between">
@@ -188,69 +61,26 @@ function TrendingOrganizationsSection({ featuredOrganizations }) {
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {featuredOrganizations.map((organization) => (
-          <FeaturedOrganizationCard
-            key={organization.id}
-            organization={organization}
-          />
+          <OrganizationCard key={organization.id} organization={organization} />
         ))}
       </div>
     </div>
   );
 }
 
-function FeaturedOrganizationCard({ organization }) {
-  return (
-    <Card>
-      <CardHeader className="flex flex-row items-top justify-start space-y-0 space-x-3 pb-4">
-        <Link href={`/organizations/${organization.slug}`}>
-          <Avatar className="h-12 w-12">
-            <AvatarImage src={organization.logoURL} alt={organization.name} />
-            <AvatarFallback>MT</AvatarFallback>
-          </Avatar>
-        </Link>
-        <CardTitle>
-          <Link href={`/organizations/${organization.slug}`}>
-            <p className="text-lg font-semibold hover:underline cursor-pointer text-slate-900 truncate">
-              {organization.name}
-            </p>
-          </Link>
-          <p className="text-sm text-slate-900">+20.1% from last month</p>
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <p className="text-base font-normal">
-          Creating an open financial system for the world
-        </p>
-      </CardContent>
-      <CardContent className="p-0 border-t border-slate-300">
-        <Link
-          className="px-5 py-3 block hover:bg-slate-100 rounded-b-md"
-          href={`/organizations/${organization.slug}`}
-        >
-          <div className="flex justify-between items-center">
-            <p className="text-sm font-normal">
-              {organization._count.jobs} open positions
-            </p>
-
-            <ChevronRight className="ml-2 h-4 w-4" />
-          </div>
-        </Link>
-      </CardContent>
-    </Card>
-  );
-}
-
-async function JobListSection() {
+async function IndustryJobList() {
   const popularIndustries = await getPopularIndustries();
 
   return popularIndustries.map(async (industry) => {
     const jobs = await getJobsByIndustryId(industry.id);
 
-    return <JobsByIndustry key={industry.id} industry={industry} jobs={jobs} />;
+    return (
+      <ListOfIndustryJobs key={industry.id} industry={industry} jobs={jobs} />
+    );
   });
 }
 
-function JobsByIndustry({ industry, jobs }) {
+function ListOfIndustryJobs({ industry, jobs }) {
   return (
     <div className="[&:not(:last-child)]:pb-10 sm:[&:not(:last-child)]:pb-16">
       <div className="pb-6 sm:flex sm:items-center sm:justify-between border-b border-slate-300">
@@ -267,6 +97,7 @@ function JobsByIndustry({ industry, jobs }) {
           </Link>
         </div>
       </div>
+
       <ul
         role="list"
         className="divide-y divide-slate-300 border-b border-slate-300"
@@ -352,7 +183,7 @@ function Sidebar() {
           <dl className="mb-6 max-w-xl space-y-4 text-sm leading-6 text-slate-900 lg:max-w-none">
             {features.map((feature) => (
               <div key={feature.name} className="relative pl-9">
-                <dt className="inline font-semibold text-gray-900">
+                <dt className="inline font-semibold text-slate-900">
                   <feature.icon
                     aria-hidden="true"
                     className="absolute left-1 top-1 h-5 w-5 text-slate-900"
